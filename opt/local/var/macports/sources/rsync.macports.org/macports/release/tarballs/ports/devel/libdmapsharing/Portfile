@@ -1,0 +1,46 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           cxx11 1.1
+PortGroup           gobject_introspection 1.0
+
+name                libdmapsharing
+version             3.9.7
+categories          devel
+license             LGPL-2+
+maintainers         {devans @dbevans} openmaintainer
+
+description         A DMAP client and server library
+
+long_description    libdmapsharing implements the DMAP protocols. This includes \
+                    support for DAAP and DPAP.
+
+homepage            https://www.flyn.org/projects/${name}/
+master_sites        ${homepage}
+
+platforms           darwin
+
+checksums           rmd160  6adc78dab770545830e2fb1524d416584e06d513 \
+                    sha256  745f4dc0b00db3e40721d041c883d813489814eaad3ca0f9ffb091e7e1acfa88 \
+                    size    802636
+
+depends_build       port:pkgconfig
+
+# gst-plugins-base for libgstapp.
+depends_lib         port:gtk2 \
+                    port:avahi \
+                    port:libgee \
+                    port:libsoup \
+                    port:gstreamer1-gst-plugins-base \
+                    port:vala
+
+gobject_introspection no
+
+configure.args      --with-mdns=avahi \
+                    --disable-check \
+                    --disable-silent-rules \
+                    --disable-tests
+
+livecheck.type      regex
+livecheck.url       https://www.flyn.org/projects/${name}/download.html
+livecheck.regex     "${name}-(\\d+(?:\\.\\d+)*)${extract.suffix}"

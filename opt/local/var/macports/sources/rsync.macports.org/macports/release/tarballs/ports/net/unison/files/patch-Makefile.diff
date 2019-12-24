@@ -1,0 +1,21 @@
+--- src/Makefile.orig	2018-01-27 14:12:13.000000000 -0700
++++ src/Makefile	2018-06-06 22:50:53.000000000 -0700
+@@ -68,7 +68,7 @@
+ ######################################################################
+ # Installation
+ 
+-INSTALLDIR = $(HOME)/bin/
++INSTALLDIR = $(DESTDIR)$(PREFIX)/bin/
+ 
+ # This has two names because on OSX the file INSTALL shadows the target 'install'!
+ install: doinstall
+@@ -86,9 +86,7 @@
+ 	    echo "makefile variable NAME not bound"; \
+ 	    exit 1 \
+           ; fi 
+-	-mv $(INSTALLDIR)/$(NAME)$(EXEC_EXT) /tmp/$(NAME)-$(shell echo $$$$)
+ 	cp $(NAME)$(EXEC_EXT) $(INSTALLDIR)
+-	cp $(NAME)$(EXEC_EXT) $(INSTALLDIR)$(NAME)-$(MAJORVERSION)$(EXEC_EXT)
+ 
+ ######################################################################
+ # Demo

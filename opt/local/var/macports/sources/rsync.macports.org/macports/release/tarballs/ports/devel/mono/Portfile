@@ -1,0 +1,85 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+PortGroup               cxx11 1.1
+PortGroup               legacysupport 1.0
+
+name                    mono
+# please update msbuild when updating mono
+version                 6.0.0.319
+revision                0
+epoch                   1
+categories              devel lang mono
+platforms               darwin
+license                 {GPL-2 LGPL-2 MIT}
+maintainers             {mcalhoun @MarcusCalhoun-Lopez} openmaintainer
+description             Implementation of the .NET Development Framework
+long_description        Mono is an effort to create an open source implementation of the .NET \
+                        Development Framework including a C# compiler.
+
+homepage                https://www.mono-project.com/
+master_sites            https://download.mono-project.com/sources/mono/
+use_xz                  yes
+universal_variant       no
+
+checksums               rmd160  ce060e7c3317fca3bf5df378dd6b33d72f9bac6e \
+                        sha256  6b4c80b88bf7688178797bfecc681e3dbc4c6810413c97d6f3c476061a8d261a \
+                        size    216081160
+
+patchfiles-append       patch-aot-compiler.c.diff
+if {!${configure.ccache}} {
+    patchfiles-append   patch-no_ccache.diff
+}
+
+depends_build           path:bin/cmake:cmake \
+                        port:ninja \
+                        port:pkgconfig \
+                        bin:perl:perl5 \
+                        port:cctools
+
+depends_lib             port:zlib \
+                        port:libiconv \
+                        port:gettext \
+                        port:kerberos5
+
+configure.args          --enable-nls \
+                        --enable-dtrace=no \
+                        --with-sigaltstack=no \
+                        --with-libgdiplus=${prefix}/lib/libgdiplus.dylib
+
+test.run                yes
+test.target             check
+
+post-patch {
+    if {${os.major} < 9} {
+        reinplace "s:MAC_OS_X_VERSION_10_5:1050:g" \
+            ${worksrcpath}/libgc/darwin_stop_world.c \
+            ${worksrcpath}/mono/utils/mono-sigcontext.h
+
+        reinplace "s/arch_state->__/arch_state->/g" \
+            ${worksrcpath}/mono/utils/mach-support-x86.c
+        reinplace "s/struct __darwin_mcontext32/struct mcontext/g" \
+            ${worksrcpath}/mono/utils/mach-support-x86.c
+        reinplace "s/ctx->__/ctx->/g" \
+            ${worksrcpath}/mono/utils/mach-support-x86.c
+    }
+
+    # ensure we are UsingTheRightCompiler (https://trac.macports.org/wiki/UsingTheRightCompiler)
+    reinplace "s:__MACPORTS_CC__:${configure.cc}:g" \
+        ${worksrcpath}/mono/mini/aot-compiler.c
+}
+
+post-destroot {
+    set docdir ${prefix}/share/doc/${name}
+
+    xinstall -d ${destroot}${docdir}
+    xinstall -m 0644 -W ${worksrcpath} COPYING.LIB NEWS README.md \
+        ${destroot}${docdir}
+}
+
+variant unixodbc description {map unixodbc instead of libiodbc to odbc32.dll} {
+    patchfiles-append patch-odbc32.diff
+}
+
+livecheck.url           https://www.mono-project.com/download/stable/
+livecheck.regex         "Stable \\((\\d+(?:\\.\\d+)+)\\)"

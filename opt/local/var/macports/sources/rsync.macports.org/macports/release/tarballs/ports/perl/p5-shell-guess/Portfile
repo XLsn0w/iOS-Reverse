@@ -1,0 +1,24 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Shell-Guess 0.09
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         Shell::Guess - Make an educated guess about the shell in use
+long_description    ${description}
+
+platforms           darwin
+
+checksums           rmd160  e96f47b2c7665ef43f6b9a086af774ee551dde15 \
+                    sha256  4069fa2637e443118ed956d710231d166823d23b2a64eb87b8a46872e865a12b \
+                    size    21663
+
+if {${perl5.major} != ""} {
+    depends_lib-append \
+                    port:p${perl5.major}-unix-process
+
+    supported_archs noarch
+}

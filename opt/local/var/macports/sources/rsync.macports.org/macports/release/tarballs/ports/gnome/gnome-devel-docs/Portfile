@@ -1,0 +1,42 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                gnome-devel-docs
+version             3.32.1
+license             GFDL-1.1+ CC-BY-SA-3 CC-BY-SA-4
+set branch          [join [lrange [split ${version} .] 0 1] .]
+description         The GNOME Developer Documentation Package
+long_description    ${description} contains essential documentation for \
+                    GNOME developers. See notes for a list of documents \
+                    provided.
+             
+maintainers         {devans @dbevans} openmaintainer
+categories          gnome devel
+platforms           darwin
+supported_archs     noarch
+homepage            https://www.gnome.org/
+master_sites        gnome:sources/${name}/${branch}/
+
+use_xz              yes
+
+checksums           rmd160  bbf422dddf8befae9f34a0ea3a9e7ae3d4e1200e \
+                    sha256  a02f5a74fea9714596edff4defafe6ef2eba6e1906d3d831309ae772927b1777 \
+                    size    10281104
+
+depends_build       port:pkgconfig \
+                    port:itstool \
+                    port:libxml2 \
+                    path:lib/pkgconfig/glib-2.0.pc:glib2
+
+notes "
+This port provides the following documents:
+    - GNOME Developer Overview (yelp help:platform-overview)
+    - GNOME Developer Platform Demos (yelp help:gnome-devel-demos)
+    - GNOME Human Interface Guidelines (yelp help:hig)
+    - GNOME Programming Guidelines (yelp help:programming-guidelines)
+    - GNOME Accessibility Developers Guide (yelp help:accessibility-devel-guide)
+    - GNOME Optimization Guide (yelp help:optimization-guide)
+"
+
+livecheck.type      gnome

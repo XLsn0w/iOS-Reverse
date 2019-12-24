@@ -1,0 +1,48 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                grsync
+version             1.2.6
+categories          net
+platforms           darwin
+maintainers         {mps @Schamschula} openmaintainer
+license             GPL-2
+
+description         Grsync is a GUI for rsync.
+
+long_description    Grsync makes use of the GTK libraries to synchronize folders, files and make backups.
+
+homepage            http://www.opbyte.it/grsync/
+master_sites        http://www.opbyte.it/release/
+
+checksums           rmd160  a8296e8c4b0961f177e09538048ea1d6d5e7ffdb \
+                    sha256  66d5acea5e6767d6ed2082e1c6e250fe809cb1e797cbbee5c8e8a2d28a895619
+
+depends_build       port:intltool \
+                    port:pkgconfig \
+                    port:autoconf \
+                    port:automake \
+                    port:libtool
+
+depends_lib         port:desktop-file-utils \
+                    port:rsync \
+                    port:gtk2
+
+# grsync's autogen.sh does not run intltoolize so first run intltoolize manually then
+# reconfigure using upstream autogen.sh for intltool 0.51 compatibility
+
+configure.cmd       intltoolize --automake --copy --force && ./autogen.sh && ./configure
+
+configure.args      --disable-unity
+
+# provides desktop file and hicolor icons
+
+post-activate {
+    system "${prefix}/bin/update-desktop-database ${prefix}/share/applications"
+    system "${prefix}/bin/gtk-update-icon-cache -f -t ${prefix}/share/icons/hicolor"
+}
+
+livecheck.type	regex
+livecheck.url	${homepage}download.html
+livecheck.regex	${name}-(\\d+(?:\\.\\d+)*)${extract.suffix}

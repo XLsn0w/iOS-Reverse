@@ -1,0 +1,216 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           cmake 1.0
+PortGroup           github 1.0
+PortGroup           muniversal 1.0
+
+# although Volk does not technically require C++11, forcing the use of
+# modern compilers reduces build failures. Also, it will require C++11
+# in the future, so let's just get on the bandwagon early.
+PortGroup           cxx11 1.1
+
+name                volk
+categories          science comms
+maintainers         {michaelld @michaelld}
+description         Vector-Optimized Library of Kernels
+long_description    VOLK is the Vector-Optimized Library of Kernels, a library that contains kernels of hand-written single-instruction multiple data (SIMD) code for different mathematical operations, providing portable SIMD code that is optimized for a variety of platforms.
+license             GPL-3
+platforms           darwin
+
+if {${name} eq ${subport}} {
+
+    github.setup gnuradio volk 2.0.0 v
+    checksums rmd160 ab6e7a497cd9efcd6873d4edd5b36fd8dbdf9e16 \
+              sha256 33eb98eeb036186665b0f941be1570e5a3350cb0193bbf67b28ef5d9a5ada617 \
+              size   261506
+    revision  0
+
+    # bump the epoch because I moved the version from 20150707 to 1.0.1
+    epoch           1
+    long_description ${long_description} ${subport} \
+provides the release version, which is typically updated every month or so.
+    conflicts       volk-devel
+
+}
+
+subport volk-devel {
+
+    github.setup gnuradio volk f04a46f18308771b5ebf46292bf0fe6918578b35
+    version   20191017-[string range ${github.version} 0 7]
+    checksums rmd160 4786589aed6e22442dea757ed831d2a7621c04fb \
+              sha256 c62e844c83388cef5938ee0a45627c7b6d89287a2d19c86dbae72b12c3576ee0 \
+              size   261608
+    revision  0
+
+    conflicts       volk
+    long_description ${long_description} ${subport} \
+provides the Volk GIT maint or master branch, depending on which is more advanced, and is typically updated every few days to week.
+
+}
+
+# fix naming of *Clang compiler to just "Clang" for internal use
+patchfiles-append patch-fix-clang.diff
+patch.pre_args -p1
+
+# override githib PortGroup homepage setting
+
+homepage            http://libvolk.org/
+
+depends_build-append port:pkgconfig
+depends_lib-append   port:boost
+
+# do VPATH (out of source tree) build
+
+cmake.out_of_source yes
+
+# remove top-level library path, such that internal libraries are used
+# instead of any already-installed ones.
+
+configure.ldflags-delete -L${prefix}/lib
+
+# specify the Python dependencies; these are checked for at configure,
+# then used for building, but not at runtime.
+
+set pythons_suffixes {27 34 35 36 37}
+
+set pythons_ports {}
+foreach s ${pythons_suffixes} {
+    lappend pythons_ports python${s}
+}
+
+proc python_dir {} {
+    global pythons_suffixes
+    foreach s ${pythons_suffixes} {
+        if {[variant_isset python${s}]} {
+            set p python[string index ${s} 0].[string index ${s} 1]
+            return [file normalize [exec ${p} -c "import sys; print(sys.prefix)"]/lib/${p}/site-packages]
+        }
+    }
+    error "Python support not enabled."
+}
+
+foreach s ${pythons_suffixes} {
+    set p python${s}
+    set v [string index ${s} 0].[string index ${s} 1]
+    set i [lsearch -exact ${pythons_ports} ${p}]
+    set c [lreplace ${pythons_ports} ${i} ${i}]
+    variant ${p} description "Build Volk using Python ${v}" conflicts {*}${c} "
+
+    # required Python
+
+    depends_lib-append \
+        port:${p}
+
+    depends_build-append \
+        port:py${s}-six \
+        port:py${s}-mako
+
+    # specify the Python version to use
+
+    configure.args-append \
+        -DPYTHON_EXECUTABLE=${frameworks_dir}/Python.framework/Versions/${v}/bin/python${v} \
+        -DVOLK_PYTHON_DIR=${frameworks_dir}/Python.framework/Versions/${v}/lib/python${v}/site-packages
+    "
+}
+
+if {![variant_isset debug]} {
+    set selected_python python27
+    foreach s ${pythons_suffixes} {
+        if {[variant_isset python${s}]} {
+            set selected_python python${s}
+        }
+    }
+    default_variants +${selected_python}
+}
+
+# override default version string to be MacPorts-specific
+# git / "devel" only for now
+
+set VOLK_VERSION_INFO "git-[string range ${github.version} 0 7](${version})"
+
+configure.args-append \
+    -DVOLK_GIT_COUNT="MacPorts" \
+    -DVOLK_GIT_HASH="${VOLK_VERSION_INFO}"
+
+# install CMake files into this directory
+
+configure.args-append \
+    -DCMAKE_MODULES_DIR=${prefix}/share/cmake
+
+default_variants +docs +orc
+
+variant docs description "Install Volk documentation" {
+
+    depends_build-append \
+        port:doxygen
+
+    configure.args-append \
+        -DDOXYGEN_EXECUTABLE=${prefix}/bin/doxygen
+}
+
+if {![variant_isset docs]} {
+
+    configure.args-append \
+        -DDOXYGEN_EXECUTABLE=
+
+}
+
+variant orc description "Install Volk with support for ORC" {
+
+    depends_lib-append \
+        port:orc
+
+    configure.args-append \
+        -DORCC_EXECUTABLE=${prefix}/bin/orcc \
+        -DORC_INCLUDE_DIR=${prefix}/include/orc-0.4 \
+        -DORC_LIBRARY_DIR=${prefix}/lib
+
+}
+
+if {![variant_isset orc]} {
+
+    configure.args-append \
+        -DORCC_EXECUTABLE= \
+        -DORC_INCLUDE_DIR= \
+        -DORC_LIBRARY_DIR=
+
+}
+
+pre-extract {
+
+    # tell the user to force deactivate gnuradio-(devel,next) if one
+    # is active and version is before Volk was split off (20150329 for
+    # devel and next). gnuradio 3.7.6.2+ provides this split, too (as
+    # of 2015-04-12).
+
+    set not_found [catch {set installed [lindex [registry_active gnuradio-devel] 0]}]
+    if {${not_found}} {
+        set not_found [catch {set installed [lindex [registry_active gnuradio-next] 0]}]
+    }
+    if {${not_found}} {
+        set not_found [catch {set installed [lindex [registry_active gnuradio] 0]}]
+    }
+    if (!${not_found}) {
+
+        set _portname [lindex ${installed} 0]
+        set _version [lindex ${installed} 1]
+
+        if {${_portname} eq "gnuradio"} {
+            set _vcmp [vercmp ${_version} 3.7.6.2]
+        } else {
+            set _vcmp [vercmp ${_version} 20150329]
+        }
+
+        if {${_vcmp} < 0} {
+
+            ui_msg "\nVolk is currently installed by the port '${_portname}'."
+            ui_msg "Use the command"
+            ui_msg "  sudo port -f deactivate ${_portname}"
+            ui_msg "to deactivate the port owning volk, then proceed with"
+            ui_msg "  sudo port upgrade ${_portname}\n"
+            return -code error "Port Needs Deactivation"
+
+        }
+    }
+}

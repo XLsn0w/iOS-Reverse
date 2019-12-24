@@ -1,0 +1,43 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           python 1.0
+
+github.setup        gdabah distorm 3.4.1 v
+set realname        distorm
+name                py-${realname}
+categories-append   devel
+platforms           darwin
+maintainers         {khindenburg @kurthindenburg} openmaintainer
+license             GPL-3
+
+description         powerful disassembler library for x86/AMD64
+
+long_description \
+    diStorm3 is really a decomposer, which means it takes an instruction \
+    and returns a binary structure which describes it rather than static \
+    text, which is great for advanced binary code analysis.
+
+supported_archs     noarch
+
+checksums           rmd160  2e97b3f1bc5dfe6af458f5fb4319da2e40661670 \
+                    sha256  44062a400021f9cb3e35415df57185e80ac4152347a06db36839d8289da40c06 \
+                    size    220110
+
+python.versions     27 35 36 37
+
+
+if {${name} ne ${subport}} {
+    depends_build-append    port:py${python.version}-setuptools
+
+    depends_test-append port:yasm
+
+    patchfiles          patch-test-yasm.diff
+    test.run            yes
+    test.env            PYTHONPATH=${worksrcpath}/build/lib
+    test.cmd            ${python.bin} examples/tests/test_distorm3.py
+    test.target
+
+    livecheck.type  none
+}

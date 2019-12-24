@@ -1,0 +1,51 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                dmapd
+version             0.0.82
+license             GPL-2+
+description         A server that provides DAAP and DPAP shares.
+long_description    The dmapd project provides a GObject-based, Open Source implementation of DMAP sharing.
+maintainers         {devans @dbevans} openmaintainer
+categories          multimedia
+platforms           darwin
+
+homepage            https://www.flyn.org/projects/${name}/
+master_sites        ${homepage}
+
+checksums           rmd160  d5ffd4f56d31957407036c8f42e3572248738e5e \
+                    sha256  7dc1a10d6c1363491492f159f7864d57194384b8007013088ca3b6c220e9e3f6 \
+                    size    444503
+
+depends_build       port:pkgconfig
+
+depends_lib         path:lib/pkgconfig/glib-2.0.pc:glib2 \
+                    port:libdmapsharing \
+                    port:libexif \
+                    port:GraphicsMagick \
+                    port:vips \
+                    port:gstreamer1 \
+                    port:db48
+
+# replace /usr/bin/sh with /bin/sh in build script shebangs
+# fixes build failures in configure dep tracking and in destroot
+
+post-patch {
+    reinplace "s|^#!/usr/bin/sh|#!/bin/sh|" \
+        ${worksrcpath}/compile \
+        ${worksrcpath}/config.guess \
+        ${worksrcpath}/config.sub \
+        ${worksrcpath}/depcomp \
+        ${worksrcpath}/install-sh \
+        ${worksrcpath}/missing
+}
+
+# uses C99 `for` loop initializer
+# breaks build on 10.6 and earlier
+# dmapd.c:435: error: ‘for’ loop initial declaration used outside C99 mode
+configure.cflags-append -std=c99
+
+livecheck.type      regex
+livecheck.url       https://www.flyn.org/projects/${name}/download.html
+livecheck.regex     ${name}-(\[0-9\]+\\\.\[0-9\\\.\]+).tar.gz

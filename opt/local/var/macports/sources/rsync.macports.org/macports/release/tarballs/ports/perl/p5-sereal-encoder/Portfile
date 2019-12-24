@@ -1,0 +1,33 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Sereal-Encoder 4.007 ../../authors/id/Y/YV/YVES
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         Sereal::Encoder - Fast, compact, powerful binary serialization
+long_description    ${description}
+
+platforms           darwin
+
+checksums           rmd160  50c6f20d4794970142c797da8b2d73b44f44f166 \
+                    sha256  bf6fdddc8fcc901c78adcfb61f56c393cd64d73ab320195ebae9e4a82976eab6 \
+                    size    497719
+
+use_parallel_build  no
+
+if {${perl5.major} != ""} {
+    depends_build-append \
+                    port:p${perl5.major}-data-dumper \
+                    port:p${perl5.major}-file-path \
+                    port:p${perl5.major}-sereal-decoder \
+                    port:p${perl5.major}-test-deep \
+                    port:p${perl5.major}-test-differences \
+                    port:p${perl5.major}-test-longstring \
+                    port:p${perl5.major}-test-warn
+
+    depends_lib-append \
+                    port:zstd
+}

@@ -1,0 +1,35 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+PortGroup               python 1.0
+
+name                    py-curtsies
+version                 0.3.0
+platforms               darwin
+supported_archs         noarch
+maintainers             {aronnax @lpsinger} openmaintainer
+license                 MIT
+description             Curses-like terminal wrapper, with colored strings
+long_description        ${description}
+
+homepage                http://curtsies.readthedocs.io
+master_sites            pypi:[string index ${python.rootname} 0]/${python.rootname}
+distname                ${python.rootname}-${version}
+checksums               md5     20e7295c9592b4101915131a685725f0 \
+                        rmd160  39fd8eb76f8e38fec3a7803659e3ae1a7cbfce2a \
+                        sha256  89c802ec051d01dec6fc983e9856a3706e4ea8265d2940b1f6d504a9e26ed3a9 \
+                        size    47120
+
+python.versions         27 34 35 36
+
+if {${name} ne ${subport}} {
+    livecheck.type          none
+
+    depends_build-append    port:py${python.version}-setuptools
+
+    depends_lib-append      port:py${python.version}-blessings \
+                            port:py${python.version}-wcwidth
+
+} else {
+    livecheck.type      pypi
+}

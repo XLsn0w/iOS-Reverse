@@ -1,0 +1,438 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                nginx
+version             1.17.5
+revision            0
+categories          www mail
+platforms           darwin
+license             BSD
+maintainers         {cal @neverpanic} {mps @Schamschula} openmaintainer
+
+description         High-performance HTTP(S) server, HTTP(S) reverse proxy and IMAP/POP3 proxy server
+long_description    \
+    Nginx ("engine x") is a high-performance HTTP(S) server and reverse proxy, \
+    as well as an IMAP/POP3 proxy server. Nginx was written by Igor Sysoev for \
+    Rambler.ru, Russia's second-most visited website, where it has been running \
+    in production for over two and a half years. Igor has released the source \
+    code under a BSD-like license. Although still in beta, Nginx is known for \
+    its stability, rich feature set, simple configuration, and low resource \
+    consumption.
+
+homepage            https://nginx.org/
+master_sites        https://nginx.org/download:nginx \
+                    http://www.grid.net.ru/nginx/download/:upload_module \
+                    googlecode:mod-zip:zip_module \
+                    https://people.freebsd.org/~osa/:redis_module \
+                    https://github.com/masterzen/nginx-upload-progress-module/archive/:uploadprogress_module \
+                    https://github.com/arut/nginx-dav-ext-module/archive/:davext_module \
+                    https://github.com/arut/nginx-rtmp-module/archive/:rtmp_module \
+                    https://github.com/slact/nchan/archive/:http_push_module \
+                    https://github.com/simpl/ngx_devel_kit/archive/:devel_kit_module \
+                    https://github.com/openresty/lua-nginx-module/archive/:lua_module \
+                    https://github.com/openresty/headers-more-nginx-module/archive/:h_more_module \
+                    https://github.com/TeslaGov/ngx-http-auth-jwt-module/archive/:jwt_module \
+                    https://github.com/aperezdc/ngx-fancyindex/archive/:fancyindex_module
+
+distfiles           ${name}-${version}${extract.suffix}:nginx
+checksums           ${name}-${version}${extract.suffix} \
+rmd160  46be697ecf5d0ed8d809ebe75d608cb54ed2483e \
+                    sha256  63ee35e15a75af028ffa1f995e2b9c120b59ef5f1b61a23b8a4c33c262fc10c3 \
+                    size    1036056
+
+depends_lib         port:pcre \
+                    port:zlib
+
+patchfiles          patch-auto__install.diff \
+                    patch-conf__nginx.conf.diff
+
+set nginx_share     ${prefix}/share/${name}
+set nginx_examples  ${nginx_share}/examples
+set nginx_confdir   ${prefix}/etc/${name}
+set nginx_logdir    ${prefix}/var/log/${name}
+set nginx_rundir    ${prefix}/var/run/${name}
+set nginx_pidfile   ${nginx_rundir}/${name}.pid
+set nginx_all_confs {fastcgi.conf fastcgi_params mime.types nginx.conf scgi_params uwsgi_params}
+set auto_activate_confs {nginx.conf mime.types fastcgi.conf}
+
+# portfile-scoped vars for variant routines to re-def and use in port-stages (post-extract, pre-patch, etc)
+set nginx_lua_mod_dirname      ""
+set nginx_rtmp_mod_dirname     ""
+set nginx_upload_mod_dirname   ""
+
+# for aforementioned re-defs of portfile-scoped vars in variant routines
+proc nginx_set_portfile_var {var_name new_value} {
+    upvar   $var_name   portfile_var
+    set portfile_var   $new_value
+}
+
+
+configure.args-append \
+                    --with-cc-opt=\"${configure.cppflags} ${configure.cflags}\" \
+                    --with-ld-opt=\"${configure.ldflags}\" \
+                    --conf-path=${nginx_confdir}/${name}.conf \
+                    --error-log-path=${nginx_logdir}/error.log \
+                    --http-log-path=${nginx_logdir}/access.log \
+                    --pid-path=${nginx_pidfile} \
+                    --lock-path=${nginx_rundir}/${name}.lock \
+                    --http-client-body-temp-path=${nginx_rundir}/client_body_temp \
+                    --http-proxy-temp-path=${nginx_rundir}/proxy_temp \
+                    --http-fastcgi-temp-path=${nginx_rundir}/fastcgi_temp \
+                    --http-uwsgi-temp-path=${nginx_rundir}/uwsgi_temp
+
+# remove --disable-dependency-tracking
+configure.universal_args-delete   --disable-dependency-tracking
+
+build.target        build
+destroot.keepdirs   ${destroot}${nginx_logdir} \
+                    ${destroot}${nginx_rundir}
+
+post-destroot {
+    xinstall -d -m 755 ${destroot}${nginx_share}
+    xinstall -d -m 755 ${destroot}${nginx_examples}
+
+    foreach conf ${nginx_all_confs} {
+        set conf_path "${destroot}${nginx_confdir}/${conf}"
+        if {[file exists ${conf_path}]} {
+            file delete ${conf_path}
+        }
+        if {[file exists ${conf_path}.default]} {
+            move ${conf_path}.default ${destroot}${nginx_examples}
+        }
+    }
+
+    file rename ${destroot}${prefix}/html ${destroot}${nginx_share}
+}
+
+post-activate {
+    foreach conf ${auto_activate_confs} {
+        if {![file exists ${nginx_confdir}/${conf}]} {
+            xinstall -m 644 ${nginx_examples}/${conf}.default ${nginx_confdir}/${conf}
+        }
+    }
+}
+
+startupitem.create      yes
+startupitem.pidfile     auto ${nginx_pidfile}
+startupitem.executable  ${prefix}/sbin/nginx -g "daemon off;"
+
+notes "\
+    A set of sample configuration files has been installed in ${nginx_examples}.\n\n\
+    Additionally, the files [join ${auto_activate_confs} ", "] have been copied to ${nginx_confdir} if they didn't exist yet.\n\
+    Adjust these files to your needs before starting nginx."
+
+default_variants +mp4 +flv +secure_link +ssl +http2 +stream +fancyindex
+
+variant auth_request description {Add client authorization based on the result of a subrequest} {
+    configure.args-append   --with-http_auth_request_module
+}
+
+variant addition description {Append text to pages} {
+    configure.args-append   --with-http_addition_module
+}
+
+variant dav description {Add WebDAV support to server} {
+    configure.args-append   --with-http_dav_module
+}
+
+variant davext description {Add WebDAV (extended) support to server} {
+    set davext_filename     nginx-dav-ext-module
+    set davext_version      0.1.0
+    set davext_distname     ${davext_filename}-${davext_version}
+    distfiles-append        v${davext_version}.tar.gz:davext_module
+    checksums-append        v${davext_version}.tar.gz \
+                            rmd160  78b7008e570fb4cb5d80a76011f88b5a1d34c529 \
+                            sha256  6b004eed8ea16ad8de4d304027bf0413cc323a95914e58625a7dc066481aae3a \
+                            size    6614
+
+    configure.args-append   --with-http_dav_module --add-module=${workpath}/${davext_distname}
+}
+
+variant debug description {Enable debug mode} {
+    configure.args-append   --with-debug
+}
+
+variant degradation description {Allow to return 204 or 444 code for some locations on low memory condition} {
+    configure.args-append   --with-http_degradation_module
+}
+
+variant flv description {Add FLV (Flash Video) streaming support to server} {
+    configure.args-append   --with-http_flv_module
+}
+
+variant geoip description {Enable Ngx http GeoIP module (http://wiki.nginx.org/HttpGeoIPModule)} {
+    configure.args-append   --with-http_geoip_module
+    depends_lib-append      port:libgeoip
+}
+
+variant gperftools description {Enable Google Performance Tools profiling for workers} {
+    configure.args-append   --with-google_perftools_module
+    depends_lib-append      port:gperftools
+
+    # If 'google_perftools' port doesn't find headers needed for the profiler lib, it just quietly skips it.
+    # Check if "-lprofiler" will fail -- if so, pre-empt configure-stage error with a more useful error msg.
+    pre-configure {
+        if {![file exists "${prefix}/lib/libprofiler.dylib"] && ![file exists "${prefix}/lib/libprofiler.a"]} {
+            ui_error "\
+                The 'gperftools' port did not install a libprofiler library (libprofiler.dylib or\
+                libprofiler.a) on your version of OS X, but the +google_perftools variant will not work\
+                without this library. Disable the +google_perftools variant to continue installing ${name}"
+            error "Required libprofiler library missing from gperftools port."
+        }
+    }
+}
+
+variant gzip_static description {Avoids compressing the same file each time it is requested} {
+    configure.args-append   --with-http_gzip_static_module
+}
+
+variant http2 requires ssl description {Add HTTP/2 support to the server} {
+    configure.args-append   --with-http_v2_module
+}
+
+variant image_filter description {Transform images with libgd} {
+    configure.args-append   --with-http_image_filter_module
+    depends_lib-append      port:gd2
+}
+
+variant mail description {Add IMAP4/POP3 mail proxy support} {
+    configure.args-append   --with-mail
+    if {[variant_isset ssl]} {
+        configure.args-append   --with-mail_ssl_module
+    }
+}
+
+variant mp4 description {Enables mp4 streaming with seeking ability} {
+    configure.args-append   --with-http_mp4_module
+}
+
+variant perl5 description {Add perl support to the server directly within nginx and call perl via SSI} {
+    depends_lib-append      port:perl5.24
+    configure.args-append   --with-http_perl_module \
+                            --with-perl=${prefix}/bin/perl5.24
+}
+
+variant random_index description {Randomize directory indexes} {
+    configure.args-append   --with-http_random_index_module
+}
+
+variant realip description {For using nginx as backend} {
+    configure.args-append   --with-http_realip_module
+}
+
+variant secure_link description {Protect pages with a secret key} {
+    configure.args-append   --with-http_secure_link_module
+}
+
+variant ssl description {Add SSL (HTTPS) support to the server, and also to the mail proxy if that is enabled} {
+    configure.args-append   --with-http_ssl_module
+    depends_lib-append      path:lib/libssl.dylib:openssl
+}
+
+variant status description {Add /nginx_status support to the server} {
+    configure.args-append   --with-http_stub_status_module
+}
+
+variant substitution description {Replace text in pages} {
+    configure.args-append   --with-http_sub_module
+}
+
+variant stream description {Enable ngx_stream_core_module for generic TCP proxying and load balancing (install with +ssl to enable ngx_stream_ssl_module)} {
+    configure.args-append   --with-stream
+    if {[variant_isset ssl]} {
+        configure.args-append \
+            --with-stream_ssl_module --with-stream_ssl_preread_module
+    }
+}
+
+variant upload description {Enable Valery Kholodkov's upload module (http://grid.net.ru/nginx/upload.en.html)} {
+    set upload_filename     nginx_upload_module
+    set upload_version      2.2.0
+    set upload_distname     ${upload_filename}-${upload_version}
+    distfiles-append        ${upload_distname}.tar.gz:upload_module
+    checksums-append        ${upload_distname}.tar.gz \
+                            rmd160  5734af837be3fe8ec444a7e5e7f6707118594098 \
+                            sha256  b1c26abe0427180602e257627b4ed21848c93cc20cefc33af084983767d65805
+
+    configure.args-append   --add-module=${workpath}/${upload_distname}
+
+    # v2.2.0 release references members of ngx_http_request_body_t that were renamed in later nginx versions.
+    # Patch nginx_upload_module.c with fixed version from https://github.com/TimothyKlim/nginx-upload-module.
+    patchfiles-append       patch-nginx_upload_module.tmp-ngx_http_upload_module.c.diff
+
+
+    nginx_set_portfile_var  nginx_upload_mod_dirname    "${upload_distname}"
+
+    pre-fetch {
+        ui_error "The +upload variant is currently broken, because the upload module is not compatible with nginx 1.9.0."
+        error "incompatible variant selection"
+    }
+    # patch routine balks on file names with "../", but rel-paths in patchfiles start from $worksrcpath
+    pre-patch {
+        ln -s   "${workpath}/${nginx_upload_mod_dirname}" "${worksrcpath}/nginx_upload_module.tmp"
+    }
+    post-patch {
+        file delete   "${worksrcpath}/nginx_upload_module.tmp"
+    }
+}
+
+variant upload_progress description {Enable Brice Figureau's upload progress module (https://github.com/masterzen/nginx-upload-progress-module)} {
+    set uploadprg_filename  nginx_uploadprogress_module
+    set uploadprg_version   0.9.2
+    set uploadprg_distname  v${uploadprg_version}
+    distfiles-append        ${uploadprg_distname}.tar.gz:uploadprogress_module
+    checksums-append        ${uploadprg_distname}.tar.gz \
+                            rmd160  eedb9d9acd6450df0f940902165dc5113ede0171 \
+                            sha256  b286689355442657650421d8e8398bd4abf9dbbaade65947bb0cb74a349cc497 \
+                            size    17268
+
+    configure.args-append   --add-module=${workpath}/nginx-upload-progress-module-${uploadprg_version}
+}
+
+variant xslt description {Post-process pages with XSLT} {
+    configure.args-append   --with-http_xslt_module
+
+    depends_lib-append      port:libxslt
+}
+
+variant zip description {Enable Ngx zip download module (https://github.com/evanmiller/mod_zip)} {
+
+    set zip_distname        mod_zip-1.1.6
+    distfiles-append        ${zip_distname}.tar.gz:zip_module
+    checksums-append        ${zip_distname}.tar.gz \
+                            rmd160  17a465d87b8e1ba71bdd6ad40e20d21cc7dcd434 \
+                            sha256  d30546b4be8308c721df0240ebc38c474c6b577381a110321eded6dbed5104b1 \
+                            size    21991
+
+    configure.args-append   --add-module=${workpath}/${zip_distname}
+    patchfiles-append       patch-src-http-ngx_http_upstream.c.diff \
+                            patch-src-http-ngx_http_upstream.h.diff
+}
+
+variant redis description {Enable Ngx HTTP Redis module} {
+    set redis_filename      ngx_http_redis
+    set redis_version       0.3.9
+    set redis_distname      ${redis_filename}-${redis_version}
+    distfiles-append        ${redis_distname}.tar.gz:redis_module
+    checksums-append        ${redis_distname}.tar.gz \
+                            rmd160  ecaa081631c67e8ab7ffe2f6abf49e78d8cddbda \
+                            sha256  21f87540f0a44b23ffa5df16fb3d788bc90803b255ef14f9c26e3847a6f26f46 \
+                            size    13051
+
+    configure.args-append   --add-module=${workpath}/${redis_distname}
+}
+
+variant rtmp description {Enable Ngx RTMP module (https://github.com/arut/nginx-rtmp-module)} {
+    set rtmp_filename       nginx-rtmp-module
+    set rtmp_version        1.1.7
+    set rtmp_distname       ${rtmp_filename}-${rtmp_version}
+    distfiles-append        v${rtmp_version}.tar.gz:rtmp_module
+    checksums-append        v${rtmp_version}.tar.gz \
+                            rmd160  3b7510fba6f6e572f0fb0b3676fe1eb4d4caecb1 \
+                            sha256  7922b0e3d5f3d9c4b275e4908cfb8f5fb1bfb3ac2df77f4c262cda56df21aab3 \
+                            size    519735
+
+    configure.args-append   --add-module=${workpath}/${rtmp_distname}
+    patchfiles-append       patch-ngx_rtmp_core_module.c.diff
+
+    nginx_set_portfile_var  nginx_rtmp_mod_dirname    "${rtmp_distname}"
+
+    # patch routine balks on file names with "../", but rel-paths in patchfiles start from $worksrcpath
+    pre-patch {
+        ln -s   "${workpath}/${nginx_rtmp_mod_dirname}" "${worksrcpath}/nginx_rtmp_module.tmp"
+    }
+    post-patch {
+        file delete   "${worksrcpath}/nginx_rtmp_module.tmp"
+    }
+}
+
+variant http_push description {Enable Ngx HTTP Push module (https://github.com/slact/nchan)} {
+    set http_push_filename  nchan
+    set http_push_version   1.2.1
+    set http_push_distname  ${http_push_filename}-${http_push_version}
+    distfiles-append        v${http_push_version}.tar.gz:http_push_module
+    checksums-append        v${http_push_version}.tar.gz \
+                            rmd160  aeae5bbb2becaa83a52ccf1350f7b8ee170ab388 \
+                            sha256  7bb3ae57a036afabee1da5e40085b69b3fd68026fcc1d8abc98a8ad9f5dccc44 \
+                            size    645188
+
+     configure.args-append   --add-module=${workpath}/${http_push_distname}
+}
+
+variant devel_kit description {Enable ngx_devel_kit module (https://github.com/simpl/ngx_devel_kit)} {
+    set devel_kit_filename  ngx_devel_kit
+    set devel_kit_version   0.3.0
+    set devel_kit_distname  ${devel_kit_filename}-${devel_kit_version}
+    distfiles-append        v${devel_kit_version}.tar.gz:devel_kit_module
+    checksums-append        v${devel_kit_version}.tar.gz \
+                            rmd160  beb2736eb06e8e26f60643623553789346f653da \
+                            sha256  88e05a99a8a7419066f5ae75966fb1efc409bad4522d14986da074554ae61619 \
+                            size      66455
+
+    configure.args-append     --add-module=${workpath}/${devel_kit_distname}
+}
+
+variant lua requires devel_kit description {Enable Lua module (https://github.com/openresty/lua-nginx-module)} {
+    depends_lib-append      port:luajit
+    set ngx_lua_filename    lua-nginx-module
+    set ngx_lua_version     0.10.13
+    set ngx_lua_distname    ${ngx_lua_filename}-${ngx_lua_version}
+    distfiles-append        v${ngx_lua_version}.tar.gz:lua_module
+    checksums-append        v${ngx_lua_version}.tar.gz \
+                            rmd160  ec6278fb7936abfdead2df5e20a90092a1024098 \
+                            sha256  ecea8c3d7f69dd48c6132498ddefb5d83ba9f387fa3d4da14e2abeacdfc8a3ee \
+                            size    624102
+
+    configure.cflags        -I${prefix}/include/luajit-2.0/ ${configure.cflags}
+    configure.env           LUAJIT_INC=${prefix}/include/luajit-2.0/
+    configure.env           LUAJIT_LIB=${prefix}/lib
+    configure.args-append   --add-module=${workpath}/${ngx_lua_distname}
+
+    nginx_set_portfile_var  nginx_lua_mod_dirname    "${ngx_lua_distname}"
+}
+
+variant headers_more description {Enable headers-more module (https://github.com/openresty/headers-more-nginx-module)} {
+    set ngx_h_more_filename     headers-more-nginx-module
+    set ngx_h_more_version      0.33
+    set ngx_h_more_distname     ${ngx_h_more_filename}-${ngx_h_more_version}
+    distfiles-append            v${ngx_h_more_version}.tar.gz:h_more_module
+    checksums-append            v${ngx_h_more_version}.tar.gz \
+                                rmd160  fb27195a722e81f533016e693b5a6616fd6b4f72 \
+                                sha256  a3dcbab117a9c103bc1ea5200fc00a7b7d2af97ff7fd525f16f8ac2632e30fbf \
+                                size    28130
+
+    configure.args-append       --add-module=${workpath}/${ngx_h_more_distname}
+}
+
+variant jwt description {Add JWT (Javascript Web Token) support to server using TeslaGov's ngx-http-auth-jwt-module (https://github.com/TeslaGov/ngx-http-auth-jwt-module)} {
+    set jwt_filename        ngx-http-auth-jwt-module
+    set jwt_version         0.0.2
+    set jwt_distname        ${jwt_filename}-${jwt_version}
+    distfiles-append        v${jwt_version}.tar.gz:jwt_module
+    checksums-append        v${jwt_version}.tar.gz \
+                            rmd160  7c87e95adcf654f2684e5ce1c932ce56b32b403c \
+                            sha256  2ff4f6ee29cfb708ce215f2f110aa360ba5823ad0355033d7ec2ec39610d5087 \
+                            size    13681
+
+    configure.args-append   --add-dynamic-module=${workpath}/${jwt_distname}
+    depends_lib-append      port:libjwt
+}
+
+variant fancyindex description {Add fancy index support; file listings, like the built-in autoindex module does, but with a touch of style} {
+    set fancyindex_filename        ngx-fancyindex
+    set fancyindex_version         0.4.3
+    set fancyindex_distname        ${fancyindex_filename}-${fancyindex_version}
+    distfiles-append        v${fancyindex_version}.tar.gz:fancyindex_module
+    checksums-append        v${fancyindex_version}.tar.gz \
+                            rmd160  fa7be114c57883e38869a16091ea64573db208aa \
+                            sha256  81698fb0c1ec9f906ce308c055d5d248085caf390f4b92516c1ec93f87c886d4 \
+                            size    25274
+
+    configure.args-append   --add-module=${workpath}/${fancyindex_distname}
+}
+
+
+livecheck.type      regexm
+livecheck.url       ${homepage}
+livecheck.regex     {nginx-(\d+\.\d+\.\d+)</a>\s+mainline}

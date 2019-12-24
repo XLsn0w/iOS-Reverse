@@ -1,0 +1,30 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Net-SSH-Perl 2.14 ../by-authors/id/S/SC/SCHWIGON
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         Net-SSH-Perl - Perl client Interface to SSH
+long_description    ${description}. It is compatible with both the SSH-1 and \
+                    SSH-2 protocols.
+
+platforms           darwin
+
+checksums           rmd160  09a218c63f902b692b82f7dd14993eefc0a3a5ef \
+                    sha256  2b5d1bb13590b5870116704e7f1dce9a9823c4f80ff5461b97bb26a317393017
+
+if {${perl5.major} != ""} {
+    depends_lib-append \
+                    port:p${perl5.major}-crypt-curve25519 \
+                    port:p${perl5.major}-crypt-idea \
+                    port:p${perl5.major}-crypt-rsa \
+                    port:p${perl5.major}-cryptx \
+                    port:p${perl5.major}-digest-bubblebabble \
+                    port:p${perl5.major}-file-homedir \
+                    port:p${perl5.major}-math-gmp \
+                    port:p${perl5.major}-module-signature \
+                    port:p${perl5.major}-string-crc32
+}

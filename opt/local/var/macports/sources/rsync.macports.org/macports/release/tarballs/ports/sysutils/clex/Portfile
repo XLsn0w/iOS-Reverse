@@ -1,0 +1,37 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+
+name                    clex
+epoch                   1
+version                 4.6.patch8
+categories              sysutils
+platforms               darwin
+maintainers             {ryandesign @ryandesign} openmaintainer
+license                 GPL-2
+
+description             file manager with curses interface
+
+long_description \
+    CLEX is a file manager with a full-screen user interface. It        \
+    displays directory contents including the file status details and   \
+    provides features like command history, filename insertion, or name \
+    completion in order to help users to create commands to be executed \
+    by the shell.
+
+homepage                http://www.clex.sk/
+master_sites            ${homepage}download/
+
+checksums               rmd160  866750195ed77b074a73b7cbd25a58991e0374bc \
+                        sha256  67d8d67eb1e41299e808f96be0f877729804eebb6a92627a35b2eac527b7f0e5 \
+                        size    252780
+
+depends_lib             port:ncurses
+
+use_parallel_build      yes
+
+test.run                yes
+test.target             check
+
+livecheck.type          regex
+livecheck.regex         {latest stable version is ([0-9]+(\.[0-9a-z]+)+)}

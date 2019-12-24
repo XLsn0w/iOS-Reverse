@@ -1,0 +1,31 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                gnome-getting-started-docs
+version             3.34.0
+set branch          [join [lrange [split ${version} .] 0 1] .]
+description         GNOME Help Getting Started
+long_description    This package adds getting started topics to \
+                    the default GNOME Help document
+
+maintainers         nomaintainer
+categories          gnome
+license             CC-BY-SA-3
+installs_libs       no
+platforms           darwin
+supported_archs     noarch
+homepage            https://www.gnome.org/
+master_sites        gnome:sources/${name}/${branch}/
+
+use_xz              yes
+
+checksums           rmd160  25ae2f75729eaa5770aa9183a0337f574f4e1517 \
+                    sha256  f70ce2ca23ad786215f3c92ec85783e3aabed07e4f78700fa27f9b2cf76e03db \
+                    size    91385592
+
+depends_build       port:pkgconfig \
+                    port:itstool \
+                    port:libxml2
+
+livecheck.type      gnome

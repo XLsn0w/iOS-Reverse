@@ -1,0 +1,53 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-pybtex
+license             MIT
+epoch               1
+version             0.21
+revision            1
+categories-append   textproc
+platforms           darwin
+maintainers         nomaintainer
+supported_archs     noarch
+
+description         A BibTeX-compatible bibliography processor in Python.
+long_description    Pybtex reads citation information from a file and \
+                    produces a formatted bibliography.  BibTeX style files \
+                    are supported.  Alternatively it is possible to write \
+                    styles in Python.
+
+homepage            http://pybtex.sourceforge.net/
+master_sites        pypi:p/pybtex/
+distname            pybtex-${version}
+checksums           rmd160  df7b5504fbeaabbd748801ee9917d2138b62a6a6 \
+                    sha256  af8a6c7c74954ad305553b118d2757f68bc77c5dd5d5de2cc1fd16db90046000 \
+                    size    364772
+
+python.versions     27 36 37
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                        port:py${python.version}-setuptools
+    depends_lib-append  port:py${python.version}-latexcodec \
+                        port:py${python.version}-six \
+                        port:py${python.version}-yaml
+    depends_test-append port:py${python.version}-nose
+
+    test.run            yes
+    test.cmd            ${python.bin} setup.py
+    test.env            PYTHONPATH=${worksrcpath}/build/lib
+
+    post-destroot   {
+        set docdir ${prefix}/share/doc/${subport}
+        xinstall -d ${destroot}${docdir}
+        xinstall -m 644 -W ${worksrcpath} \
+            CHANGES \
+            COPYING \
+            PKG-INFO \
+            README \
+            ${destroot}${docdir}
+    }
+}

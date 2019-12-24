@@ -1,0 +1,51 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-service_identity
+version             18.1.0
+categories-append   devel
+platforms           darwin
+license             MIT
+
+python.versions     27 34 35 36 37
+
+maintainers         {khindenburg @kurthindenburg} openmaintainer
+
+description         Service Identity Verification for pyOpenSSL
+
+long_description    service_identity aspires to give you all the tools\
+                    you need for verifying whether a certificate is valid\
+                    for the intended purposes.
+
+homepage            https://github.com/pyca/service_identity
+master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
+distname            ${python.rootname}-${version}
+
+checksums           rmd160  98fa0a949087bb2be14480d84779d4d723f82374 \
+                    sha256  0858a54aabc5b459d1aafa8a518ed2081a285087f349fe3e55197989232e2e2d \
+                    size    21653
+
+if {${name} ne ${subport}} {
+    depends_build-append  port:py${python.version}-setuptools
+    depends_lib-append  port:py${python.version}-asn1 \
+                        port:py${python.version}-asn1-modules \
+                        port:py${python.version}-idna \
+                        port:py${python.version}-openssl \
+                        port:py${python.version}-attrs
+
+    # Appears tests were removed in 17.0.0
+    if 0 {
+    depends_test-append port:py${python.version}-pytest
+    set pyver [join [split ${python.version} {}] {.}]
+    test.run            yes
+    test.cmd            py.test-${pyver}
+    test.target
+    test.env            PYTHONPATH=${worksrcpath}/build/lib
+    }
+
+    livecheck.type      none
+} else {
+    livecheck.type      pypi
+}

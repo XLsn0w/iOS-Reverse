@@ -1,0 +1,33 @@
+PortSystem 1.0
+PortGroup select 1.0
+
+name                    maven_select
+version                 0.3
+revision                2
+categories              sysutils
+platforms               darwin
+license                 BSD
+maintainers             nomaintainer
+supported_archs         noarch
+description             common files for selecting default Maven version
+long_description        This port installs files that allow 'port select' to \
+                        be used to create links to the preferred default \
+                        version of the Maven Java build tool.
+
+homepage                https://www.macports.org/
+distfiles
+
+use_configure           no
+build                   {}
+# install all files
+destroot {
+        select::install maven ${filespath}/base
+        select::install maven ${filespath}/none
+}
+
+livecheck.type  none
+
+# Documentation for maven ports:
+#   PortGroup select 1.0
+#   select.group            maven
+#   select.file             ${filespath}/maven[string map {. {}} ${branch}]

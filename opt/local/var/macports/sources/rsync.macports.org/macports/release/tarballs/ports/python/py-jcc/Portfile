@@ -1,0 +1,47 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+set _name           JCC
+set _n              [string index ${_name} 0]
+
+name                py-jcc
+version             3.0
+categories-append   devel
+platforms           darwin
+maintainers         nomaintainer
+license             Apache-2
+
+description         JCC is a C++ code generator for calling Java from C++/Python
+long_description    JCC is a C++ code generator for producing the code \
+                    necessary to call into Java classes from CPython via \
+                    Java's Native Invocation Interface (JNI).\
+                    JCC generates C++ wrapper classes that hide all \
+                    the gory details of JNI access as well Java memory \
+                    and object reference management.\
+                    JCC generates CPython types that make these C++ classes\
+                    accessible from a Python interpreter. JCC attempts to make\
+                    these Python types pythonic by detecting iterators and\
+                    property accessors. Iterators and mappings may also be\
+                    declared to JCC.
+
+homepage            https://lucene.apache.org/pylucene/jcc/index.html
+
+master_sites        pypi:${_n}/${_name}/
+distname            ${_name}-${version}
+
+checksums           rmd160  29390df455c6b3cbc5e6ce84c57ad3c0f3873487 \
+                    sha256  52dc7ae13a8e81d78afbc0f13e88ecbdf969673923425a4d65021ae241d99b91
+
+patchfiles          patch-comparsion-error.diff
+
+python.versions     27 35 36
+
+if {${name} ne ${subport}} {
+    depends_build   port:py${python.version}-setuptools
+
+    livecheck.type  none
+} else {
+    livecheck.type  pypi
+}

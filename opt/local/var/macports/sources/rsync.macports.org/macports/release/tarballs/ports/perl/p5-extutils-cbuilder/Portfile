@@ -1,0 +1,32 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         ExtUtils-CBuilder 0.280231
+epoch               2
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         Compile and link C code for Perl modules
+long_description    This module can build the C portions of Perl modules by \
+                    invoking the appropriate compilers and linkers in a \
+                    cross-platform manner.  It was motivated by the \
+                    Module::Build project, but may be useful for other \
+                    purposes as well.  However, it is not intended as a \
+                    general cross-platform interface to all your C building \
+                    needs.  That would have been a much more ambitious goal!
+
+platforms           darwin
+
+checksums           rmd160  042cdb9c553103067130dd0c23f6c8d3437b4157 \
+                    sha256  e6e72546ca0468c10bb50d4aba2a9b3908e9fe4d7708e7ee800327be075eeeeb \
+                    size    40422
+
+if {${perl5.major} != ""} {
+    depends_lib-append \
+                    port:p${perl5.major}-ipc-cmd \
+                    port:p${perl5.major}-text-parsewords
+
+    supported_archs noarch
+}

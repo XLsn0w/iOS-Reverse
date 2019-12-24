@@ -1,0 +1,68 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+
+name                    wordpress
+version                 4.9.10
+categories              www
+platforms               darwin freebsd
+maintainers             nomaintainer
+license                 GPL-2+
+supported_archs         noarch
+
+description             A state-of-the-art semantic personal publishing platform
+long_description        WordPress is a state-of-the-art semantic personal publishing platform \
+                        with a focus on aesthetics, web standards, and usability.
+
+homepage                https://wordpress.org/
+master_sites            ${homepage}
+
+checksums               rmd160  96b9549cb6fb37c311c3c1973854f4e37b54a708 \
+                        sha256  359045880c4d49f600acb2c18808a4ba1d50090c1f759d930ee40e8173a77815 \
+                        size    8744264
+
+worksrcdir              ${name}
+
+# The php variants deliberately do not conflict
+foreach php {php55 php56 php70 php71} {
+    variant ${php} description "Use ${php}" "
+        depends_run-append  port:${php}-gd \
+                            port:${php}-mbstring \
+                            port:${php}-mcrypt \
+                            port:${php}-mysql \
+                            port:${php}-zip
+    "
+}
+
+if {![variant_isset php55] && ![variant_isset php56] && ![variant_isset php70]} {
+    default_variants +php71
+}
+
+use_configure           no
+build                   {}
+
+destroot {
+    file copy ${worksrcpath} ${destroot}${prefix}/www/${name}
+}
+
+notes "
+If your webserver is already running with php and mysql, connect on http://localhost/wordpress/ to finish the install.
+Temporarily allow the webserver write access so it can create wp-config.php (or do it yourself)
+$ sudo chmod 1777 ${prefix}/www/wordpress
+$ sudo chmod 755 ${prefix}/www/wordpress
+
+If Apache is not set, set an alias to the wordpress dir and some access like
+-- ${prefix}/apache2/conf/extra/wordpress.conf
+Alias /wordpress/ \"${prefix}/www/wordpress/\"
+<Directory \"${prefix}/www/wordpress\">
+    Options Indexes FollowSymLinks
+    AllowOverride None
+    Order allow,deny
+    Allow from all
+</Directory>
+--
+"
+
+livecheck.type          regex
+livecheck.url           ${homepage}download/
+livecheck.regex         "Download&nbsp;WordPress&nbsp;(\\d+(?:\\.\\d+)*)"

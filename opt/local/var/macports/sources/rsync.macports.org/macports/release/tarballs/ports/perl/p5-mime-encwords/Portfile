@@ -1,0 +1,30 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         MIME-EncWords 1.014.3
+revision            1
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         Deal with RFC 2047 encoded words
+long_description    MIME::EncWords is aimed to be another implimentation \
+                    of MIME::Words so that it will achive more exact \
+                    conformance with RFC 2047 (former RFC 1522) \
+                    specifications. Additionally, it contains some \
+                    improvements.
+
+platforms           darwin
+
+checksums           rmd160  b925ddc8931705a82f05d7829cfb435627132b15 \
+                    sha256  e9afb548611d4e7e6c50b7f06bbd2b1bb2808e37a810deefb537c67af5485238
+
+if {${perl5.major} != ""} {
+# for CVE-2016-1238 security fixes, use latest Encode rather than core
+    depends_lib-append \
+                    port:p${perl5.major}-encode \
+                    port:p${perl5.major}-mime-charset
+
+    supported_archs noarch
+}

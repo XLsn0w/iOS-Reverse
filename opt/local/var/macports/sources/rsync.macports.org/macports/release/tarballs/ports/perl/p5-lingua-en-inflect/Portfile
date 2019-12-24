@@ -1,0 +1,21 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Lingua-EN-Inflect 1.904
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         Convert singular to plural. Select a or an
+long_description    The exportable subroutines of Lingua::EN::Inflect \
+                    provide plural inflections, a/an selection for \
+                    English words, and manipulation of numbers as words.
+
+platforms           darwin
+
+checksums           rmd160  17cd38fab636ce7de1f3bc0f3ec1134795bdd363 \
+                    sha256  54d344884ba9b585680975bbd4049ddbf27bf654446fb00c7e1fc538e08c3173 \
+                    size    59797
+
+supported_archs     noarch

@@ -1,0 +1,38 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                rsyncrypto
+version             1.12
+revision            3
+platforms           darwin
+categories          security
+license             GPL-2
+maintainers         nomaintainer
+
+description         rsync friendly file encryption
+long_description    A slightly reduced strength bulk encryption. \
+                    In exchange for the reduced strength, you get \
+                    the ability to rsync the encrypted files, \
+                    so that local changes in the plaintext file \
+                    will result in (relatively) local changes \
+                    to the cyphertext file.
+
+homepage            https://sourceforge.net/projects/rsyncrypto/
+
+master_sites        sourceforge:project/rsyncrypto/rsyncrypto/${version}
+
+checksums           rmd160  a0fdb00fc5bfe5fd0e526dfd0f469dadb7ee8851 \
+                    sha256  1fbe640af6db598e105d9e9554cddce05ed78849f0afa26d4cc8b1e1a2df9ace \
+                    size    420652
+
+depends_lib         port:argtable \
+                    port:gzip \
+                    path:lib/libssl.dylib:openssl \
+                    port:zlib
+
+configure.cppflags-append \
+                    -D__unix__
+
+destroot.destdir    prefix=${destroot}${prefix} \
+                    mandir=${destroot}${prefix}/share/man

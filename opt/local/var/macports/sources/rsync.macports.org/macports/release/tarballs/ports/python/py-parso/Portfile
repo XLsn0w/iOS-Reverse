@@ -1,0 +1,37 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           python 1.0
+
+github.setup        davidhalter parso 0.5.1 v
+
+name                py-parso
+categories-append   devel
+platforms           darwin
+license             MIT
+supported_archs     noarch
+
+python.versions     27 34 35 36 37 38
+
+maintainers         {stromnov @stromnov} openmaintainer
+
+description         A Python Parser
+long_description    ${description}
+
+checksums           rmd160  aebee4e55b16d0eee0f0e4030d5d62cb92ec0a6b \
+                    sha256  ac34a33f8b3606460af46140ce961ad7431a049009dd207270cbabeb6b3e03df \
+                    size    388107
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                        port:py${python.version}-setuptools
+
+    depends_test-append \
+                        port:py${python.version}-pytest
+    test.run            yes
+    test.cmd            py.test-${python.branch}
+    test.target
+
+    livecheck.type      none
+}

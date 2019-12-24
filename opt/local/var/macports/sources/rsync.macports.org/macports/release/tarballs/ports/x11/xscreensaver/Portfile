@@ -1,0 +1,42 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                xscreensaver
+version             5.43
+revision            0
+categories          x11
+platforms           darwin
+maintainers         nomaintainer
+license             X11
+description         X11 screen saver
+long_description    The xscreensaver program waits until the keyboard and \
+                    mouse have been idle for a period, and then runs a graphics \
+                    demo chosen at random.
+
+homepage            http://www.jwz.org/xscreensaver/
+master_sites        ${homepage}
+
+checksums           rmd160  cd289aa0c083c517b5e2b525dc07ebfd508cd132 \
+                    sha256  158f381d687e8360a6debb0d3af0148d279e853666244f02d628a5a482bce194 \
+                    size    26973508
+
+depends_build       port:pkgconfig port:intltool
+
+depends_lib         port:gtk2 port:libglade2 port:xpm port:xorg-libXmu
+
+configure.args      --with-gtk --without-motif
+configure.ldflags   -lintl
+
+use_parallel_build  no
+
+build.env           LC_CTYPE=C
+
+destroot.destdir    install_prefix=${destroot}
+post-destroot {
+    file delete -force ${destroot}/usr
+}
+
+livecheck.type      regex
+livecheck.url       http://www.jwz.org/xscreensaver/download.html
+livecheck.regex     xscreensaver-(\[0-9\.\]+).tar.gz

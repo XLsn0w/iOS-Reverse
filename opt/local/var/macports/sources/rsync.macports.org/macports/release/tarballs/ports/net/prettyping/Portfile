@@ -1,0 +1,34 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+github.setup        denilsonsa prettyping 1.0.1 v
+categories          net
+platforms           darwin
+maintainers         nomaintainer
+license             MIT
+supported_archs     noarch
+
+description         prettier, more colorful, more compact, easier to read \
+                    ping output
+
+long_description    prettyping is a wrapper around the standard ping tool \
+                    with the objective of making the output prettier, more \
+                    colorful, more compact, and easier to read. prettyping \
+                    runs the standard ping in the background and parses its \
+                    output, showing the ping responses in a graphical way at \
+                    the terminal (by using colors and Unicode characters).
+
+homepage            https://denilsonsa.github.io/prettyping/
+
+checksums           rmd160  199a0f4558b666791ece9ef80e81bb87c1eb5afc \
+                    sha256  4526d1fe920f05f952e3ebb83b89f7e134e0d202b14bbfc237ecfdd6076559d2
+
+use_configure       no
+
+build {}
+
+destroot {
+    copy ${worksrcpath}/prettyping ${destroot}${prefix}/bin
+}

@@ -1,0 +1,26 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-b asic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Module-Starter 1.76
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+
+description         Module::Starter is a simple starter kit for any module
+long_description    ${description}
+
+checksums           rmd160  782462f981ac003d251700730594fc0f8de3045f \
+                    sha256  ab8262ad1193df991fa29871bae015dea86175d65e647c236649c7e6cc9117bf \
+                    size    54304
+
+platforms           darwin
+
+if {${perl5.major} != ""} {
+    depends_lib-append \
+                    port:p${perl5.major}-module-runtime \
+                    port:p${perl5.major}-software-license
+
+    supported_archs noarch
+}

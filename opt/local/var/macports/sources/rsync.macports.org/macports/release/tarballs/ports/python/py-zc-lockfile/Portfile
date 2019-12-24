@@ -1,0 +1,34 @@
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-zc-lockfile
+set real_name       zc.lockfile
+version             1.4
+python.versions     27 34 35 36 37
+maintainers         nomaintainer
+platforms           darwin
+description         Basic inter-process locks
+license             ZPL-2.1
+
+long_description \
+    The zc.lockfile package provides a basic portable implementation of \
+    interprocess locks using lock files. The purpose if not specifically to \
+    lock files, but to simply provide locks with an implementation based on \
+    file-locking primitives. Of course, these locks could be used to mediate \
+    access to other files. For example, the ZODB file storage implementation uses \
+    file locks to mediate access to file-storage database files. The database \
+    files and lock file files are separate files.
+
+categories-append   zope
+
+homepage            https://pypi.python.org/pypi/${real_name}
+master_sites        pypi:z/${real_name}
+distname            ${real_name}-${version}
+
+checksums           rmd160  e34bc6efc63e9540d588d8c83ae2da2270d00cde \
+                    sha256  95a8e3846937ab2991b61703d6e0251d5abb9604e18412e2714e1b90db173253 \
+                    size    11075
+
+if {${name} ne ${subport}} {
+    depends_build       port:py${python.version}-setuptools
+}

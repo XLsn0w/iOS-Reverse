@@ -1,0 +1,37 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim: fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-colander
+version             1.7.0
+revision            0
+categories-append   devel
+platforms           darwin
+license             BSD
+supported_archs     noarch
+
+python.versions     27 34 35 36 37
+
+maintainers         {stromnov @stromnov} openmaintainer
+
+description         System for validating and deserializing data.
+long_description    ${description}
+
+homepage            http://docs.repoze.org/colander
+master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
+
+distname            ${python.rootname}-${version}
+
+checksums           rmd160  0dab298772ea78877d5af3f910fbd0dfc7a28236 \
+                    sha256  d758163a22d22c39b9eaae049749a5cd503f341231a02ed95af480b1145e81f2 \
+                    size    131320
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                        port:py${python.version}-setuptools
+    depends_lib-append  port:py${python.version}-iso8601 \
+                        port:py${python.version}-translationstring
+
+    livecheck.type      none
+}

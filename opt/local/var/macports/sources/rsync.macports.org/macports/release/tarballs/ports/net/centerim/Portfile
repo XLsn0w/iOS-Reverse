@@ -1,0 +1,41 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           active_variants 1.1
+
+name                centerim
+version             4.22.10
+revision            4
+categories          net
+platforms           darwin
+maintainers         nomaintainer
+license             GPL-2+
+
+description         Console multi-IM client.
+long_description    Console client for ICQ/Yahoo/IRC/LiveJournal.
+
+checksums           sha1    46fbac7a55f33b0d4f42568cca21ed83770650e5 \
+                    rmd160  2514c871388edb98b4a8957f965ccee3450b968f
+
+homepage            https://www.centerim.org/
+master_sites        ${homepage}download/releases/
+
+depends_build       port:pkgconfig
+
+depends_lib         port:libiconv port:gettext port:ncurses path:lib/libssl.dylib:openssl \
+                    port:jpeg port:gpgme port:curl
+
+require_active_variants curl {ssl}
+
+patchfiles          patch-configure.diff patch-libjabber_jconn.c.diff
+
+configure.args      --with-libiconv-prefix=${prefix} \
+                    --with-libintl-prefix=${prefix} \
+                    --with-ssl --with-openssl=${prefix}/include \
+                    --with-libjpeg --with-gpgme-prefix=${prefix} \
+                    --with-libcurl=${prefix}
+build.type          gnu
+
+livecheck.type      regex
+livecheck.url       [lindex ${master_sites} 0]
+livecheck.regex     ${name}-(\[0-9.\]+)\\.tar

@@ -1,0 +1,67 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8::et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                pass
+version             1.7.3
+maintainers         nomaintainer
+categories          security
+description         ${name} is the standard unix password manager
+long_description    ${description}
+platforms           darwin
+supported_archs     noarch
+homepage            https://www.passwordstore.org/
+license             GPL-2+
+
+depends_run         port:git \
+                    port:pwgen \
+                    port:getopt \
+                    port:tree \
+                    port:qrencode \
+                    path:bin/gpg:gnupg2
+
+master_sites        https://git.zx2c4.com/password-store/snapshot/
+distname            password-store-${version}
+use_xz              yes
+
+checksums           rmd160  9ad833769402003dffd9922e53571dc7baf6ff9a \
+                    sha256  2b6c65846ebace9a15a118503dcd31b6440949a30d3b5291dfb5b1615b99a3f4 \
+                    size    63416
+
+patchfiles          patch-getopt-path.diff
+
+post-patch {
+    reinplace "s|@@PREFIX@@|${prefix}|g" ${worksrcpath}/src/platform/darwin.sh
+}
+
+use_configure       no
+build {}
+
+destroot.env-append PREFIX=${prefix} \
+                    SYSCONFDIR=${prefix}/etc
+
+default_variants    +bash
+
+variant bash description {Include Bash completion support} {
+    depends_run-append port:bash
+    destroot.env-append FORCE_BASHCOMP=1
+
+    notes-append {
+        To use pass bash completion, add the following lines at the end of your .bash_profile:
+            [[ -r "${prefix}/share/bash-completion/completions/pass" ]] && source "${prefix}/share/bash-completion/completions/pass"
+    }
+}
+
+variant fish description {Include fish completion support} {
+    depends_run-append port:fish
+    destroot.env-append FORCE_FISHCOMP=1
+}
+
+variant zsh description {Include Zsh completion support} {
+    depends_run-append port:zsh
+    destroot.env-append FORCE_ZSHCOMP=1
+}
+
+livecheck.type    regex
+livecheck.url     ${homepage}
+livecheck.regex   The latest version is (\[\\d\\.\]+)\\.

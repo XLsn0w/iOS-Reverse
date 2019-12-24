@@ -1,0 +1,70 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           gobject_introspection 1.0
+
+name                gexiv2
+version             0.10.10
+revision            0
+license             GPL-2+
+set branch          [join [lrange [split ${version} .] 0 1] .]
+description         gexiv2 is a GObject-based wrapper around the exiv2 library.
+long_description    ${description} \
+                    It makes the basic features of exiv2 available to GNOME applications. \
+                    Thanks to GObject Introspection support, gexiv2 has excellent support \
+                    for Python 2 & 3, and can also be accessed by any other programming \
+                    language that supports GI.
+maintainers         {devans @dbevans} openmaintainer
+categories          gnome graphics
+platforms           darwin
+homepage            https://wiki.gnome.org/Projects/gexiv2
+master_sites        gnome:sources/${name}/${branch}/
+
+use_xz              yes
+
+checksums           rmd160  95a0cf86e1100605c32cb5ea9fa861b54f4259f3 \
+                    sha256  7d9ad7147ab51ab691edf043c44a0a44de4088c48a12d9c23c26939710e66ce1 \
+                    size    638168
+
+depends_build       port:pkgconfig \
+                    port:libtool \
+                    port:gtk-doc
+
+depends_lib         path:lib/pkgconfig/glib-2.0.pc:glib2 \
+                    port:vala \
+                    port:exiv2
+
+gobject_introspection yes
+
+configure.args      --enable-compile-warnings=no \
+                    --disable-silent-rules
+
+# one each of python2 python3 allowed
+
+variant python27 description {Build Python2 bindings using Python 2.7} {
+    depends_lib-append      port:py27-gobject3
+    configure.env-append    PYTHON2_PATH=${prefix}/bin/python2.7
+}
+
+default_variants +python27
+
+variant python35 conflicts python36 python37 description {Build Python3 bindings using Python 3.5} {
+    depends_lib-append      port:py35-gobject3
+    configure.env-append    PYTHON3_PATH=${prefix}/bin/python3.5
+}
+
+variant python36 conflicts python35 python37 description {Build Python3 bindings using Python 3.6} {
+    depends_lib-append      port:py36-gobject3
+    configure.env-append    PYTHON3_PATH=${prefix}/bin/python3.6
+}
+
+variant python37 conflicts python35 python36 description {Build Python3 bindings using Python 3.7} {
+    depends_lib-append      port:py37-gobject3
+    configure.env-append    PYTHON3_PATH=${prefix}/bin/python3.7
+}
+
+if {![variant_isset python35] && ![variant_isset python37]} {
+    default_variants +python36
+}
+
+livecheck.type      gnome

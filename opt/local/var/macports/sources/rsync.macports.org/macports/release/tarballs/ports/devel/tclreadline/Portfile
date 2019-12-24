@@ -1,0 +1,38 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem                  1.0
+PortGroup                   github 1.0
+
+github.setup                flightaware tclreadline 2.3.5 v
+revision                    0
+categories                  devel
+platforms                   darwin
+maintainers                 {dons.net.au:darius @DanielO}
+license                     BSD
+
+description                 An interactive readline for tcl shells.
+
+long_description            The tclreadline package makes the GNU Readline \
+                            library available for interactive tcl shells. \
+                            This includes history expansion and file/command \
+                            completion. Command completion for all tcl/tk \
+                            commands is provided and commmand completers for \
+                            user defined commands can be easily added. \
+                            tclreadline can also be used for tcl scripts \
+                            which want to use a shell like input interface. \
+                            In this case the ::tclreadline::readline read \
+                            command has to be called explicitly.
+
+
+checksums                   rmd160  0fd8e09ed57122683085dbccef4cbb7279cc44d8 \
+                            sha256  36e42a3912e6a41529d7c5447658c36414d0db167e937919f27addd382c955b0 \
+                            size    260109
+
+depends_lib                 port:readline \
+                            port:tcl
+
+use_autoreconf              yes
+
+configure.args-append       --with-tcl=${prefix}/lib/ \
+                            --with-tk=no \
+                            --with-readline-includes=${prefix}/include/readline

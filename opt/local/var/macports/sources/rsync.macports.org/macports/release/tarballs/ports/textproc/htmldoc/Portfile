@@ -1,0 +1,43 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem 1.0
+
+PortGroup           github 1.0
+
+github.setup        michaelrsweet htmldoc 1.9 v
+revision            1
+categories          textproc
+license             {GPL-2 OpenSSLException}
+maintainers         nomaintainer
+platforms           darwin
+
+description         Converts HTML or Markdown files to various other formats
+long_description \
+    HTMLDOC is a program that reads HTML and Markdown source files \
+    or web pages and generates corresponding EPUB, HTML, PostScript, \
+    or PDF files with an optional table of contents.
+
+checksums           rmd160  bfcb1cbb69cdf93a59b143f2c9945c1a25d63d77 \
+                    sha256  a6e7ca3b61d68d989414805586f86ffa19db1cecdf2960226938df2c0ab454c1
+
+depends_lib         port:jpeg port:libpng port:zlib
+
+configure.args      --without-gui --disable-localjpeg --disable-localpng \
+                    --disable-localzlib --disable-ssl
+
+variant ssl conflicts gnutls cdsassl {
+    depends_lib-append  path:lib/libssl.dylib:openssl
+    configure.args-delete   --disable-ssl
+    configure.args-append   --enable-openssl --disable-gnutls --disable-cdsassl
+}
+
+variant gnutls conflicts ssl cdsassl {
+    depends_lib-append  port:gnutls
+    configure.args-delete   --disable-ssl
+    configure.args-append   --disable-openssl --enable-gnutls --disable-cdsassl
+}
+
+variant cdsassl conflicts ssl gnutls {
+    configure.args-delete   --disable-ssl
+    configure.args-append   --disable-openssl --disable-gnutls --enable-cdsassl
+}

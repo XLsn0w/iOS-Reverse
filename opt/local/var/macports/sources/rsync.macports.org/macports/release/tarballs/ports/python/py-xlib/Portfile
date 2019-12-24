@@ -1,0 +1,47 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+PortGroup           github 1.0
+
+github.setup        python-xlib python-xlib 0.25
+revision            0
+name                py-xlib
+categories-append   x11
+license             GPL-2+
+platforms           darwin
+maintainers         nomaintainer
+supported_archs     noarch
+
+description         python module for the X protocol
+long_description    The Python X Library is intended to be a fully \
+                    functional X client library for Python programs. It is \
+                    written entirely in Python. This is possible to do \
+                    since X client programs communicate with the X server \
+                    via the X protocol. The communication takes place over \
+                    TCP/IP, Unix sockets, DECnet or any other suitable \
+                    streaming network protocol.
+
+checksums           rmd160  488454d74382ff51fb6e4195b459026d9edb40d7 \
+                    sha256  dd163cc3d40aa466feeb5861e626fad5b2d5889b0f8cbd5f2e7aad2a32dd74e6 \
+                    size    258891
+
+python.versions     27 37
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                    port:py${python.version}-setuptools_scm
+
+    depends_lib-append \
+                    port:py${python.version}-six
+
+    post-destroot {
+        set docdir ${prefix}/share/doc/${subport}
+        xinstall -m 0644 -W ${worksrcpath} README.rst LICENSE \
+            CHANGELOG.md TODO ${destroot}${docdir}
+        xinstall -m 0644 {*}[glob ${worksrcpath}/examples/*] \
+           ${destroot}${docdir}
+    }
+
+    livecheck.type  none
+}

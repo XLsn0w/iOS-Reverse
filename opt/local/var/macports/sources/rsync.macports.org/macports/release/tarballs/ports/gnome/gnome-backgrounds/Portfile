@@ -1,0 +1,30 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           meson 1.0
+
+name                gnome-backgrounds
+version             3.28.0
+set branch          [join [lrange [split ${version} .] 0 1] .]
+maintainers         nomaintainer
+categories          gnome
+license             GPL-2
+installs_libs       no
+platforms           darwin
+supported_archs     noarch
+
+description         A collection of backgrounds for GNOME 2.
+long_description    $description
+
+homepage            https://www.gnome.org/
+master_sites        gnome:sources/$name/$branch/
+
+use_xz              yes
+
+checksums           rmd160  bf0751a3f01c36716403c54c436b6e685c6a1b44 \
+                    sha256  b25b963d9d1ce076b489ef1e85c6540166f2312c77132f4ec0ecc90f3da8f1e1 \
+                    size    26134776
+
+depends_lib         path:lib/pkgconfig/glib-2.0.pc:glib2
+
+livecheck.type      gnome

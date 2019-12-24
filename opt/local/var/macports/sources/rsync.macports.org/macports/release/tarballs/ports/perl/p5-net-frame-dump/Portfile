@@ -1,0 +1,33 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Net-Frame-Dump 1.17
+license             Artistic-1
+platforms           darwin
+maintainers         nomaintainer
+
+description         tcpdump like implementation
+
+long_description    Net::Frame::Dump is the base class for all dump modules. \
+                    With them, you can open a device for live capture, for \
+                    offline analysis, or for creating a pcap file. \
+                    See Net::Frame::Dump::Offline, Net::Frame::Dump::Online, \
+                    Net::Frame::Dump::Writer for specific usage.
+
+checksums           rmd160  58fabb41de3ae4aaa3d289833b43895152873aa1 \
+                    sha256  9167ed9e7c8be479fae1cf082f15c72b6e7f58dd01fac808bc07cef97c063af8 \
+                    size    19636
+
+if {${perl5.major} != ""} {
+    depends_lib-append \
+                    port:p${perl5.major}-class-gomor \
+                    port:p${perl5.major}-net-frame \
+                    port:p${perl5.major}-net-pcap \
+                    port:p${perl5.major}-time-hires
+
+    perl5.use_module_build
+    supported_archs noarch
+}

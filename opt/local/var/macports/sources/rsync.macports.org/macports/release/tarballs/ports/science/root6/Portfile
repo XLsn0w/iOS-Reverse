@@ -1,0 +1,604 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+PortGroup           active_variants               1.1
+PortGroup           cmake                         1.1
+PortGroup           compiler_blacklist_versions   1.0
+PortGroup           github                        1.0
+PortGroup           select                        1.0
+PortGroup           xcodeversion                  1.0
+PortGroup           legacysupport                 1.0
+
+# Please also check if Gate needs a revbump after root6 update
+github.setup        root-project root 6-18-04 v
+version             [string map {- .} ${github.version}]
+revision            2
+livecheck.version   ${github.version}
+
+# Use git commit
+#github.setup        root-project root 6e90aef0c646668a513fd2e291500c0c31fa1af2
+#github.setup        cjones051073 root 6e90aef0c646668a513fd2e291500c0c31fa1af2
+#version             6.14.00
+#livecheck.version   6-14-00
+#revision            0
+
+# extract major version
+set version_major   [lindex [split ${version} .] 0]
+
+livecheck.type      regex
+livecheck.url       ${github.homepage}/tags
+# even numbered minor releases are production releases, odd are developmental so skip.
+# Also, skip anything with trailing rcX etc.
+livecheck.regex     {v(6[-.]\d[02468][-.]\d{2}).tar.gz}
+
+checksums           rmd160  2af3a2f7c1f92ff7fe135bd32ee9ebb43b023504 \
+                    sha256  e9c135a83a6090576ff67f2765f9d10f9697416637fb7486a80294cf09235884 \
+                    size    165952672
+
+name                root${version_major}
+categories          science
+maintainers         {jonesc @cjones051073} {mojca @mojca}
+license             LGPL-2.1+
+
+description         ROOT is a data analysis framework from CERN
+long_description    The ROOT system provides a set of frameworks with all \
+                    the functionality needed to handle and analyze large amounts \
+                    of data in a very efficient way.
+
+homepage            https://root.cern.ch/
+platforms           darwin
+
+dist_subdir         root/${version}_1
+
+# Force a compatible compiler
+set gcc_ver          9
+configure.fc         ${prefix}/bin/gfortran-mp-${gcc_ver}
+configure.f77        ${prefix}/bin/gfortran-mp-${gcc_ver}
+configure.f90        ${prefix}/bin/gfortran-mp-${gcc_ver}
+depends_lib-append   path:lib/libgcc/libgcc_s.1.dylib:libgcc
+depends_build-append port:gcc${gcc_ver}
+compiler.blacklist-append *gcc* {clang < 920} {macports-clang-3.[0-9]} {macports-clang-[4-6].0}
+
+# If using Macports clang, make sure its added as a runtime dep as well as cling will need it.
+foreach clang_v { 7.0 8.0 9.0 } {
+    if { ${configure.compiler} eq "macports-clang-${clang_v}"} {
+        depends_run-append port:clang-${clang_v}
+    }
+}
+
+depends_build-append port:pkgconfig
+
+depends_lib-append  port:expat \
+                    port:gmp \
+                    port:giflib \
+                    port:jpeg \
+                    port:libpng \
+                    port:lzma \
+                    port:pcre \
+                    port:tiff \
+                    port:xz \
+                    port:gl2ps \
+                    port:lz4 \
+                    port:vdt \
+                    port:tbb \
+                    port:git \
+                    path:lib/libopenblas.dylib:OpenBLAS \
+                    path:lib/libssl.dylib:openssl
+
+# Use builtin zlib instead as upstream claims has better performance
+# https://root.cern/content/release-61800
+#                   port:zlib
+
+depends_run-append  port:root_select
+
+cmake.out_of_source yes
+
+# TODO: the file ${filespath}/${name} would have to be generated on the fly instead
+select.group        root
+select.file         ${filespath}/${name}
+
+# port specific location
+set install_prefix ${prefix}/libexec/root${version_major}
+
+patch.pre_args      -p1
+
+#                -DCMAKE_Fortran_COMPILER=${prefix}/bin/gfortran-mp-${configure.f77} \     
+
+configure.args-append \
+                    -Dgnuinstall=ON \
+                    -Drpath=ON \
+                    -DCMAKE_INSTALL_PREFIX="${install_prefix}" \
+                    -DCMAKE_INSTALL_SYSCONFDIR="${install_prefix}/etc/root" \
+                    -DCMAKE_INSTALL_NAME_DIR="${install_prefix}/lib/root" \
+                    -Dfortran=ON \
+                    -Dbuiltin_davix=OFF \
+                    -Dbuiltin_freetype=ON \
+                    -Dbuiltin_glew=OFF \
+                    -Dbuiltin_pcre=OFF \
+                    -Dbuiltin_zlib=ON \
+                    -Dbuiltin_lzma=OFF \
+                    -Dbuiltin_tbb=OFF \
+                    -Dbuiltin_afterimage=ON \
+                    -Ddavix=OFF \
+                    -Dfftw3=OFF \
+                    -Dkrb5=OFF \
+                    -Dmysql=OFF \
+                    -Dsqlite=OFF \
+                    -Dodbc=OFF \
+                    -Dopengl=OFF \
+                    -Dpythia6=OFF \
+                    -Dpythia8=OFF \
+                    -Droofit=OFF \
+                    -Dssl=ON \
+                    -Dxml=OFF \
+                    -Dpython=OFF \
+                    -Dfitsio=OFF \
+                    -Dgsl_shared=OFF \
+                    -Dbuiltin_gsl=OFF \
+                    -Dpgsql=OFF \
+                    -Ddcache=OFF \
+                    -Dchirp=OFF \
+                    -Dhdfs=OFF \
+                    -Druby=OFF \
+                    -Dminuit2=ON \
+                    -Dtmva=OFF \
+                    -Dqt=OFF \
+                    -Dqtgsi=OFF \
+                    -Dgviz=OFF \
+                    -Dsoversion=ON \
+                    -Dcxx11=ON \
+                    -Dcxx14=OFF \
+                    -Dcxx17=OFF \
+                    -Dlibcxx=ON \
+                    -Dxrootd=OFF \
+                    -Dbuiltin_ftgl=ON \
+                    -Dmathmore=OFF \
+                    -Dgenvector=ON \
+                    -Dmemstat=ON \
+                    -Dunuran=ON \
+                    -Dgdml=ON \
+                    -Dhttp=ON \
+                    -Dvc=OFF \
+                    -Dastiff=ON \
+                    -Dgeocad=OFF \
+                    -Dr=OFF \
+                    -Droot7=OFF \
+                    -Dbuiltin_veccore=OFF \
+                    -DPNG_LIBRARY=${prefix}/lib/libpng.dylib \
+                    -DPNG_PNG_INCLUDE_DIR=${prefix}/include
+
+# clad cling plugin fails to build
+# https://root-forum.cern.ch/t/build-failure-with-6-16-00/32434
+configure.args-append -Dclad=OFF
+
+# Enable C++17 on 10.14 (Darwin18+)
+#        C++14 on 10.9  (Darwin13+)
+#        C+=11 otherwise
+if        { ${os.major} >= 18 } {
+    compiler.cxx_standard 2017
+    configure.args-replace  -Dcxx17=OFF -Dcxx17=ON
+    compiler.blacklist-append macports-clang-5.0
+} elseif  { ${os.major} >= 13 } {
+    compiler.cxx_standard 2014
+    configure.args-replace  -Dcxx14=OFF -Dcxx14=ON
+    compiler.blacklist-append macports-clang-5.0
+} else {
+    # force use of MP clang 5.0
+    compiler.blacklist-append clang macports-clang-8.0 macports-clang-7.0
+    compiler.cxx_standard 2011
+}
+
+# Setup the C++ runtime on OSX10.8 (Darwin 12) and older
+if { ${os.major} <= 12 && ${configure.cxx_stdlib} ne "libc++" } {
+    # Use macports stdc++ on older systems
+    if       { ${configure.compiler} eq "macports-clang-5.0" } {
+        require_active_variants clang-5.0 libstdcxx
+    } elseif { ${configure.compiler} eq "macports-clang-6.0" } {
+        require_active_variants clang-6.0 libstdcxx
+    } elseif { ${configure.compiler} eq "macports-clang-7.0" } {
+        require_active_variants clang-7.0 libstdcxx
+    } elseif { ${configure.compiler} eq "macports-clang-8.0" } {
+        require_active_variants clang-8.0 libstdcxx
+    }
+    default_variants-append +libstdcxx
+    pre-configure {
+        foreach f [ exec find ${worksrcpath} -name "*.cmake" -or -name "*.in" -or -name "Makefile.*" ] {
+            reinplace "s|stdlib=libc++|stdlib=${configure.cxx_stdlib}|g" $f
+        }
+    }
+}
+
+# Configure the C++ runtime to use
+if { ${configure.cxx_stdlib} ne "libc++" } {
+    configure.args-replace -Dlibcxx=ON -Dlibcxx=OFF
+}
+
+# Configure the graphics backend. cocoa on OSX10.8 and newer. X11 otherwise
+if { ${os.major} >= 12 } {
+    default_variants-append +cocoa
+} else {
+    default_variants-append +x11
+}
+
+# Enable xrootd support by default
+if { ${os.major} >= 12 } {
+    default_variants-append +xrootd
+}
+
+# No longer compiles on OSX10.6, due to update to internal LLVM version.
+# Disable build on this platform.
+if { ${os.major} <= 10 } {
+    pre-fetch {
+        ui_error "${name} is not supported on this OSX release."
+        return -code error "Unsupported OSX version"
+    }
+}
+
+pre-configure {
+    # Force use of system python in build scripts
+    # Find command finds text files containing the string to be replaced.
+    # shtest-encoding.py intentionally includes an unreadable character, so have to skip it ...
+    set pystringtoreplace "/usr/bin/env python"
+    foreach f [ exec find ${worksrcpath} -type f -and -not -name "shtest-encoding.py" -and -name "*.py" ] {
+        reinplace -q "s|${pystringtoreplace}|/usr/bin/python|g" $f
+    }
+}
+
+post-destroot {
+    # Set execute flag on binaries (broken in 6.06.00)
+    foreach f [glob -directory ${destroot}${install_prefix}/bin *] {
+        system "chmod +x $f"
+    }
+    # create versioned symlinks for the content of libexec bin dir
+    foreach f [glob -directory ${destroot}${install_prefix}/bin *] {
+        set filename  [file tail $f]
+        set extension [file extension $filename]
+        set base      [file rootname $filename]
+        set versioned_filename ${base}${version_major}${extension}
+        ln -s ${install_prefix}/bin/${filename} ${destroot}${prefix}/bin/${versioned_filename}
+    }
+    # lib dir
+    ln -s ${install_prefix}/lib/root ${destroot}${prefix}/lib/root${version_major}
+    # include dir
+    ln -s ${install_prefix}/include/root ${destroot}${prefix}/include/root${version_major}
+    # etc dir
+    ln -s ${install_prefix}/etc/root ${destroot}${prefix}/etc/root${version_major}
+    # share dir
+    ln -s ${install_prefix}/share ${destroot}${prefix}/share/root${version_major}
+    # Compress manpages in custom location (borrowed from mariadb)
+    set manpath ${install_prefix}/share/man
+    set gzip [findBinary gzip ${portutil::autoconf::gzip_path}]
+    foreach manpage [glob -type f ${destroot}${manpath}/man1/*] {
+        # Zip the man file
+        system "$gzip -9vf ${manpage}"
+        # Create man pages for versioned files
+        set filename  [file tail $manpage]
+        set extension [file extension $filename]
+        set base      [file rootname $filename]
+        set versioned_filename ${base}${version_major}${extension}.gz
+        set d [file tail $manpage]
+        ln -s ${manpath}/man1/${d}.gz ${destroot}${prefix}/share/man/man1/${versioned_filename}
+    }
+    # Define font path in system config file
+    set rootsystemrcfile ${destroot}${prefix}/libexec/root${version_major}/etc/root/system.rootrc
+    # uncoment some settings
+    reinplace "s|#\*\.\*\.Root\.TTFontPath|\*\.\*\.Root\.TTFontPath|g" ${rootsystemrcfile}
+    reinplace "s|#Unix\.\*\.Gui.IconPath|Unix\.\*\.Gui\.IconPath|g" ${rootsystemrcfile}
+}
+
+set run_port_select "No"
+pre-activate {
+  if { ![file exists ${prefix}/bin/root]  &&
+       ![file exists ${prefix}/bin/root5] &&
+       ![file exists ${prefix}/bin/root6] } {
+     set run_port_select "Yes"
+  }
+}
+
+post-activate {
+  ui_msg "======================================================================================"
+  if { ${run_port_select} == "Yes" } {
+      ui_msg "  Making root${version_major} your default root version. To change this run 'sudo port select root'"
+      catch { system "port select root root${version_major}" }
+  } else {
+      ui_msg "  To make root${version_major} your default root version, run 'sudo port select root root${version_major}'"
+  }
+  ui_msg "======================================================================================"
+}
+
+universal_variant no
+
+default_variants-append +xml +gsl +tmva +roofit +graphviz +opengl +davix
+
+variant native description {Build with best native support for local CPU capabilities} {
+    configure.cflags-append    -O3 -mtune=native
+    configure.cppflags-append  -O3 -mtune=native
+    configure.fflags-append    -O3 -mtune=native
+}
+
+variant root7 description {Enable ROOT7 preview} {
+    configure.args-replace  -Droot7=OFF -Droot7=ON
+}
+
+variant qt4 description {Enable QT4 support} {
+    configure.args-replace  -Dqt=OFF -Dqt=ON
+    PortGroup qt4 1.0
+}
+
+variant veccore description {Enable VecCore support} {
+    configure.args-replace  -Dbuiltin_veccore=OFF -Dbuiltin_veccore=ON
+}
+
+variant valgrind description {Build internal LLVM library with valgrind support} {
+    depends_lib-append      port:valgrind
+}
+
+variant vc description {Build with Vc library support} {
+    depends_lib-append      port:Vc
+    configure.args-replace  -Dvc=OFF -Dvc=ON
+}
+
+variant debug description {Enable a debug build} {
+    configure.args-append   -DCMAKE_BUILD_TYPE=Debug
+}
+
+variant xrootd description {Build with XRootD support} {
+    configure.args-replace  -Dxrootd=OFF -Dxrootd=ON
+#   configure.args-append   -Dbuiltin_xrootd=ON
+    configure.args-append   -DXROOTD_INCLUDE_DIR="${prefix}/include/xrootd"
+    depends_lib-append      port:xrootd
+}
+
+variant graphviz description {Build with graphviz support} {
+    configure.args-replace  -Dgviz=OFF -Dgviz=ON
+    configure.args-append   -DGRAPHVIZ_INCLUDE_DIR="${prefix}/include"
+#                           -DGRAPHVIZ_CDT_LIBRARY="${prefix}/lib/libcdt.dylib" \
+#                           -DGRAPHVIZ_GRAPH_LIBRARY="${prefix}/lib/libcgraph.dylib" \
+#                           -DGRAPHVIZ_GVC_LIBRARY="${prefix}/lib/libgvc.dylib" \
+#                           -DGRAPHVIZ_PATHPLAN_LIBRARY="${prefix}/lib/libpathplan.dylib"
+    depends_lib-append      path:bin/dot:graphviz
+}
+
+variant fftw3 description {Build with fftw3 support} {
+    configure.args-replace  -Dfftw3=OFF -Dfftw3=ON
+    configure.args-append   -DFFTW_INCLUDE_DIR="${prefix}/include" \
+                            -DFFTW_LIBRARY="${prefix}/lib/libfftw3.dylib"
+    depends_lib-append      port:fftw-3
+}
+
+variant gsl description {Build with gsl support} {
+    # External GSL library
+    configure.args-replace  -Dgsl_shared=OFF -Dgsl_shared=ON
+    configure.args-append   -DGSL_CONFIG_EXECUTABLE="${prefix}/bin/gsl-config"
+    depends_lib-append      port:gsl
+    # Enable the MathMore library
+    configure.args-replace  -Dmathmore=OFF -Dmathmore=ON
+}
+
+variant fitsio description {Build with fitsio support} {
+    configure.args-replace  -Dfitsio=OFF -Dfitsio=ON
+    depends_lib-append      port:cfitsio
+}
+
+variant odbc description {Build with odbc support} {
+    configure.args-replace  -Dodbc=OFF -Dodbc=ON
+    configure.args-append   -DODBC_INCLUDE_DIR="${prefix}/include" \
+                            -DODBC_LIBRARY="${prefix}/lib/libiodbc.dylib"
+    depends_lib-append      port:libiodbc
+}
+
+variant roofit description {Build the RooFit advanced fitting package} {
+    configure.args-replace  -Droofit=OFF -Droofit=ON
+}
+
+variant tmva description {Build the TMVA package} {
+    configure.args-replace  -Dtmva=OFF -Dtmva=ON
+}
+
+variant opengl description {Build with opengl support} {
+    configure.args-replace  -Dopengl=OFF -Dopengl=ON 
+    configure.args-replace  -Dbuiltin_glew=OFF -Dbuiltin_glew=ON
+}
+
+# ========================================================================================
+# Setup various python variants
+# ========================================================================================
+
+# List of possible python versions
+set python_versions { 2.7 3.5 3.6 3.7 3.8 }
+# Enable python variant by default on OSX 10.9 and newer.
+# Disabled on older systems due to an issue fetching the source for
+# the various python dependencies due to these systems having out of
+# date SSL versions that are rejected by the upstream server.
+if { ${os.major} >= 13 } {
+    set default_python_variant +python38
+} else {
+    set default_python_variant ""
+}
+
+# Define the available variants
+foreach py_ver ${python_versions} {
+    set py_ver_no_dot [join [split ${py_ver} "."] ""]
+    set variant_line {variant python${py_ver_no_dot} description "Build with python ${py_ver} support"}
+    foreach py_over ${python_versions} {
+        if { ${py_ver} == ${py_over} } { continue }
+        set py_over_no_dot [join [split ${py_over} "."] ""]
+        append variant_line " conflicts python${py_over_no_dot}"
+    }
+    append variant_line { { } }
+    eval $variant_line
+    if {[variant_isset python${py_ver_no_dot}]} {
+        if {${default_python_variant} != "+python${py_ver_no_dot}"} {
+            set default_python_variant ""
+        }
+    }
+}
+
+if {${default_python_variant} != ""} {
+    default_variants-append "${default_python_variant}"
+}
+
+# If a python variant is enabled, activate it
+set active_python_version ""
+foreach py_ver ${python_versions} {
+    set py_ver_no_dot [join [split ${py_ver} "."] ""]
+    if {[variant_isset python${py_ver_no_dot}]} {
+
+        set active_python_version        ${py_ver}
+        set active_python_version_no_dot ${py_ver_no_dot}
+
+        # Check root5 variants
+        pre-activate {
+            set portname root5
+            if {![catch {set result [active_variants ${portname} python${active_python_version_no_dot}]}]} {
+                if {$result} {
+                    ui_error "Cannot install ${name} with +python${active_python_version_no_dot} variant"
+                    return -code error "${portname} port is already installed with +python${active_python_version_no_dot} and both cannot be active at once. Pick a different python variant."
+                }
+            }
+        }
+
+        # Setup python
+        set mypydir ${frameworks_dir}/Python.framework/Versions/${py_ver}
+        configure.args-replace  -Dpython=OFF -Dpython=ON
+        configure.args-append   -DPYTHON_INCLUDE_DIR="${mypydir}/Headers" \
+                                -DPYTHON_EXECUTABLE="${mypydir}/bin/python${py_ver}"
+        # Explicitly set python library
+        if       { [ file exists "${mypydir}/lib/libpython${py_ver}.dylib" ] } {
+            configure.args-append -DPYTHON_LIBRARY="${mypydir}/lib/libpython${py_ver}.dylib"
+        } elseif { [ file exists "${prefix}/lib/libpython${py_ver}.dylib" ] } {
+            configure.args-append -DPYTHON_LIBRARY="${prefix}/lib/libpython${py_ver}.dylib"
+        }
+        depends_lib-append      port:python${py_ver_no_dot} \
+                                port:py${py_ver_no_dot}-numpy \
+                                port:py${py_ver_no_dot}-jupyter \
+                                port:py${py_ver_no_dot}-gnureadline \
+                                port:py${py_ver_no_dot}-metakernel
+        
+        post-destroot {
+            # Install PyROOT lib in the correct place
+            set mypylibdir  ${frameworks_dir}/Python.framework/Versions/${active_python_version}/lib/python${active_python_version}
+            set mypysitedir ${mypylibdir}/site-packages/
+            file mkdir ${destroot}${mypysitedir}
+            # Move X.py files to site-packages
+            foreach pyfile [glob ${destroot}${install_prefix}/lib/root/*.py*] { move $pyfile ${destroot}${mypysitedir}/ }
+            # link PyROOT files to site-packages
+            # See also https://trac.macports.org/ticket/58942
+            foreach f [ exec find ${destroot}${install_prefix}/lib/root -name "*PyROOT*" ] {
+                set fname [file tail ${f}]
+                ln -sf ${install_prefix}/lib/root/${fname} ${destroot}${mypylibdir}/
+                ln -sf ${install_prefix}/lib/root/${fname} ${destroot}${mypysitedir}/
+            }
+            # Fix python version in scripts
+            set pystringtoreplace "/usr/bin/python"
+            foreach f [ exec find ${destroot}${install_prefix} -type f -and -name "*.py" ] {
+                reinplace -q "s|${pystringtoreplace}|${prefix}/bin/python${active_python_version}|g" $f
+            }
+            # Support for juypter
+            ln -s ${install_prefix}/lib/root/JupyROOT       ${destroot}${mypysitedir}/
+            ln -s ${install_prefix}/lib/root/JsMVA          ${destroot}${mypysitedir}/
+            ln -s ${install_prefix}/lib/root/libJupyROOT.so ${destroot}${mypysitedir}/
+            ln -s ${install_prefix}/lib/root/libJupyROOT.so ${destroot}${mypylibdir}/
+        }
+        # patch the command ROOT assumes to run for juypter
+        pre-configure {
+            foreach f [ exec find ${worksrcpath} -type f -and -name "nbmain.cxx" ] {
+                reinplace "s|\"jupyter\"|\"jupyter-${active_python_version}\"|g" $f
+            }
+        }
+
+    }
+}
+
+# ========================================================================================
+
+variant davix description {Enable Davix support} {
+    configure.args-replace  -Ddavix=OFF  -Ddavix=ON
+    depends_lib-append      port:davix
+}
+
+variant xml description {Build with xml support} {
+    configure.args-replace  -Dxml=OFF -Dxml=ON
+    configure.args-append   -DLIBXML2_INCLUDE_DIR="${prefix}/include/libxml2" \
+                            -DLIBXML2_LIBRARIES="${prefix}/lib/libxml2.dylib" \
+                            -DLIBXML2_LIBRARY="${prefix}/lib/libxml2.dylib" \
+                            -DLIBXML2_XMLLINT_EXECUTABLE="${prefix}/bin/xmllint"
+    depends_lib-append      port:libxml2
+}
+
+variant sqlite3 description {Build with sqlite3 support} {
+    configure.args-replace  -Dsqlite=OFF -Dsqlite=ON
+    depends_lib-append      port:sqlite3
+}
+
+variant mysql conflicts mariadb percona description {Build with mysql support} {
+    set ver 57
+    configure.args-replace  -Dmysql=OFF -Dmysql=ON
+    configure.args-append   -DMYSQL_CONFIG_EXECUTABLE=${prefix}"/lib/mysql${ver}/bin/mysql_config"
+    depends_lib-append      port:mysql${ver}
+}
+
+variant mariadb conflicts mysql percona description {Build with mariadb support} {
+    set ver 10.2
+    configure.args-replace  -Dmysql=OFF -Dmysql=ON
+    configure.args-append   -DMYSQL_CONFIG_EXECUTABLE=${prefix}"/lib/mariadb-${ver}/bin/mysql_config"
+    depends_lib-append      port:mariadb-${ver}
+}
+
+variant percona conflicts mysql mariadb description {Build with percona support} {
+    configure.args-replace  -Dmysql=OFF -Dmysql=ON
+    configure.args-append   -DMYSQL_CONFIG_EXECUTABLE=${prefix}"/lib/percona/bin/mysql_config"
+    depends_lib-append      port:percona
+}
+
+variant postgresql conflicts description {Build with PostgreSQL support} {
+    set ver 96
+    configure.args-replace -Dpgsql=OFF -Dpgsql=ON
+    configure.args-append  -DPOSTGRESQL_INCLUDE_DIR="${prefix}/include/postgresql${ver}" \
+                           -DPOSTGRESQL_LIBRARY="${prefix}/lib/postgresql${ver}/libpq.dylib"
+    depends_lib-append      port:libpqxx port:postgresql${ver}
+}
+
+# variant oracle description {Build with Oracle support} {
+#     configure.args-replace --disable-oracle --enable-oracle
+#     configure.args-append  -DORACLE_PATH_INCLUDES="${prefix}/lib/oracle/sdk/include" \
+#                            -DORACLE_PATH_LIB="${prefix}/lib/oracle" \
+#                            -DORACLE_OCI_VERSION=8
+#     depends_lib-append     port:oracle-instantclient
+# }
+
+variant pythia description {Enables Pythia 8 support} {
+    configure.args-replace  -Dpythia8=OFF -Dpythia8=ON
+    configure.args-append   -DPYTHIA8_INCLUDE_DIR=${prefix}/include/pythia \
+                            -DPYTHIA8_LIBRARY=${prefix}/lib/libpythia8.dylib
+    depends_lib-append      port:pythia
+}
+
+variant cocoa conflicts x11 description {Enables native OSX graphical backend} {
+    # Enable cocoa support in configure
+    configure.args-append   -Dcocoa=ON -Dx11=OFF
+}
+
+variant x11 conflicts cocoa description {Enables X11 graphical backend} {
+    # Dependencies on X11 ports
+    depends_lib-append      port:xorg-libX11 port:mesa port:libGLU port:Xft2 port:xpm
+    # Disable cocoa
+    configure.args-append   -Dcocoa=OFF -Dx11=ON \
+                            -DOPENGL_INCLUDE_DIR=${prefix}/include \
+                            -DOPENGL_gl_LIBRARY=${prefix}/lib/libGL.dylib \
+                            -DX11_ICE_INCLUDE_PATH=${prefix}/include \
+                            -DX11_SM_INCLUDE_PATH=${prefix}/include \
+                            -DX11_X11_INCLUDE_PATH=${prefix}/include \
+                            -DX11_Xext_INCLUDE_PATH=${prefix}/include \
+                            -DX11_Xft_INCLUDE_PATH=${prefix}/include \
+                            -DX11_Xpm_INCLUDE_PATH=${prefix}/include \
+                            -DX11_ICE_LIB=${prefix}/lib/libICE.dylib \
+                            -DX11_SM_LIB=${prefix}/lib/libSM.dylib \
+                            -DX11_X11_LIB=${prefix}/lib/libX11.dylib \
+                            -DX11_Xext_LIB=${prefix}/lib/libXext.dylib \
+                            -DX11_Xft_LIB=${prefix}/lib/libXft.dylib \
+                            -DX11_Xpm_LIB=${prefix}/lib/libXpm.dylib \
+                            -DOPENGL_glu_LIBRARY=${prefix}/lib/libGLU.dylib
+}
+

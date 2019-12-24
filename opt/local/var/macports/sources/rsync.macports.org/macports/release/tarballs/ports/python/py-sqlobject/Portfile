@@ -1,0 +1,47 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-sqlobject
+version             3.7.1
+revision            0
+categories-append   databases
+license             LGPL-2.1+
+platforms           darwin
+supported_archs     noarch
+maintainers         nomaintainer
+description         Object-Relational Manager, aka database wrapper
+long_description    SQLObject is a popular *Object Relational Manager* for providing an \
+                    object interface to your database, with tables as classes, rows as \
+                    instances, and columns as attributes. \
+                    SQLObject includes a Python-object-based query language that makes SQL \
+                    more abstract, and provides substantial database independence for \
+                    applications.
+
+homepage            http://www.sqlobject.org/
+master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
+checksums           rmd160  0456704d526bcdd3e9b69faa895be42ca2bc4db1 \
+                    sha256  0f0a5d9430c40b9fa5065e210a7fd3aaabb0713313e72b1b7b7dc4c7d62e43d2 \
+                    size    1525177
+distname            SQLObject-${version}
+
+python.versions     27 37
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                    port:py${python.version}-setuptools
+
+    depends_lib-append \
+                    port:py${python.version}-dispatcher \
+                    port:py${python.version}-formencode
+
+    post-destroot {
+        set docdir ${prefix}/share/doc/${subport}
+        xinstall -d ${destroot}${docdir}
+        xinstall -m 0644 -W ${worksrcpath} README.rst ANNOUNCE.rst \
+            LICENSE ${destroot}${docdir}
+    }
+
+    livecheck.type  none
+}

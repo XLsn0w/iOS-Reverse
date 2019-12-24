@@ -1,0 +1,219 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
+# We have an umbrella radar tracking webkit-gtk issues on OS X.  Please relate
+# any future issues with this tracker.
+# http://bugs.webkit.org/show_bug.cgi?id=126492
+
+PortSystem          1.0
+PortGroup           active_variants 1.1
+PortGroup           cmake 1.1
+
+compiler.cxx_standard 2017
+cmake.generator     Ninja
+
+name                webkit2-gtk
+conflicts           webkit2-gtk-devel
+version             2.26.1
+revision            0
+
+description         Apple's WebKit2 HTML rendering library for GTK+3
+long_description    ${description}
+maintainers         {devans @dbevans} {kencu @kencu}
+categories          www gnome
+platforms           darwin freebsd
+license             LGPL-2+ BSD
+homepage            http://webkitgtk.org/
+master_sites        http://webkitgtk.org/releases/
+
+use_xz              yes
+distname            webkitgtk-${version}
+
+dist_subdir         webkit-gtk
+
+checksums           rmd160  c5634e5a457a4eccc631043b9d7a61448f64278e \
+                    sha256  6b4b21801d2b1008422a1075dbd6fb4ae8b5127503faf657cf9671289d9cd155 \
+                    size    19327444
+
+depends_build-append \
+                    port:gperf \
+                    port:gtk-doc \
+                    port:pkgconfig \
+                    port:python27 \
+                    port:py27-simplejson
+
+depends_lib-append  port:atk \
+                    port:at-spi2-atk \
+                    port:bison \
+                    path:lib/pkgconfig/cairo.pc:cairo \
+                    port:flex \
+                    port:fontconfig \
+                    port:freetype \
+                    port:enchant2 \
+                    port:geoclue2 \
+                    path:lib/pkgconfig/glib-2.0.pc:glib2 \
+                    port:gobject-introspection \
+                    port:gstreamer1 \
+                    port:gstreamer1-gst-plugins-bad \
+                    port:gstreamer1-gst-plugins-base \
+                    port:gstreamer1-gst-plugins-good \
+                    port:gtk3 \
+                    port:harfbuzz-icu \
+                    port:hyphen \
+                    port:icu \
+                    port:libnotify \
+                    port:libpng \
+                    port:libsecret \
+                    port:libsoup \
+                    port:libxml2 \
+                    port:libxslt \
+                    port:sqlite3 \
+                    port:webp \
+                    port:woff2 \
+                    port:zlib
+
+
+# 1. add missing JavaScriptCore include directory used only on Apple webkit builds
+# 2. don't copy the ICU includes into the source tree
+# 3. add missing WebCore include directory used only on Apple webkit builds
+# 4. add a missing Apple-only header found in the WebKit project
+# 5. change some int64_t to gint64 to stop typedef errors in gstreamer
+patchfiles-append   patch-webkit2gtk-macports.diff
+
+# fix name collision that breaks build with clang-9.0
+patchfiles-append   patch-webkit2gtk-source-javascriptcore-tools-jsdollarvm-handle.diff
+
+# enable Netscape plugin architecture on macOS
+# or can be explicitly disabled with the following addition if preferred
+# configure.args-append -DENABLE_NETSCAPE_PLUGIN_API=OFF
+patchfiles-append    patch-enable-plugin-architecture-unix.diff
+
+# add a link library to WebCore. I am not sure this is still needed; builds and
+# runs without this patch.
+patchfiles-append    patch-bundle-link-webcore.diff
+
+# https://gitlab.gnome.org/GNOME/jhbuild/commit/e8b48870602c3a8e474e54cf1c6151b98651aae9
+patchfiles-append    WebKit-icu-65.1-fix.patch
+
+# it is preferred to use the WebKit built in bmalloc if it builds on a given os.
+# it has improved security features, but not all systems can build it at present.
+
+configure.args-append \
+    -DPORT=GTK \
+    -DENABLE_INTROSPECTION=ON \
+    -DENABLE_MINIBROWSER=OFF \
+    -DENABLE_VIDEO=ON \
+    -DUSE_SYSTEM_MALLOC=OFF
+
+pre-configure {
+    if {![variant_isset quartz] && ![variant_isset x11]} {
+        error "Either +x11 or +quartz is required"
+    }
+}
+
+if {![variant_isset quartz]} {
+    default_variants-append +x11
+}
+
+# this is nice to have, and should be the default
+default_variants-append +minibrowser
+
+variant quartz conflicts x11 {
+    require_active_variants port:gtk3 quartz
+
+    configure.args-append \
+        -DENABLE_QUARTZ_TARGET=ON \
+        -DENABLE_X11_TARGET=OFF \
+        -DENABLE_OPENGL=OFF
+
+# OPENGL does not work with +quartz, eg: https://trac.macports.org/ticket/52495
+# OPENGL must be explicitly turned off, otherwise GLX is found, but X11 is not, and:
+# CMake Error at Source/cmake/OptionsGTK.cmake:280 (message):
+#  Either GLX or EGL is needed for ENABLE_OPENGL.
+
+}
+
+variant x11 conflicts quartz {
+    require_active_variants port:gtk3 x11
+
+    configure.args-append \
+        -DENABLE_QUARTZ_TARGET=OFF \
+        -DENABLE_X11_TARGET=ON \
+        -DENABLE_OPENGL=ON
+
+    depends_lib-append \
+        port:mesa \
+        port:xorg-libXt
+}
+
+variant minibrowser description {Build and install MiniBrowser (for testing)} {
+    configure.args-delete   -DENABLE_MINIBROWSER=OFF
+    configure.args-append   -DENABLE_MINIBROWSER=ON
+    depends_run-append       port:adwaita-icon-theme
+}
+
+
+# the above code presently builds as-in on 10.13 and up
+if {${os.platform} eq "darwin" && ${os.major} <= 16} {
+
+    # build of bmalloc fails up to 10.12 https://trac.macports.org/ticket/59447
+    configure.args-replace -DUSE_SYSTEM_MALLOC=OFF -DUSE_SYSTEM_MALLOC=ON
+    patchfiles-append       patch-ramsize.diff
+
+    # Source/WTF/wtf/unix/CPUTimeUnix.cpp : add back a previous Darwin compat version
+     patchfiles-append      patch-source-wtf-wtf-unix-cputimeunix-cpp-darwin-version-restore.diff
+
+    # some Darwin versions don't have MAP_JIT; only use it if available
+    patchfiles-append       patch-source-wtf-wtf-osallocatorposix-cpp-map-jit.diff
+
+    # gl cocoa build continues to fail due to use of API not available on darwin 12 or earlier
+    # so gstreamergl is not available at present for darwin 12 or earlier
+    # todo clarify further where this is exactly needed
+    configure.args-append -DUSE_GSTREAMER_GL=OFF
+
+    # for the webcore/page/crypt code to flow correctly,
+    # ENABLE_WEB_CRYPTO has to be ON for 10.10+ and OFF for 10.9 and less
+    if {${os.major} <= 13} {
+        configure.args-append  -DENABLE_WEB_CRYPTO=OFF
+    }
+    # disable Apple internal security libraries, available only on new systems
+    patchfiles-append       patch-Webcore-page-crypto.diff
+
+    # restrict special process memory kernel calls to 10.9+ that support them
+    patchfiles-append       patch-WTF-wtf-spi-darwin-ProcessMemoryFootprint-h.diff
+
+    # the darwin build uses security features that are Apple internal only, but
+    # the unix version does not FIXME: sort the ifdefs out
+    # https://bugs.webkit.org/show_bug.cgi?id=157554
+    patchfiles-append       patch-WTF-wtf-Randomdevice.diff
+
+    # disable veclib on 10.7 and 10.8. There is a definition for
+    # class complex<> in the vForce.h header that collides with libc++
+    # if anyone has a more elegant fix for this, please volunteer it
+    if {${os.major} == 11 || ${os.major} == 12} {
+        patchfiles-append       patch-webcore-platform-audio-directconvolver-disable-veclib.diff
+    }
+
+    # add dep for newer ruby and spec this for build
+    # https://trac.macports.org/ticket/52016
+    depends_build-append    port:ruby25
+    configure.args-append   -DRUBY_EXECUTABLE=${prefix}/bin/ruby2.5
+
+    # fix missing PRId64 definitions on systems
+    # that don't define __STDC_FORMAT_MACROS by default
+    # https://bugs.webkit.org/show_bug.cgi?id=156596
+    # https://trac.macports.org/ticket/52016
+    # also added defn for TARGET_OS_IOS to avoid innumerable warnings
+    patchfiles-append patch-snowleopard-cmakelists-stdcformatmacros.diff
+    
+    # special case: fix build on 10.6 with macports-libstdc++
+    # contents of snowmath.h should someday become part of gcc6 cmath
+    # TODO: remove this?
+    if { ${configure.cxx_stdlib} eq "macports-libstdc++"  && ${os.major} < 11 } {
+        configure.cxxflags-append -D_GLIBCXX_USE_C99_MATH_TR1=1
+        configure.cxxflags-append -include ${filespath}/snowmath.h
+    }
+}
+
+livecheck.type      regex
+livecheck.url       http://webkitgtk.org/releases/
+livecheck.regex     "webkitgtk-(\\d+\\.\\d*\[02468\](?:\\.\\d+)*)"

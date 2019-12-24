@@ -1,0 +1,20 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         MRO-Compat 0.13 ../../authors/id/H/HA/HAARG
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+supported_archs     noarch
+
+description         mro::* interface compatibility for Perls < 5.9.5
+long_description    The "mro" namespace provides several utilities for \
+                    dealing with method resolution order and method caching \
+                    in general in Perl 5.9.5 and higher.
+
+platforms           darwin
+
+checksums           rmd160  20f2dc8b5d617278ca8f31a983ba12fff741fdea \
+                    sha256  8a2c3b6ccc19328d5579d02a7d91285e2afd85d801f49d423a8eb16f323da4f8

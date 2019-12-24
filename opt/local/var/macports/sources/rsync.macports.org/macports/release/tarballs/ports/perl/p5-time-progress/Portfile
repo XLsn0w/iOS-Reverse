@@ -1,0 +1,18 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Time-Progress 2.12
+platforms           darwin
+maintainers         nomaintainer
+license             {Artistic-1 GPL}
+supported_archs     noarch
+
+description         Elapsed and estimated finish time reporting
+
+long_description    ${description}
+
+checksums           rmd160  e519d7156c63d3b0e3f785aff10408ec05f90265 \
+                    sha256  7ca23fd6372c0765b201f354c5185924cb2fadf119bd31626163a2b691abce9e

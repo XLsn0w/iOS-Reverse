@@ -1,0 +1,34 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                bashdb
+version             4.4-1.0.1
+revision            1
+categories          devel
+platforms           darwin
+license             GPL-2
+maintainers         nomaintainer
+
+description         Debugger for scripts written in BASH
+long_description    bashdb is a script debugger for BASH that follows \
+                    the GNU Project Debugger (GDB) command syntax. \
+                    bashdb can run your script, stop it on specified \
+                    conditions, help you examine what has happened when \
+                    it has stopped, and allow you to modify parts of \
+                    your script so that you can experiment with your \
+                    code and fix problems once they are identified.
+homepage            http://bashdb.sourceforge.net
+
+depends_lib         port:bash44
+
+master_sites        sourceforge:project/bashdb/${name}/${version}
+use_bzip2           yes
+checksums           rmd160  8d5508444ea4e757fb9868c380e223ac86105be2 \
+                    sha256  bf603b6ee1f60c10861dcb1fef73a10f924327b5ff05cf41e2290f3edc1e6284 \
+                    size    701807
+
+test.run            yes
+test.target         check
+
+livecheck.regex     {/bashdb/(\d+(?:\.\d+)+-\d+(?:\.\d+)+)/}

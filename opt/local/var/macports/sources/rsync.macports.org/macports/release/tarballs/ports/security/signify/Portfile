@@ -1,0 +1,30 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+github.setup        jpouellet signify-osx 1.4
+name                signify
+categories          security
+license             ISC
+platforms           darwin
+maintainers         {vt.edu:jpo @jpouellet}
+description         cryptographically sign and verify files
+long_description    The signify utility creates and verifies cryptographic \
+                    signatures. A signature verifies the integrity of a message.
+homepage            https://man.openbsd.org/signify.1
+
+checksums           rmd160  752db6b518418387700ffccb97fdc37e8ecbc0d9 \
+                    sha256  8b3f30269dc4a6d236270bc78f41cf5f06e7502271c05c279453cdb6c3e328ef \
+                    size    99505
+
+variant universal   {}
+
+use_configure       no
+
+build.target        signify
+build.args-append   CC="${configure.cc} [get_canonical_archflags cc]"
+
+destroot.args       PREFIX="${destroot}${prefix}"
+
+test.run            yes

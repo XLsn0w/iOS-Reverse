@@ -1,0 +1,34 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-billiard
+version             3.6.1.0
+revision            0
+categories-append   devel
+platforms           darwin
+license             BSD
+
+python.versions     27 34 35 36 37
+
+maintainers         {stromnov @stromnov} openmaintainer
+
+description         Python multiprocessing fork.
+long_description    ${description}
+
+homepage            https://github.com/celery/billiard
+master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
+
+distname            ${python.rootname}-${version}
+
+checksums           rmd160  3d8b12369c1e26c5c143737e0c9dd9e17fe25935 \
+                    sha256  b8809c74f648dfe69b973c8e660bcec00603758c9db8ba89d7719f88d5f01f26 \
+                    size    151717
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                        port:py${python.version}-setuptools
+
+    livecheck.type      none
+}

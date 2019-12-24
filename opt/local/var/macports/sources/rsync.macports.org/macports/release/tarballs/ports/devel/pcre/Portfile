@@ -1,0 +1,71 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                pcre
+version             8.43
+subport pcre2 {
+    version         10.33
+}
+categories          devel
+license             BSD
+platforms           darwin freebsd
+maintainers         {larryv @larryv}
+
+description         Perl Compatible Regular Expressions
+long_description    The PCRE library is a set of functions that \
+                    implement regular expression pattern matching \
+                    using the same syntax and semantics as Perl 5. \
+                    PCRE has its own native API, as well as a set of \
+                    wrapper functions that correspond to the POSIX \
+                    regular expression API.
+homepage            https://www.pcre.org
+
+depends_lib         port:bzip2 \
+                    port:libedit \
+                    port:zlib
+
+master_sites        sourceforge:project/pcre/${subport}/${version} \
+                    https://ftp.pcre.org/pub/pcre \
+                    ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre \
+                    ftp://ftp.fu-berlin.de/unix/misc/pcre \
+                    ftp://ftp.tin.org/pub/libs/pcre
+distname            ${subport}-${version}
+use_bzip2           yes
+
+set rmd160(pcre)    b99a135d7d2833a16531ee2b2abd5dc99c9e1ea4
+set sha256(pcre)    91e762520003013834ac1adb4a938d53b22a216341c061b0cf05603b290faf6b
+set size(pcre)      1576584
+set rmd160(pcre2)   5ef46f9e0f5a4d2ee710d4ec0616a83f00b680eb
+set sha256(pcre2)   35514dff0ccdf02b55bd2e9fa586a1b9d01f62332c3356e379eabb75f789d8aa
+set size(pcre2)     1690739
+checksums           rmd160  $rmd160(${subport}) \
+                    sha256  $sha256(${subport}) \
+                    size    $size(${subport})
+
+patchfiles          no-darwin-pthread-flag.patch
+
+configure.args      --disable-silent-rules \
+                    --docdir=${prefix}/share/doc/${subport} \
+                    --enable-jit \
+                    --enable-[regsub {\d$} ${subport} &-]16 \
+                    --enable-[regsub {\d$} ${subport} &-]32 \
+                    --enable-${subport}grep-libbz2 \
+                    --enable-${subport}grep-libz \
+                    --enable-${subport}test-libedit
+subport pcre {
+    PortGroup clang_dependency 1.0
+    configure.args-append --enable-unicode-properties
+}
+
+platform darwin 8 {
+    # ticket #18448
+    if {[variant_isset universal]} {
+        configure.ldflags-append -lncurses
+    }
+}
+
+test.run            yes
+test.target         check
+
+livecheck.distname  ${subport}

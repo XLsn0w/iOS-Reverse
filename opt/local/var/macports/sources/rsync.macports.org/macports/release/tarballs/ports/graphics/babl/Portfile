@@ -1,0 +1,62 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           muniversal 1.0
+PortGroup           compiler_blacklist_versions 1.0
+
+name                babl
+conflicts           babl-devel
+version             0.1.68
+license             LGPL-3+
+set branch          [join [lrange [split ${version} .] 0 1] .]
+categories          graphics
+maintainers         {devans @dbevans} openmaintainer
+platforms           darwin
+homepage            http://gegl.org/babl
+description         Dynamic, any to any, pixel format conversion library.
+
+long_description    ${description}
+
+master_sites        gimp:${name}/${branch}/
+
+use_xz              yes
+
+checksums           rmd160  f46217f5124250d2c6663ce2c21dbd307a0eb932 \
+                    sha256  412dc8356b1e200e0f3aaa41bc6c317b9e489936c17c4e92cc5db9d34ca1e94c \
+                    size    298380
+
+depends_build       port:autoconf \
+                    port:automake \
+                    port:libtool \
+                    port:pkgconfig
+
+depends_lib         port:lcms2
+
+patchfiles          fix-html-tag-typo.patch
+
+# In 0.1.12, i386 fails to compile with SL's gcc-4.2:
+#    babl-cpuaccel.c:169: error: ‘asm’ operand has impossible constraints
+compiler.blacklist-append *gcc-3.* *gcc-4.*
+
+# additionally blacklist compilers that don't support C11 (typedef redefinition in C)
+# babl-icc.c:1031:25: error: redefinition of typedef 'UTF8' is invalid in C
+compiler.blacklist-append {clang < 300}
+
+# trsnsitioning to meson, no longer ships pre-generated configure file
+configure.cmd       ./autogen.sh
+
+configure.args      --disable-silent-rules \
+                    ac_cv_prog_AWK=/usr/bin/awk
+
+# CC_FOR_BUILD is used by config.guess to determine processor type
+if {![variant_isset universal]} {
+    configure.env-append "CC_FOR_BUILD=${configure.cc} ${configure.cc_archflags}"
+} else {
+    foreach arch ${configure.universal_archs} {
+        lappend merger_configure_env(${arch})  "CC_FOR_BUILD=${configure.cc} -arch ${arch}"
+    }
+}
+
+livecheck.type      regex
+livecheck.url       http://download.gimp.org/pub/${name}/${branch}/
+livecheck.regex     "${name}-(\\d+(?:\\.\\d+)+)"

@@ -1,0 +1,11 @@
+--- Makefile.orig	2018-10-13 20:44:01.000000000 -0500
++++ Makefile	2018-10-28 19:40:10.000000000 -0500
+@@ -23,7 +23,7 @@
+ #LDFLAGS += -Zexe -Dstrncasecmp=strnicmp
+ 
+ # OS X
+-#whois_LDADD += -liconv
++whois_LDADD += -liconv
+ 
+ ifdef CONFIG_FILE
+ DEFS += -DCONFIG_FILE=\"$(CONFIG_FILE)\"

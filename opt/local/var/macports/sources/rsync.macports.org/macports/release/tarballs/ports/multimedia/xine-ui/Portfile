@@ -1,0 +1,65 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+
+name                    xine-ui
+version                 0.99.10
+revision                1
+maintainers             {ryandesign @ryandesign} openmaintainer
+categories              multimedia
+platforms               darwin
+license                 GPL-2+
+
+description             A free multimedia player
+long_description        xine is a free multimedia player. It plays \
+                        back CDs, DVDs, and VCDs. It also decodes \
+                        multimedia files like AVI, MOV, WMV, and MP3 \
+                        from local disk drives, and displays multimedia \
+                        streamed over the Internet. It interprets many \
+                        of the most common multimedia formats available \
+                        – and some of the most uncommon formats, too.
+
+homepage                http://www.xine-project.org/
+master_sites            sourceforge:project/xine/xine-ui/${version}
+use_xz                  yes
+
+checksums               rmd160  14193feda1255e6dd7adc68d03ea09e3298b853e \
+                        sha256  ca20ab40aa386f609562de1b86a379ea3bf605813ceebe64b845bb1b23fc7244 \
+                        size    1762968
+
+depends_build           port:autoconf \
+                        port:automake \
+                        port:libtool \
+                        port:pkgconfig
+
+depends_lib             port:aalib \
+                        port:curl \
+                        port:libcaca \
+                        port:libssh2 \
+                        port:readline \
+                        port:Xft2 \
+                        port:xine-lib \
+                        port:xorg-libXtst \
+                        port:xorg-libXv \
+                        port:xorg-libXxf86vm
+
+# xine-lib is not universal
+universal_variant       no
+
+patchfiles              globals.patch \
+                        iconv.patch \
+                        libcaca.patch \
+                        no-Werror-implicit-function-declaration.patch
+
+configure.cmd           ./autogen.sh
+configure.args          --disable-lirc \
+                        --with-readline=${prefix}
+
+# disable silent rules
+build.args              V=1
+
+use_parallel_build      yes
+
+livecheck.type          regex
+livecheck.url           ${homepage}releases
+livecheck.regex         ${name}-(\[0-9.\]+)\\.

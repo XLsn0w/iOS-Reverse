@@ -1,0 +1,34 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           python 1.0
+
+github.setup        requests requests-oauthlib 1.2.0 v
+name                py-${name}
+categories-append   devel net
+platforms           darwin
+supported_archs     noarch
+license             ISC
+maintainers         {devans @dbevans} openmaintainer
+
+description         OAuth for Humans
+long_description    ${description}: an easy-to-use Python interface for building \
+                    OAuth1 and OAuth2 clients.
+
+checksums           rmd160  de032342d91aff98b094f8aa16f5c0bacc80ef1a \
+                    sha256  d52586570ea55841d6584f73dc5f0ad636effbd092c4ed907553e32be3c353e2 \
+                    size    44416
+
+python.versions     27 34 35 36 37
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                    port:py${python.version}-setuptools
+
+    depends_lib-append \
+                    port:py${python.version}-requests \
+                    port:py${python.version}-oauthlib
+
+    livecheck.type  none
+}

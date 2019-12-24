@@ -1,0 +1,35 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=portfile:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+github.setup        facebook xctool 0.3.4
+categories          devel
+platforms           darwin
+
+universal_variant   no
+license             Apache-2
+maintainers         nomaintainer
+
+description         An extension for Apple's xcodebuild that makes it easier to \
+                    test iOS and macOS apps.
+long_description    ${description}
+
+checksums           rmd160  bdcc9e513dbd3111099e59015977f74b10b5716b \
+                    sha256  05046f0befea09b9d8cf8735dbac3427bc0456f62aef342faf9d71155035eda4
+
+use_configure       no
+
+# put everything into libexec since the binaries seem to not be user facing
+# (i.e. only xctool is run by the user and flags like -reporter will run a
+# binary underneath the hood)
+build {
+    system -W ${worksrcpath} "./scripts/build.sh XT_INSTALL_ROOT=${destroot}${prefix}/libexec/xctool/ -IDECustomDerivedDataLocation=${worksrcpath}/custombuild"
+}
+
+destroot {
+    foreach f [glob -tails -directory ${destroot}${prefix}/libexec/xctool/lib *.dylib] {
+        system "install_name_tool -id ${prefix}/libexec/xctool/lib/$f ${destroot}${prefix}/libexec/xctool/lib/$f"
+    }
+    ln -s ${prefix}/libexec/xctool/bin/xctool ${destroot}${prefix}/bin/xctool
+}

@@ -1,0 +1,61 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem      1.0
+PortGroup       active_variants 1.1
+
+# pangomm > 2.36.0 requires C++11 or better
+PortGroup       cxx11 1.1
+
+name            pangomm
+version         2.42.0
+# some build files are GPL-2+ but they are not installed
+license         LGPL-2.1+
+set branch      [join [lrange [split ${version} .] 0 1] .]
+description     C++ interface to Pango.
+long_description    pangomm is the official \
+                C++ interface for the Pango text layout library.
+maintainers     {devans @dbevans} openmaintainer
+categories      x11 devel
+platforms       darwin
+homepage        http://www.gtkmm.org/
+master_sites    gnome:sources/${name}/${branch}/
+
+use_xz          yes
+
+checksums       rmd160  c2fef22f518bb48247587fea51c30499e6edb34a \
+                sha256  ca6da067ff93a6445780c0b4b226eb84f484ab104b8391fb744a45cbc7edbf56 \
+                size    853064
+
+depends_build   port:pkgconfig \
+                port:mm-common
+
+depends_lib     path:lib/pkgconfig/pango.pc:pango \
+                path:lib/pkgconfig/cairomm-1.0.pc:cairomm \
+                port:glibmm \
+                port:libsigcxx2
+ 
+use_autoreconf  yes
+autoreconf.args -fvi
+
+configure.args  --disable-silent-rules
+
+#
+# dummy variants to ensure that this port gets rebuilt if
+# the corresponding variants for pango change
+#
+
+variant x11 {}
+variant quartz {}
+default_variants +x11
+
+if {[variant_isset x11]} {
+    require_active_variants path:lib/pkgconfig/cairomm-1.0.pc:cairomm x11
+    require_active_variants path:lib/pkgconfig/pango.pc:pango x11
+}
+
+if {[variant_isset quartz]} {
+    require_active_variants path:lib/pkgconfig/cairomm-1.0.pc:cairomm quartz
+    require_active_variants ath:lib/pkgconfig/pango.pc:pango quartz
+}
+
+livecheck.type  gnome

@@ -1,0 +1,73 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                fossil
+version             2.10
+revision            0
+epoch               20110901182519
+categories          devel
+platforms           darwin
+license             BSD
+maintainers         {ciserlohn @ci42}
+
+description         Simple, high-reliability, distributed software configuration management
+
+long_description    Fossil is a distributed software configuration management which supports \
+                    distributed version control, distributed bug tracking, distributed wiki, \
+                    and a distributed blog mechanism all in single integrated package. It provides \
+                    an easy-to-use web interface to access and administrate projects over the \
+                    built-in webserver or CGI.
+
+homepage            https://www.fossil-scm.org/
+
+master_sites        ${homepage}index.html/uv
+distname            ${name}-src-${version}
+
+worksrcdir          ${name}-${version}
+
+checksums           rmd160  e4ac6020a0369b3aff8942e06f45fe0de6cd3f50 \
+                    sha256  d8a3776d2ce77385ed5ff20a2776d13bb534fb2508e87351e14e94f91cd12b10 \
+                    size    5634327
+
+test.run            yes
+
+depends_lib         port:tcl \
+                    port:zlib \
+                    path:lib/libssl.dylib:openssl \
+                    port:libiconv
+
+configure.args-append       --with-tcl=${prefix}/lib \
+                            --with-th1-docs \
+                            --with-th1-hooks \
+                            --with-exec-rel-paths \
+                            --json
+if {[vercmp [macports_version] 2.5.99] >= 0} {
+configure.env-append "CC_FOR_BUILD=${configure.cc} [get_canonical_archflags]"
+} else {
+configure.env-append CC_FOR_BUILD="${configure.cc} [get_canonical_archflags]"
+}
+
+configure.ldflags-append    -liconv
+
+post-destroot {
+    set docdir ${destroot}${prefix}/share/doc/${name}
+    xinstall -d ${docdir}
+    xinstall -m 644 -W ${worksrcpath} \
+        COPYRIGHT-BSD2.txt \
+        ${docdir}
+}
+
+notes "
+It is recommended to rebuild repositories created with earlier versions of\
+fossil. To rebuild a repository run:
+
+fossil rebuild /<path>/<to>/<repository>
+
+Rebuilding a repository is a safe operation\; executing it more then once will\
+not harm the integrity of a repository.
+"
+
+livecheck.type      regex
+livecheck.url       ${homepage}home/juvlist
+livecheck.regex     {fossil-src-([\d.]+).tar.gz}

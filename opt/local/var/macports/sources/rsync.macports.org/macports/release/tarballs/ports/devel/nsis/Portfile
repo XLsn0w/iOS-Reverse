@@ -1,0 +1,91 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                nsis
+version             3.04
+set major           [lindex [split ${version} .] 0]
+categories          devel
+license             zlib CPL-1 MIT
+platforms           darwin
+maintainers         nomaintainer
+
+description         NSIS is a tool for creating win32 installers.
+long_description    NSIS (Nullsoft Scriptable Install System) is a tool \
+                    that allows programmers to create software installers \
+                    for Windows. It is released under an open source \
+                    license and is completely free for any use.
+
+homepage            http://nsis.sourceforge.net/
+master_sites        sourceforge:project/nsis/NSIS%20${major}/${version}
+
+distname            ${name}-${version}-src
+use_bzip2           yes
+
+distfiles-append    nsis-${version}.zip
+extract.only-delete nsis-${version}.zip
+
+checksums           nsis-3.04-src.tar.bz2 \
+                    rmd160  9647acea3069fb8abb89853f3b394f4be7307728 \
+                    sha256  609536046c50f35cfd909dd7df2ab38f2e835d0da3c1048aa0d48c59c5a4f4f5 \
+                    size    1740579 \
+                    nsis-3.04.zip \
+                    rmd160  795f9233fbbbd60876734a68397d172b1f47dec5 \
+                    sha256  22f3349fea453a45551745635c13e5efb7849ecbdce709daa2b2fa8e2ac55fc4 \
+                    size    2246851
+
+depends_build       port:scons
+
+depends_lib         port:libiconv \
+                    port:zlib
+
+# Installer checks for cross-compiler during build, but doesn't seem to use it?
+#                   port:i386-mingw32-gcc
+
+post-extract {
+    system -W ${workpath} "unzip ${distpath}/nsis-${version}.zip"
+}
+
+use_configure       no
+
+build.args          APPEND_CCFLAGS="[get_canonical_archflags cc] -stdlib=${configure.cxx_stdlib}" \
+                    APPEND_CPPPATH="${prefix}/include" \
+                    APPEND_LIBPATH="${prefix}/lib" \
+                    APPEND_LINKFLAGS="[get_canonical_archflags ld] -stdlib=${configure.cxx_stdlib}" \
+                    CC="${configure.cc}" \
+                    CXX="${configure.cxx}" \
+                    PREFIX="${prefix}" \
+                    SKIPMISC=all \
+                    SKIPPLUGINS=all \
+                    SKIPSTUBS=all \
+                    SKIPUTILS=all \
+                    STRIP=0 \
+                    VERSION=${version}
+
+use_parallel_build  no
+
+build.cmd           ${prefix}/bin/scons
+build.target
+
+destroot.args       {*}${build.args}
+destroot.destdir    PREFIX_DEST="${destroot}"
+
+post-destroot {
+    foreach dir {Bin Contrib Docs Examples Include Plugins Stubs} {
+        file delete -force ${destroot}${prefix}/share/nsis/${dir}
+        file copy ${workpath}/nsis-${version}/${dir} ${destroot}${prefix}/share/nsis
+    }
+    system "chmod -R go-w '${destroot}${prefix}/share/nsis'"
+}
+
+variant advanced_logging description {Build makensis with advanced logging support} {
+    build.args-append    NSIS_CONFIG_LOG=yes
+}
+
+variant large_strings description {Build makensis with support for large strings} {
+    build.args-append    NSIS_MAX_STRLEN=8192
+}
+
+variant debug description {Build makensis with debugging information} {
+    build.args-append    DEBUG=1
+}

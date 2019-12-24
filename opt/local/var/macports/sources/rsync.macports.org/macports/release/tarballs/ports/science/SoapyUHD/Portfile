@@ -1,0 +1,31 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           cmake 1.1
+PortGroup           cxx11 1.1
+
+platforms           darwin macosx
+categories          science
+license             GPL-3.0
+maintainers         {@ra1nb0w irh.it:rainbow} {michaelld @michaelld} openmaintainer
+
+description         Soapy SDR plugins for UHD devices
+long_description    ${description}
+
+github.setup        pothosware SoapyUHD 0.3.6 soapy-uhd-
+checksums           rmd160 2ca696cdd64aae2d6aa1fb72f004929b67ffeacb \
+                    sha256 3c7a51c005d4c41196f40462198c2f46ca3106db0515218921ed6714867f1f65 \
+                    size   32907
+revision            0
+
+depends_build-append \
+    port:pkgconfig
+
+depends_lib-append \
+    port:SoapySDR \
+    path:lib/libuhd.dylib:uhd \
+    port:boost
+
+configure.args-append \
+    -DCMAKE_BUILD_TYPE=Release

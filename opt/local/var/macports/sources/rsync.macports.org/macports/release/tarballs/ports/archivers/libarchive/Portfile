@@ -1,0 +1,50 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem 1.0
+PortGroup clang_dependency 1.0
+
+name             libarchive
+
+categories       archivers
+license          BSD
+maintainers      {toby @tobypeterson} openmaintainer
+description      functions for reading and writing streaming archives
+long_description \
+	Libarchive is a programming library that can create and \
+	read several different streaming archive formats, including \
+	most popular tar variants, several cpio formats, 7zip and rar. It can \
+	also write shar archives.
+platforms        darwin
+
+version          3.4.0
+revision         1
+checksums        rmd160  7aa43082eeea7b72c1442b995ef9f69135cf7481 \
+                 sha256  8643d50ed40c759f5412a3af4e353cffbce4fdf3b5cf321cb72cacf06b2d825e \
+                 size    6908093
+
+homepage         https://libarchive.org/
+master_sites     ${homepage}downloads/
+
+
+depends_lib      port:bzip2 port:zlib port:libxml2 port:xz \
+                 port:lzo2 port:libiconv \
+                 port:lz4 port:zstd
+
+patchfiles       patch-libarchive__archive_read_support_format_lha.c.diff \
+                 patch-libarchive__archive_write_disk_posix.c.diff
+
+depends_build    port:pkgconfig
+
+configure.args   --enable-bsdtar=shared --enable-bsdcpio=shared \
+                 --disable-silent-rules --without-nettle \
+                 --without-openssl --with-lzo2 --with-zstd
+
+post-destroot {
+    xinstall -d ${destroot}${prefix}/libexec/${subport}
+    foreach program [glob -tails -directory ${destroot}${prefix}/bin *] {
+        ln -s ${prefix}/bin/${program} ${destroot}${prefix}/libexec/${subport}
+    }
+}
+
+livecheck.type  regex
+livecheck.regex libarchive-(\[0-9.\]+)\\.tar.gz

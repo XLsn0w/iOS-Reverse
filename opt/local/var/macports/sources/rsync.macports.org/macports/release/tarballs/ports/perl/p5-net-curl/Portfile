@@ -1,0 +1,32 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Net-Curl 0.41
+license             MIT
+maintainers         {devans @dbevans} openmaintainer
+description         Net::Curl - Perl interface for libcurl
+long_description    ${description}
+
+platforms           darwin
+
+checksums           rmd160  e0413c3badc21f79f6f11ac841f52502d1404fc5 \
+                    sha256  c31bcf4302d8dd3c34da715c3032e37019f0ff7c96df8a9d8eeef78e55f6726c \
+                    size    101997
+
+if {${perl5.major} != ""} {
+    depends_lib-append \
+                    port:p${perl5.major}-extutils-pkgconfig \
+                    port:curl
+
+    patchfiles      macports-curl-inc-dir.patch
+
+    post-patch {
+        reinplace "s|@@MP_CURL_INCDIR@@|${prefix}/include|" ${worksrcpath}/Makefile.PL
+    }
+
+    configure.env-append \
+                    CURL_CONFIG=${prefix}/bin/curl-config
+}

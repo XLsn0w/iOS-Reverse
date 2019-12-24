@@ -1,0 +1,68 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem                                      1.0
+PortGroup           python                      1.0
+PortGroup           cxx11                       1.1
+PortGroup           github                      1.0
+PortGroup           compiler_blacklist_versions 1.0
+
+name                py-thinc
+version             7.3.0
+revision            0
+github.setup        explosion thinc ${version} v
+
+checksums           rmd160  cb09e4dacebe5ac821fb2c2996a1648aa36351fc \
+                    sha256  87e52f35ea2868e8aec18f2ea302167ec3e157738d29cb75aa68e418a6ca73de \
+                    size    245614
+
+platforms           darwin
+supported_archs     x86_64
+
+license             MIT
+
+maintainers         {jonesc @cjones051073} openmaintainer
+
+description         spaCy's Machine Learning library for NLP in Python
+long_description    ${description}
+
+# Exclude anything with non-numbers
+github.livecheck.regex {([0-9.]+)}
+
+# Support python versions
+python.versions     35 36 37 38
+python.default_version 37
+
+# Compiler selection
+compiler.blacklist-append *gcc* {clang < 900} {macports-clang-3.[0-9]} macports-clang-4.0
+
+if {${name} ne ${subport}} {
+
+    depends_build-append \
+        port:py${python.version}-setuptools
+
+    depends_lib-append \
+        port:py${python.version}-cython \
+        port:py${python.version}-cymem \
+        port:py${python.version}-murmurhash \
+        port:py${python.version}-numpy \
+        port:py${python.version}-tqdm \
+        port:py${python.version}-blis \
+        port:py${python.version}-plac \
+        port:py${python.version}-srsly \
+        port:py${python.version}-wasabi \
+        port:py${python.version}-mock \
+        port:py${python.version}-preshed
+
+    depends_test-append \
+        port:py${python.version}-hypothesis \
+        port:py${python.version}-flake8 
+        
+    post-extract {
+        # Set cython version
+        set PythonVersionWithDot [join [split ${python.version} ""] "."]
+        reinplace "s|\'cython\'|\'cython-${PythonVersionWithDot}\'|g" ${worksrcpath}/bin/cythonize.py
+    }
+
+    livecheck.type none 
+
+}

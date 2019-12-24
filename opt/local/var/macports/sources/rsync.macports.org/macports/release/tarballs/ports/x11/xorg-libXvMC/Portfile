@@ -1,0 +1,32 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem      1.0
+
+name            xorg-libXvMC
+version         1.0.11
+revision        0
+categories      x11 devel
+license         X11
+maintainers     {jeremyhu @jeremyhu} openmaintainer
+description     X.org libXvMC
+homepage        https://www.x.org
+platforms       darwin macosx
+long_description Xvideo extension library with Motion Compression
+master_sites     xorg:individual/lib/
+
+distname        libXvMC-${version}
+
+checksums       rmd160  0d6cb6e08e4d30c2f4c909a9a1549197971a4886 \
+                sha256  4a2e34d444a683a7c010b01b23cefe2b8043a063ce4dc6a9b855836b5262622d \
+                size    303516
+                    
+use_bzip2           yes
+use_parallel_build  yes
+
+depends_build   port:pkgconfig
+
+depends_lib     port:xorg-libXv
+
+livecheck.type  regex
+livecheck.url   https://xorg.freedesktop.org/archive/individual/lib/?C=M&O=D
+livecheck.regex libXvMC-(\\d+(?:\\.\\d+)*)

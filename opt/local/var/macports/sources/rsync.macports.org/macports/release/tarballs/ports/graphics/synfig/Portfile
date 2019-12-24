@@ -1,0 +1,164 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+github.setup        synfig synfig 1.2.0 v
+categories          graphics
+platforms           darwin
+maintainers         ryandesign openmaintainer
+license             GPL-2+
+
+homepage            http://www.synfig.org/
+master_sites        sourceforge:project/synfig/releases/${version}/source/
+dist_subdir         ${subport}
+
+if {${subport} eq ${name}} {
+    revision            5
+
+    description         vector-based 2-D animation package
+
+    long_description    Synfig is a ${description}. It is designed to be \
+                        capable of producing feature-film-quality animation. \
+                        It eliminates the need for tweening, preventing the \
+                        need to hand-draw each frame. Synfig features spatial \
+                        and temporal resolution independence (sharp and smooth \
+                        at any resolution or framerate), high dynamic range \
+                        images, and a flexible plugin system.
+
+    checksums           rmd160  51f687541f7ea74b65caa3fee1cad694f8534745 \
+                        sha256  611ea9f156188c9ecbb99a21116b5330e5070c51a0ffa721c7791c46ec231dbf
+
+    depends_build       port:pkgconfig
+
+    depends_lib         port:boost \
+                        path:lib/pkgconfig/cairo.pc:cairo \
+                        port:ETL \
+                        path:lib/libavcodec.dylib:ffmpeg \
+                        port:freetype \
+                        port:fontconfig \
+                        port:gettext \
+                        port:ImageMagick \
+                        port:jpeg \
+                        port:libdv \
+                        port:libiconv \
+                        port:libmng \
+                        port:libpng \
+                        port:libsigcxx2 \
+                        port:libtool \
+                        port:libxmlxx2 \
+                        port:mlt \
+                        port:openexr \
+                        path:lib/pkgconfig/pango.pc:pango
+
+    patchfiles          template.patch
+
+    configure.args      --with-boost=${prefix}
+
+    post-destroot {
+        set docdir ${destroot}${prefix}/share/doc/${subport}
+        xinstall -d ${docdir}
+        xinstall -m 644 -W ${worksrcpath} \
+            ABOUT-NLS \
+            AUTHORS \
+            COPYING \
+            ChangeLog \
+            ChangeLog.old \
+            NEWS \
+            README \
+            TODO \
+            ${docdir}
+    }
+
+    livecheck.name      synfig
+    livecheck.type      sourceforge
+    livecheck.regex     /${name}-(\[0-9.\]+)${extract.suffix}
+} else {
+    livecheck.type      none
+}
+
+subport ETL {
+    version             0.04.22
+    revision            0
+    supported_archs     noarch
+
+    description         multi-platform class and template library
+
+    long_description    ETL is a ${description} designed to add new datatypes \
+                        and functions which combine well with the existing \
+                        types and functions from the C++ Standard Template \
+                        Library (STL).
+
+    checksums           rmd160  c9dcf4a0f3ef1cc33b4453416b3ca7c4f0f0f9a6 \
+                        sha256  ac5aeb9b8ec2c69dd455c6c72e104ff20c43e1e5dde6c0cd87f3f7d1b41d2746
+
+    # ETL-config is a wrapper around pkg-config
+    depends_run         port:pkgconfig
+
+    patchfiles          algorithm.patch
+
+    post-destroot {
+        set docdir ${destroot}${prefix}/share/doc/${subport}
+        xinstall -d ${docdir}
+        xinstall -m 644 -W ${worksrcpath} \
+            AUTHORS \
+            ChangeLog \
+            COPYING \
+            NEWS \
+            README \
+            ${docdir}
+    }
+}
+
+subport synfigstudio {
+    revision            0
+
+    description         synfig animation studio
+
+    long_description    Synfig Studio is the animation studio for synfig and \
+                        provides a GUI to create Synfig animations which are \
+                        saved in Synfig .sif or .sifz format.
+
+    checksums           rmd160  c0cbbd19c0430ccd18f21c89c9d552776cee34be \
+                        sha256  159b6bef1f5a819602f82014f787c22d4c9108af749fcd4505ee37c4979b6c39
+
+    depends_build       port:intltool \
+                        port:pkgconfig
+
+    depends_lib         port:ETL \
+                        port:gtkmm3 \
+                        port:synfig
+
+    patchfiles          WorkAreaTile.patch
+
+    post-destroot {
+        foreach f [glob ${destroot}${prefix}/share/mime/*] {
+            if {[file isfile ${f}]} {
+                delete ${f}
+            }
+        }
+
+        set docdir ${destroot}${prefix}/share/doc/${subport}
+        xinstall -d ${docdir}
+        xinstall -m 644 -W ${worksrcpath} \
+            ABOUT-NLS \
+            AUTHORS \
+            COPYING \
+            ChangeLog \
+            ChangeLog.old \
+            NEWS \
+            README \
+            TODO \
+            ${docdir}
+    }
+
+    post-activate {
+        system "${prefix}/bin/update-mime-database ${prefix}/share/mime"
+    }
+
+    post-deactivate {
+        system "${prefix}/bin/update-mime-database ${prefix}/share/mime"
+    }
+}
+
+distname            ${subport}-${version}

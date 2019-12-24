@@ -1,0 +1,27 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+github.setup        zsh-users zsh-completions 0.31.0
+maintainers         {g5pw @g5pw} openmaintainer
+categories          sysutils shells
+license             Permissive Apache-2
+description         Additional completion definitions for Zsh.
+long_description    Additional completion definitions for Zsh. This package \
+                    includes the completion files for the MacPorts port command.
+platforms           darwin
+supported_archs     noarch
+
+checksums           rmd160  b4c1d7ff7f272139b89f6fbe915cd1f138ec8f46 \
+                    sha256  9d8a3d782d1d5f83151e5d5af9370e91d0e4fa7a86bde2f04e0db4302818500d \
+                    size    247770
+
+use_configure       no
+
+build {}
+
+destroot {
+    xinstall -d ${destroot}${prefix}/share/zsh/
+    copy ${worksrcpath}/src ${destroot}${prefix}/share/zsh/site-functions
+}

@@ -1,0 +1,70 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           compilers 1.0
+PortGroup           linear_algebra 1.0
+
+name                wannier90
+version             3.0.0
+categories          science
+platforms           darwin
+license             GPL-2+
+maintainers         {dstrubbe @dstrubbe} openmaintainer
+
+description         A Tool for Obtaining Maximally-Localised Wannier Functions
+
+long_description    Wannier90 uses inputs from an electronic-structure code \
+                    to transform the Bloch orbitals of a crystal into \
+                    maximally-localised Wannier functions. Interfaces exist \
+                    for various density-functional theory codes.
+
+homepage            http://www.wannier.org
+master_sites        https://github.com/wannier-developers/wannier90/archive
+
+checksums           rmd160  cf937b9854e64ea545fe81ce063a02689aefa8de \
+                    sha1    233773801b170d46200004dd1c0db8cdf7003ddd \
+                    sha256  f196e441dcd7b67159a1d09d2d7de2893b011a9f03aab6b30c4703ecbf20fe5b \
+                    size    71943515
+
+distname            v${version}
+worksrcdir          ${name}-${version}
+
+configure {
+    file copy ${worksrcpath}/config/make.inc.macosx.macports ${worksrcpath}/make.inc
+}
+
+# TODO: enable use of MPI
+pre-build {
+    build.args      F90=${configure.f90} LDOPTS="-O3" COMMS="" MPIF90="" CC=${configure.cc} CFLAGS="${configure.cflags}" \
+        LIBS="-L${prefix}/lib ${linalglib}"
+    if {[variant_isset g95]} {
+        build.args-append FCOPTS="-O3 -fno-second-underscore"
+    } else {
+        build.args-append FCOPTS="-O3"
+    }
+}
+
+use_parallel_build  yes
+
+destroot {
+    xinstall ${worksrcpath}/wannier90.x              ${destroot}${prefix}/bin/
+    xinstall ${worksrcpath}/postw90.x                ${destroot}${prefix}/bin/
+    xinstall ${worksrcpath}/w90chk2chk.x             ${destroot}${prefix}/bin/
+    xinstall ${worksrcpath}/utility/w90pov/w90pov    ${destroot}${prefix}/bin/
+    xinstall ${worksrcpath}/utility/w90vdw/w90vdw.x  ${destroot}${prefix}/bin/
+    xinstall ${worksrcpath}/libwannier.a             ${destroot}${prefix}/lib/
+}
+
+compilers.choose    f90
+compilers.setup     require_fortran
+
+variant threads requires atlas description {Build with threaded ATLAS} {}
+# test fails with tiny discrepancies:
+# tests/testw90_example26 - gaas.win: **FAILED**
+
+test.run            yes
+test.target         test-serial
+
+livecheck.type      regex
+livecheck.url       ${homepage}/download
+livecheck.regex     Wannier90 \\(v(\[0-9.\]+)\\)

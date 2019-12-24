@@ -1,0 +1,49 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4; truncate-lines: t -*- vim:fenc=utf-8:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           perl5 1.0
+
+github.setup        darold pgbadger 11.1 v
+revision            0
+categories          databases
+maintainers         nomaintainer
+description         PostgreSQL log analyzer with fully detailed reports and graphs.
+long_description    pgBadger is a PostgreSQL log analyzer built for speed with fully reports \
+                    from your PostgreSQL log file. It's a single and small Perl script that \
+                    outperforms any other PostgreSQL log analyzer.
+
+platforms           darwin
+license             BSD
+supported_archs     noarch
+
+homepage            https://pgbadger.darold.net/
+
+checksums           rmd160  7bfe11a4c386c1dc0210315c19ff22306fd17f3e \
+                    sha256  637a1784ce50c1917110b07be462049fd9eaaa16d8bb80390a89b6b1bb12508c \
+                    size    1680591
+
+perl5.branches      5.30
+
+depends_lib-append  port:perl${perl5.major} \
+                    port:p${perl5.major}-text-csv_xs \
+                    port:p${perl5.major}-json-xs
+
+post-patch {
+    reinplace "s|^#!/usr/bin/env perl|#!${perl5.bin}|" ${worksrcpath}/${name}
+}
+
+configure.cmd       ${perl5.bin}
+configure.pre_args  Makefile.PL
+configure.args      INSTALLDIRS=perl
+
+post-destroot {
+    fs-traverse f ${destroot}${prefix}/lib/perl5 {
+        if {[file isfile $f] && [file tail $f] eq "perllocal.pod"} {
+            file delete $f
+        }
+        if {[file isfile $f] && [file tail $f] eq ".packlist"} {
+            reinplace -n "s|${destroot}||p" $f
+        }
+    }
+}

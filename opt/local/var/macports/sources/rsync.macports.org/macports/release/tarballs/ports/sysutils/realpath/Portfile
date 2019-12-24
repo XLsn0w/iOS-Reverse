@@ -1,0 +1,42 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+github.setup        user454322 realpath 1.0.1 v
+categories          sysutils
+platforms           darwin
+maintainers         yahoo.com.mx:dev.modprobe
+license             BSD
+
+description         realpath(1)
+
+long_description    realpath uses realpath(3) to resolve the path of the \
+                    filename(s) supplied as arguments and prints the result \
+                    to stdout.
+
+checksums           rmd160  7526580f51f19891067ad243b4a4c90e9e2c4d69 \
+                    sha256  bf38a149a528486e4c3caa26b8584410b55fdf824f64709ef8b93e75559d797d
+
+configure.pre_args
+configure.args      -b ${prefix} \
+                    -m ${prefix}/share/man
+
+configure.universal_args-delete --disable-dependency-tracking
+
+variant universal {}
+
+build.target
+build.args          CC="${configure.cc} [get_canonical_archflags cc]"
+
+test.run            yes
+test.target         test
+
+post-destroot {
+    set docdir ${prefix}/share/doc/${subport}
+    xinstall -d ${destroot}${docdir}
+    xinstall -m 644 -W ${worksrcpath} \
+        LICENSE \
+        README.md \
+        ${destroot}${docdir}
+}

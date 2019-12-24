@@ -1,0 +1,44 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           legacysupport 1.0
+
+name                gss
+version             1.0.3
+revision            1
+categories          security
+license             GPL-3+
+maintainers         nomaintainer
+description         GNU Generic Security Service Library
+long_description \
+   GSS is an implementation of the Generic Security Service Application \
+   Program Interface (GSS-API). GSS-API is used by network servers to \
+   provide security services, e.g., to authenticate SMTP/IMAP clients \
+   against SMTP/IMAP servers.
+
+platforms           darwin
+
+homepage            https://www.gnu.org/software/gss/
+master_sites        gnu
+checksums           rmd160  e20ee482f159f5ad9b6285f1302fa959e0139b79 \
+                    sha256  ff919ddc731531d65e27d7ababdc361aae05ada5f1a6dd60703d153307dcdeeb
+
+depends_build-append \
+                    port:pkgconfig
+
+depends_lib-append  port:libiconv \
+                    port:gettext
+
+set docdir          ${prefix}/share/doc/${name}
+
+configure.args      --docdir=${docdir} \
+                    --disable-kerberos5 \
+                    --disable-silent-rules \
+                    --with-libiconv-prefix=${prefix} \
+                    --with-libintl-prefix=${prefix}
+
+post-destroot {
+   xinstall -m 0755 -d ${destroot}${docdir}
+   xinstall -m 0644 -W ${worksrcpath}/doc gss.html gss.pdf gss.ps \
+      ${destroot}${docdir}
+}

@@ -1,0 +1,36 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim: fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+PortGroup           select 1.0
+
+name                py-asn1crypto
+version             1.2.0
+revision            0
+categories-append   devel
+platforms           darwin
+license             MIT
+supported_archs     noarch
+
+python.versions     27 34 35 36 37 38
+
+maintainers         {stromnov @stromnov} openmaintainer
+
+description         A fast, pure Python library for parsing and serializing ASN.1 structures.
+long_description    ${description}
+
+homepage            https://github.com/wbond/asn1crypto
+master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
+
+distname            ${python.rootname}-${version}
+
+checksums           rmd160  ce80628746096e1d62e81cf86e3bcb072634fde8 \
+                    sha256  87620880a477123e01177a1f73d0f327210b43a3cdbd714efcd2fa49a8d7b384 \
+                    size    116457
+
+if {${name} ne ${subport}} {
+    depends_build-append  \
+                        port:py${python.version}-setuptools
+
+    livecheck.type      none
+}

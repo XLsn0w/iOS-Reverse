@@ -1,0 +1,38 @@
+--- src/modules/macosx/module-coreaudio-device.c.old	2018-07-14 18:02:54.000000000 +0200
++++ src/modules/macosx/module-coreaudio-device.c	2018-07-17 06:40:04.000000000 +0200
+@@ -43,6 +43,7 @@
+ #include <pulsecore/thread.h>
+ #include <pulsecore/thread-mq.h>
+ #include <pulsecore/i18n.h>
++#include <pulsecore/namereg.h>
+ 
+ #include <CoreAudio/CoreAudio.h>
+ #include <CoreAudio/CoreAudioTypes.h>
+@@ -453,7 +454,12 @@ static int ca_device_create_sink(pa_modu
+         tmp = NULL;
+     }
+ 
+-    ca_sink->name = pa_strbuf_to_string_free(strbuf);
++    /* Clamp to PA_NAME_MAX and leave a "safety margin" for deduplication
++     * and other appended data. */
++    tmp = pa_strbuf_to_string_free(strbuf);
++    ca_sink->name = pa_xstrndup(tmp, PA_NAME_MAX - 20);
++    pa_xfree(tmp);
++    tmp = NULL;
+ 
+     pa_log_debug("Stream name is >%s<", ca_sink->name);
+ 
+@@ -587,7 +593,12 @@ static int ca_device_create_source(pa_mo
+         tmp = NULL;
+     }
+ 
+-    ca_source->name = pa_strbuf_to_string_free(strbuf);
++    /* Clamp to PA_NAME_MAX and leave a "safety margin" for deduplication
++     * and other appended data. */
++    tmp = pa_strbuf_to_string_free(strbuf);
++    ca_source->name = pa_xstrndup(tmp, PA_NAME_MAX - 20);
++    pa_xfree(tmp);
++    tmp = NULL;
+ 
+     pa_log_debug("Stream name is >%s<", ca_source->name);
+ 

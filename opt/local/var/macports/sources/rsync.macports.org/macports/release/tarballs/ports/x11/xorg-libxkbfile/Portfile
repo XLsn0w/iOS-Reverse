@@ -1,0 +1,33 @@
+PortSystem 1.0
+
+name		xorg-libxkbfile
+version		1.1.0
+revision        0
+categories	x11 devel
+license		X11
+maintainers	{jeremyhu @jeremyhu} openmaintainer
+description	X.org libxbfile
+homepage	https://www.x.org
+platforms	darwin macosx
+long_description XKB file handling routines
+master_sites	 xorg:individual/lib/
+
+distname	libxkbfile-${version}
+
+checksums       rmd160  e7315fef2836740fa4aa370418b697c29c4e56a1 \
+                sha256  758dbdaa20add2db4902df0b1b7c936564b7376c02a0acd1f2a331bd334b38c7 \
+                size    364678
+
+use_bzip2	yes
+use_parallel_build yes
+
+depends_build \
+	port:pkgconfig
+
+depends_lib \
+	port:xorg-libX11 \
+	port:xorg-xorgproto
+
+livecheck.type  regex
+livecheck.url   https://xorg.freedesktop.org/archive/individual/lib/?C=M&O=D
+livecheck.regex libxkbfile-(\\d+(?:\\.\\d+)*)

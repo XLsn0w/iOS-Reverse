@@ -1,0 +1,121 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           qmake5 1.0
+
+# Qt5.7 requires C++11 support
+PortGroup           cxx11 1.1
+
+name                gqrx
+maintainers         {michaelld @michaelld} openmaintainer
+
+description         Gqrx is a software defined radio (SDR) receiver using GNU Radio, OSMOSDR, and Qt5.
+long_description {Gqrx is a software defined radio receiver for Funcube Dongle (FCD), RTL2832U-based DVB-T devices (RTL-SDR), Universal Software Radio Peripherals (USRP) and Osmo SDR devices.  Gqrx is powered by GNU Radio and the Qt5 GUI toolkit.  Gqrx is free and open source software and anyone is invited to hack the source code to suit their needs.}
+
+categories          science comms
+license             GPL-3 BSD
+platforms           darwin macosx
+
+# common directory for storing downloaded tarballs
+dist_subdir         gqrx
+
+if {${subport} eq ${name}} {
+
+    github.setup    csete gqrx 2.11.5 v
+    revision        1
+    checksums       \
+        rmd160 b22320ee122d428ff7accc3053796d8ff303ae63 \
+        sha256 e3e98ac8d0cccdb26122a0b8030e40bae99fe76ab188918bbcc9e2cc5639ea37 \
+        size   1329109
+
+    patchfiles-append   patch-gqrx.pro.release.diff
+
+    # bump the epoch because I moved the version from 20160113 to 2.5.1
+    epoch           1
+
+    long_description ${long_description} ${subport} \
+provides the release version, which is typically updated every month or so.
+    conflicts       gqrx-devel
+
+}
+
+subport gqrx-devel {
+
+    github.setup csete gqrx 6e92a6a76ea623c62feb4b437137e5fa649e794c
+    version      20190413-[string range ${github.version} 0 7]
+    checksums    rmd160 726d46ba0df820577549cf7fbf5669f59082bc15 \
+                 sha256 7dcf542e7b37e57481153e4b7651a2165f83f1b9be29c347dcb37d16c9e515d4 \
+                 size   1329304
+    revision     0
+
+    patchfiles-append   patch-gqrx.pro.devel.diff
+
+    long_description    ${long_description}  \
+        This port is kept up with the Gqrx GIT 'master' branch, is typically updated weekly to monthly, and provides compatibility with the GNU Radio release 3.7 API: the gnuradio and gnuradio-devel ports.
+    conflicts           gqrx
+
+}
+
+# allow gqrx to work with gnuradio, gnuradio-devel, and gnuradio-next
+
+depends_lib-append  port:gr-osmosdr \
+    path:lib/libgnuradio-audio.dylib:gnuradio
+qt5.depends_component qtsvg
+
+# override githib PortGroup homepage setting
+
+homepage            http://gqrx.dk/
+
+post-patch {
+
+    # set install location
+
+    reinplace "s|@APPSDIR@|${qt_apps_dir}|g" ${worksrcpath}/gqrx.pro
+
+    # remove old version setting
+
+    reinplace "s|\[ #\]*VER =.*||g" ${worksrcpath}/gqrx.pro
+
+    # set version
+
+    if {${name} eq ${subport}} {
+        set VERSION_INFO "release-${version}"
+    } else {
+        set VERSION_INFO "git-[string range ${github.version} 0 7](${version})"
+    }
+
+    reinplace "s|\$\${VER}|MacPorts-${VERSION_INFO}|g" ${worksrcpath}/gqrx.pro
+
+    # set arch type(s)
+
+    set qt_arch_types {[string map {i386 x86} [get_canonical_archs]]}
+    reinplace "s|@ARCHES@|${qt_arch_types}|g" ${worksrcpath}/gqrx.pro
+
+}
+
+configure.post_args gqrx.pro
+
+post-configure {
+
+    # remove indirect dependency on Volk added by pkgconfig
+
+    reinplace "s|-lvolk ||g" ${worksrcpath}/Makefile
+
+}
+
+post-destroot {
+
+    # link the executable back to $qt_bins_dir, and, if $qt_dir is
+    # not ${prefix}, back to ${prefix}/bin too.
+
+    xinstall -m 755 -d ${destroot}${qt_bins_dir}
+    ln -s ${qt_apps_dir}/Gqrx.app/Contents/MacOS/Gqrx \
+        ${destroot}${qt_bins_dir}
+
+    if {${qt_dir} ne ${prefix}} {
+        xinstall -m 755 -d ${destroot}${prefix}/bin
+        ln -s ${qt_apps_dir}/Gqrx.app/Contents/MacOS/Gqrx \
+            ${destroot}${prefix}/bin
+    }
+}

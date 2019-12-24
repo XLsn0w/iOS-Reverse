@@ -1,0 +1,48 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           active_variants 1.1
+PortGroup           gobject_introspection 1.0
+
+name                libgnomekbd
+version             3.26.0
+set branch          [join [lrange [split ${version} .] 0 1] .]
+description         A GNOME library which manages keyboard configuration
+long_description    Libgnomekbd is ${description} and offers various \
+                    widgets related to keyboard configuration.
+maintainers         {devans @dbevans} openmaintainer
+categories          gnome
+license             LGPL-2+
+platforms           darwin
+homepage            https://www.gnome.org/
+
+master_sites        gnome:sources/${name}/${branch}/
+
+use_xz              yes
+
+checksums           rmd160  8677d45a1e3a62ec5584d69b7b01adc2578544c9 \
+                    sha256  ea3b418c57c30615f7ee5b6f718def7c9d09ce34637324361150744258968875
+
+depends_build       port:pkgconfig
+
+depends_lib         port:desktop-file-utils \
+                    port:gtk3 \
+                    port:libxklavier
+
+gobject_introspection yes
+
+# libgnomekbd/gkbd-keyboard-display.c uses gdk_set_allowed_backends ("x11")
+
+require_active_variants port:gtk3 x11
+
+configure.args      --x-includes=${prefix}/include \
+                    --x-libraries=${prefix}/lib \
+                    --disable-schemas-compile \
+                    --disable-silent-rules
+
+post-activate {
+    system "${prefix}/bin/update-desktop-database ${prefix}/share/applications"
+    system "${prefix}/bin/glib-compile-schemas ${prefix}/share/glib-2.0/schemas"
+}
+
+livecheck.type      gnome

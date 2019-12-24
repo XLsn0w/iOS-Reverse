@@ -1,0 +1,33 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         HTTP-Message 6.18
+platforms           darwin
+maintainers         nomaintainer
+license             {Artistic-1 GPL}
+supported_archs     noarch
+
+description         HTTP::Message - Representation of HTTP messages
+
+long_description    The HTTP-Message distribution contains classes useful for representing \
+                    the messages passed in HTTP style communication.  These are classes \
+                    representing requests, responses and the headers contained within them.
+
+checksums           rmd160  2c6fdbcaffa37785e912f60cac96ffa31cbf9588 \
+                    sha256  d060d170d388b694c58c14f4d13ed908a2807f0e581146cef45726641d809112 \
+                    size    81363
+
+if {${perl5.major} != ""} {
+    depends_build-append \
+                    port:p${perl5.major}-try-tiny
+
+    depends_lib-append \
+                    port:p${perl5.major}-encode-locale \
+                    port:p${perl5.major}-http-date \
+                    port:p${perl5.major}-io-html \
+                    port:p${perl5.major}-lwp-mediatypes \
+                    port:p${perl5.major}-uri
+}

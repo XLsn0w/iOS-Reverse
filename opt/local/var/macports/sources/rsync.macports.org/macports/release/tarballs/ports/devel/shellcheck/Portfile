@@ -1,0 +1,20 @@
+PortSystem          1.0
+PortGroup           haskell_stack 1.0
+PortGroup           github 1.0
+
+github.setup        koalaman shellcheck 0.7.0 v
+categories          devel haskell
+checksums           rmd160  cd0d426d77b49d94b3eecc5bed467f52f1211e54 \
+                    sha256  00d8d8481c98a58b9f060dab9c2de65dc891ad866b63c889df5afbe6ed0a0b9f \
+                    size    206753
+
+license             GPL-3+
+maintainers         {cal @neverpanic} openmaintainer
+platforms           darwin
+
+description         ShellCheck, a static analysis tool for shell scripts
+long_description    \
+    The goals of ShellCheck are: \
+    \n - To point out and clarify typical beginner's syntax issues, that causes a shell to give cryptic error messages. \
+    \n - To point out and clarify typical intermediate level semantic problems, that causes a shell to behave strangely and counter-intuitively. \
+    \n - To point out subtle caveats, corner cases and pitfalls, that may cause an advanced user's otherwise working script to fail under future circumstances.

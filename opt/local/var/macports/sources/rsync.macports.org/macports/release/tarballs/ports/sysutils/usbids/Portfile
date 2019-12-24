@@ -1,0 +1,38 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+github.setup        usbids usbids 632f481c6db5065170379d93242e862500e066b3
+name                usbids
+version             2019.08.21
+categories          sysutils
+platforms           darwin
+license             {GPL-2+ BSD}
+maintainers         {lbschenkel @lbschenkel} openmaintainer
+supported_archs     noarch
+
+description         The USB ID Repository
+long_description    This is a public repository of all known ID's used \
+                    in USB devices: ID's of vendors, devices, \
+                    subsystems and device classes. It is used in \
+                    various programs (e.g., The USB Utilities) to \
+                    display full human-readable names instead of \
+                    cryptic numeric codes.
+homepage            http://www.linux-usb.org/usb-ids.html
+
+checksums           rmd160  70167b2fdf52726bdd996508decc42d19064cdf1 \
+                    sha256  8c662407bd04bbce66f413f13e342e550e947d50de6f4d366c62346c0b6419b4 \
+                    size    225831
+
+use_configure       no
+build {}
+destroot {
+    exec /usr/bin/gzip -9 ${worksrcpath}/usb.ids
+    xinstall -m 644 ${worksrcpath}/usb.ids.gz ${destroot}${prefix}/share
+}
+
+livecheck.version   ${version}
+livecheck.type      regex
+livecheck.url       https://raw.githubusercontent.com/usbids/usbids/master/usb.ids
+livecheck.regex     {Version: (\d{4}\.\d{2}\.\d{2})}

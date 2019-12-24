@@ -1,0 +1,69 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+
+name                    nxcomp
+version                 3.5.99.20-1
+checksums               rmd160  40ee323e5e032ea58348772ab0cece5df6afc699 \
+                        sha256  6b934a98e6425b3790ab0fa56e6e1c7047e98ffdb381415afa755375ae1cb123 \
+                        size    757561
+
+categories              net
+platforms               darwin
+license                 GPL-2
+
+maintainers             {ionic @Ionic} openmaintainer
+
+description             nxcomp is the X compression library by NX
+long_description        nxcomp is a library compressing X commands to be passed over network \
+                        for use with the X2Go suite.
+
+homepage                https://wiki.x2go.org/doku.php/wiki:libs:nx-libs
+master_sites            https://code.x2go.org/releases/source/nx-libs/
+distname                nx-libs-${version}-lite
+
+universal_variant       yes
+supported_archs         ppc i386 x86_64
+
+use_autoreconf          yes
+
+depends_build-append    port:pkgconfig
+
+configure.cppflags-append \
+                        -I${prefix}/include
+
+configure.args-append   --disable-silent-rules
+
+if {${name} eq ${subport}} {
+    revision            0
+
+    depends_lib-append  port:libpng \
+                        path:lib/libjpeg.dylib:jpeg \
+                        port:zlib \
+                        port:xorg-xorgproto
+
+    worksrcdir          nx-libs-${version}/nxcomp
+
+    livecheck.url       [lindex ${master_sites} 0]
+    livecheck.regex     nx-libs-(\[0-9\]+(\\.\[0-9\]+)+(-\[0-9\]+)?)-lite
+} else {
+    livecheck.type      none
+}
+
+subport nxproxy {
+    revision            0
+
+    description         nxproxy is a compressing proxy for X
+    long_description    nxproxy is a library compressing X commands to be passed over network \
+                        for use with the X2Go suite.
+
+    installs_libs       no
+
+    depends_lib-append  port:nxcomp
+
+    worksrcdir          nx-libs-${version}/nxproxy
+
+    patchfiles-append   patch-nxproxy_src_Makefile.am-use-system-libXcomp.diff
+
+    configure.cppflags-append   -I${prefix}/include/nx
+}

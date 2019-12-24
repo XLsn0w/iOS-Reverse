@@ -1,0 +1,52 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+github.setup        ArtifexSoftware ghostpdl-downloads 950 gs
+name                jbig2dec
+version             0.17
+revision            0
+categories          graphics
+platforms           darwin
+license             AGPL-3+
+maintainers         nomaintainer
+
+description         A decoder implementation of the JBIG2 image \
+                    compression format
+long_description    JBIG2 is designed for lossy or lossless encoding \
+                    of 'bilevel' (1-bit monochrome) images at \
+                    moderately high resolution, and in particular \
+                    scanned paper documents. In this domain it can be \
+                    very efficient, offering compression ratios on the \
+                    order of 100:1. This is a decoder only \
+                    implementation, and its primary use is in \
+                    Ghostscript and MuPDF for decoding JBIG2 streams \
+                    in PDF files. Thus its primary focus is the set of \
+                    JBIG2 features supported in PDF.
+
+homepage            https://www.jbig2dec.com/
+github.tarball_from releases
+distname            ${name}-${version}
+
+checksums           rmd160  8900f7074e82ec851c82ba4f48619886496cd8db \
+                    sha256  f72bad7102638b31fa96be7492fb3d447a83d71c644cffd01f2a7ec52bd5fb72 \
+                    size    563083
+
+depends_build       port:autoconf
+
+post-destroot {
+    set docdir ${destroot}${prefix}/share/doc/${name}
+    xinstall -d ${docdir}
+    xinstall -m 644 -W ${worksrcpath} \
+            CHANGES \
+            COPYING \
+            LICENSE \
+            README \
+            ${docdir}
+}
+
+livecheck.type      regex
+livecheck.url       ${homepage}
+livecheck.version   ${version}
+livecheck.regex     /${name}-(\[0-9.\]+)${extract.suffix}

@@ -1,0 +1,48 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-axiom
+set gname           Axiom
+version             0.7.5
+license             MIT
+categories-append   databases
+platforms           darwin
+supported_archs     noarch
+
+maintainers         {devans @dbevans} openmaintainer
+
+description         Axiom is an object database, or alternatively, an object-relational \
+                    mapper, implemented on top of Python.
+
+long_description    ${description} \
+                    Its primary goal is to provide an object-oriented layer with the key \
+                    aspects of OOP (Object Oriented Programming), i.e. polymorphism and \
+                    message dispatch, without hindering the power of an RDBMS \
+                    (Relational DataBase Management System).
+
+homepage            https://pypi.python.org/pypi/${gname}
+master_sites        pypi:A/${gname}/
+
+distname            ${gname}-${version}
+
+checksums           rmd160  bdd7c0df230c2b2aaa1a9426f5976cc16e6c62cf \
+                    sha256  82b227cb8ab270d8132416ddfe2c98c662cf548f3f741d73ac077c52aa08af8d
+
+worksrcdir          ${gname}-${version}
+
+python.default_version  27
+python.versions     27
+
+if {${name} ne ${subport}} {
+    depends_build-append    port:py${python.version}-setuptools
+    depends_lib-append      port:py${python.version}-epsilon \
+                            port:py${python.version}-sqlite \
+                            port:py${python.version}-twisted
+    livecheck.type          none
+} else {
+    livecheck.type          regex
+    livecheck.url           ${homepage}
+    livecheck.regex         "${gname} (\\d+(?:\\.\\d+)*)"
+}

@@ -1,0 +1,33 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           clang_dependency 1.0
+
+name                libunistring
+version             0.9.10
+categories          textproc
+platforms           darwin
+license             GPL-3
+maintainers         nomaintainer
+description         library for manipulating Unicode strings
+long_description    Text files are nowadays usually encoded in Unicode, and may consist of \
+                    very different scripts – from Latin letters to Chinese Hanzi –, with many \
+                    kinds of special characters – accents, right-to-left writing marks, \
+                    hyphens, Roman numbers, and much more. But the POSIX platform APIs for \
+                    text do not contain adequate functions for dealing with particular \
+                    properties of many Unicode characters. In fact, the POSIX APIs for text \
+                    have several assumptions at their base which don't hold for Unicode text. \
+                    This library provides functions for manipulating Unicode strings and for \
+                    manipulating C strings according to the Unicode standard.
+
+homepage            https://www.gnu.org/software/libunistring/
+master_sites        gnu
+
+checksums           rmd160  d64da9245ed843c62d69c76498146bc87787c37d \
+                    sha256  a82e5b333339a88ea4608e4635479a1cfb2e01aafb925e1290b65710d43f610b \
+                    size    3744814
+
+depends_build       bin:perl:perl5 \
+                    port:texinfo
+
+depends_lib         port:libiconv

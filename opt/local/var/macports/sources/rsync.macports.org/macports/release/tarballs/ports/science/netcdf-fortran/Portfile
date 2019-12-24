@@ -1,0 +1,68 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem                  1.0
+PortGroup                   muniversal 1.0
+PortGroup                   mpi 1.0
+PortGroup                   github 1.0
+# Although CMakeLists.txt is provided nf-config is not yet ported.
+
+# netcdf-fortran does not require the fortran interface of hdf5.
+# enforcing hdf5 variant does not allow installation of
+# hdf5+cxx (w/o a fortran variant) and netcdf-fortran.
+#mpi.enforce_variant         hdf5
+
+github.setup                Unidata netcdf-fortran 4.4.5 v
+revision                    5
+maintainers                 {takeshi @tenomoto} openmaintainer
+platforms                   darwin
+categories                  science
+license                     Permissive
+
+description                 NetCDF Fortran Library
+long_description \
+    The Unidata network Common Data Form (netCDF) is an interface \
+    for scientific data access and a set of freely-distributed \
+    software libraries that provide an implementation of the interface. \
+    The netCDF library also defines a machine-independent format for \
+    representing scientific data. Together, the interface, library, \
+    and format support the creation, access, and sharing of scientific data. \
+    This software package provides Fortran application interfaces \
+    for accessing netCDF data.
+
+checksums           rmd160  5ba175668f5a6806ab44fc08f92b80a6caa0ced8 \
+                    sha256  a34f6f69eabdee9e7bcaca80c1e532b5e8afabf936bd511538d7e09e972949e8 \
+                    size    1344715
+
+compilers.choose    f77 f90 fc
+mpi.setup           require_fortran
+
+depends_lib         port:netcdf
+
+# Fortran compilers can not cross-compile
+if {${os.arch} eq "i386"} {
+    set universal_archs_supported "i386 x86_64"
+} else {
+    set universal_archs_supported "ppc ppc64"
+}
+
+if {[variant_isset universal]} {
+    patchfiles-append   patch-Makefile.in.diff
+}
+
+post-patch {
+    if {[variant_isset g95]} {
+        reinplace "s|lt_cv_ld_force_load=yes|lt_cv_ld_force_load=no|" ${worksrcpath}/configure
+    }
+}
+
+configure.cppflags-append   -DNDEBUG \
+                            -DpgiFortran
+configure.cflags-append     -fno-common
+if {[variant_isset g95]} {
+    configure.fflags-append     -fno-second-underscore
+    configure.fcflags-append    -fno-second-underscore
+    configure.ldflags-append    -lf95
+}
+
+test.run                    yes
+test.target                 check

@@ -1,0 +1,32 @@
+PortSystem 1.0
+
+name                    dvi2bitmap
+version                 1.0
+categories              graphics
+license                 GPL-2+
+platforms               darwin
+maintainers             nomaintainer
+description             Utility to convert TeX DVI files directly to bitmaps
+long_description        dvi2bitmap is a utility to convert TeX DVI files \
+                        directly to bitmaps, without going through the \
+                        complicated (and slow!) route of conversion via \
+                        PostScript and PNM. It consists of a library plus \
+                        an application.
+homepage                http://dvi2bitmap.sourceforge.net/
+master_sites            sourceforge
+
+checksums               rmd160  81321103d7aca3b648f808377c2e6b4f6c001f12 \
+                        sha256  f40aca3b0cde343fa0b87408f811626832b1b154e95bcbd4e349c2b5c1d48b6d
+
+depends_lib             port:libpng port:zlib
+
+patchfiles              patch-Makefile.in.diff \
+                        patch-version.sed.diff
+
+configure.args          --mandir=${prefix}/share/man \
+                        --with-png=${prefix} \
+                        --without-kpathsea
+
+livecheck.type          regex
+livecheck.url           ${homepage}
+livecheck.regex         This is version (\\d+(?:\\.\\d+)*).

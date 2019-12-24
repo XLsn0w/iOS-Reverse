@@ -1,0 +1,54 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-asteval
+version             0.9.16
+revision            0
+
+categories-append   math
+platforms           darwin
+supported_archs     noarch
+license             MIT
+maintainers         {reneeotten @reneeotten} openmaintainer
+
+description         Safe, minimalistic evaluator of python expression using ast module
+long_description    ASTEVAL is a safe(ish) evaluator of Python expressions and \
+                    statements, using Python's ast module. The idea is to provide \
+                    a simple, safe, and robust miniature mathematical language that \
+                    can handle user-input. The emphasis here is on mathematical \
+                    expressions, and so many functions from numpy are imported and \
+                    used if available.
+
+homepage            https://github.com/newville/asteval
+master_sites        pypi:a/asteval/
+distname            asteval-${version}
+
+checksums           rmd160  aa877e82e78d51066d512b5593ca639a320b2e2a \
+                    sha256  bc71bb4f9ad3ef8ccdc3b9a711e094fb00d768172cb7ff9a15773673aac9e0cc \
+                    size    53842
+
+python.versions     27 35 36 37 38
+
+if {${subport} ne ${name}} {
+    depends_build-append \
+                    port:py${python.version}-setuptools
+
+    depends_test-append \
+                    port:py${python.version}-pytest
+
+    test.run        yes
+    test.cmd        py.test-${python.branch}
+    test.target
+    test.env        PYTHONPATH=${worksrcpath}/build/lib
+
+    post-destroot {
+        set docdir ${prefix}/share/doc/${subport}
+        xinstall -d ${destroot}${docdir}
+        xinstall -m 0644 -W ${worksrcpath} README.rst INSTALL \
+            LICENSE ${destroot}${docdir}
+    }
+
+    livecheck.type  none
+}

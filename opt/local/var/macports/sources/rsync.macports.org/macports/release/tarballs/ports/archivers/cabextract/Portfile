@@ -1,0 +1,36 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                cabextract
+version             1.9.1
+revision            0
+checksums           rmd160  e102e94846f7fe21ad5fbde3e2be542caba58c36 \
+                    sha256  afc253673c8ef316b4d5c29cc4aa8445844bee14afffbe092ee9469405851ca7 \
+                    size    469369
+
+categories          archivers compression sysutils
+platforms           darwin
+maintainers         {ryandesign @ryandesign} openmaintainer
+license             GPL-2+
+
+description         Extract files from Microsoft cabinet files
+
+long_description    cabextract can extract Microsoft cabinet files, also \
+                    called .CAB files, on *nix systems.  cabextract supports \
+                    all special features and all compression formats of \
+                    Microsoft cabinet files.
+
+homepage            https://www.cabextract.org.uk
+master_sites        ${homepage}
+
+depends_lib         port:libiconv
+
+test.run            yes
+test.target         check
+
+post-destroot {
+    set docdir ${prefix}/share/doc/${subport}
+    xinstall -d ${destroot}${docdir}
+    xinstall -m 0644 -W ${worksrcpath} AUTHORS COPYING ChangeLog NEWS README TODO ${destroot}${docdir}
+}

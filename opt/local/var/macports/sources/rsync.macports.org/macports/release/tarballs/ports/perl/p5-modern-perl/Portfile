@@ -1,0 +1,19 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Modern-Perl 1.20190727 ../../authors/id/C/CH/CHROMATIC
+license             {Artistic-1 GPL}
+maintainers         {devans @dbevans} openmaintainer
+description         enable all of the features of Modern Perl with one import
+long_description    ${description}
+
+platforms           darwin
+
+checksums           rmd160  eab944f8db55457264a79b4766199a3657c23fe9 \
+                    sha256  2e69d7ab7e4a53153e686c25547ad914e7464d4e5604b8851931a6e63fc51b21 \
+                    size    14826
+
+supported_archs     noarch

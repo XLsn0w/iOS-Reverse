@@ -1,0 +1,69 @@
+PortSystem          1.0
+PortGroup           compiler_blacklist_versions 1.0
+
+name                spot
+version             2.8.2
+revision            0
+categories          science math
+maintainers         {mmoll @mamoll} openmaintainer
+description         Spot is an object-oriented model checking library written in C++.
+long_description    ${description}
+homepage            https://spot.lrde.epita.fr/index.html
+platforms           darwin
+license             GPL-3
+master_sites        http://www.lrde.epita.fr/dload/spot/
+checksums           rmd160  d11e2c622bf006ee1e1256531975b77139e07da7 \
+                    sha256  88ff7e40c2fbf029196249566bf670806443d4770d814b9cd2e98fa4a817990a \
+                    size    7535145
+depends_lib-append  port:boost
+
+compiler.cxx_standard 2014
+configure.args-append --disable-python
+
+set pythons_suffixes {35 36 37 38}
+
+set pythons_ports {}
+foreach s ${pythons_suffixes} {
+    lappend pythons_ports python${s}
+}
+
+proc python_dir {} {
+    global pythons_suffixes
+    foreach s ${pythons_suffixes} {
+        if {[variant_isset python${s}]} {
+            set p python[string index ${s} 0].[string index ${s} 1]
+            return [file normalize [exec ${p} -c "import sys; print(sys.prefix)"]/lib/${p}/site-packages]
+        }
+    }
+    error "Python support not enabled."
+}
+
+foreach s ${pythons_suffixes} {
+    set p python${s}
+    set v [string index ${s} 0].[string index ${s} 1]
+    set i [lsearch -exact ${pythons_ports} ${p}]
+    set c [lreplace ${pythons_ports} ${i} ${i}]
+    set packagepath ${destroot}${frameworks_dir}/Python.framework/Versions/${v}/lib/python${v}
+    variant ${p} description "Use Python ${v} for python bindings" conflicts {*}${c} "
+        depends_lib-append      port:${p}
+        configure.env-append    PYTHON=${prefix}/bin/python${v}
+        configure.args-delete   --disable-python
+        post-destroot {
+            file mkdir ${destroot}${frameworks_dir}/Python.framework/Versions/${v}/lib/python${v}
+            move ${destroot}${prefix}/lib/python${v}/site-packages ${packagepath}/site-packages
+        }
+    "
+}
+
+# enable one python variant so that the python bindings can be compiled
+set selected_python python37
+foreach s ${pythons_suffixes} {
+    if {[variant_isset python${s}]} {
+        set selected_python python${s}
+    }
+}
+default_variants +${selected_python}
+
+livecheck.type  regex
+livecheck.url   ${master_sites}
+livecheck.regex ${name}-(\[0-9.\]+).tar.gz

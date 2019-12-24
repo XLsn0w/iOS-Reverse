@@ -1,0 +1,55 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem      1.0
+
+name            libpaper
+set mainversion 1.1.28
+# Keep in case need again in the future
+#set nmuversion  5
+#set realversion ${mainversion}+nmu${nmuversion}
+#version         ${mainversion}.${nmuversion}
+set realversion ${mainversion}
+version         ${mainversion}
+categories      print
+license         GPL-2
+maintainers     nomaintainer
+platforms       darwin
+description     A library providing routines for paper size management
+long_description \
+                The paper library and accompanying files are intended \
+                to provide a simple way for applications to take \
+                actions based on a system- or user-specified paper size.
+
+homepage        https://packages.qa.debian.org/libp/libpaper.html
+master_sites    debian:libp/${name}/
+
+distname        ${name}_${realversion}
+worksrcdir      ${name}-${realversion}
+
+checksums       rmd160  36b669b51e81e1483232f73726952491304ab34a \
+                sha256  c8bb946ec93d3c2c72bbb1d7257e90172a22a44a07a07fb6b802a5bb2c95fddc \
+                size    42356
+
+post-patch {
+    set fd [open [file join ${worksrcpath}/lib paperspecs] a 0644]
+    # additional paper sizes
+    foreach {n x y} {jisb0 2920 4127
+                     jisb1 2064 2920
+                     jisb2 1460 2064
+                     jisb3 1032 1460
+                     jisb4  729 1032
+                     jisb5  516  729
+                     jisb6  363  516} {
+        puts ${fd} "${n} ${x} ${y}"
+    }
+    close ${fd}
+}
+
+use_autoreconf  yes
+
+configure.args  --mandir=${prefix}/share/man    \
+                --sysconfdir=${prefix}/etc
+
+livecheck.type      regex
+livecheck.version   ${realversion}
+livecheck.regex     {"stable">([^<]+)}

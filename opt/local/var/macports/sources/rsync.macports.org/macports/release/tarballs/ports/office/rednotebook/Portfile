@@ -1,0 +1,46 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+                    
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                rednotebook
+version             2.3
+categories-append   office
+license             GPL-2+
+maintainers         nomaintainer
+description         RedNotebook is a modern desktop journal
+long_description    ${description}. It lets you format, tag and search \
+                    your entries. You can also add pictures, links and customizable \
+                    templates, spell check your notes, and export to plain text, \
+                    HTML, Latex or PDF.
+
+platforms           darwin
+supported_archs     noarch
+
+homepage            http://rednotebook.sourceforge.net
+master_sites        sourceforge
+
+checksums           rmd160  3109b88301c2e48001503971ab6315f131d736e7 \
+                    sha256  4ab786080b0dd0e4b9b6d580f7d7d2cc7bd1e3832c9dbebb1b2efbea81eb2cc5 \
+                    size    517130
+
+python.default_version 36 
+
+depends_build-append \
+                    port:py${python.version}-setuptools
+                    
+depends_lib-append  port:gtk3 \
+                    path:lib/pkgconfig/webkit2gtk-4.0.pc:webkit2-gtk \
+                    port:python${python.version} \
+                    port:py${python.version}-enchant\
+                    port:py${python.version}-gobject3 \
+                    port:py${python.version}-yaml
+
+post-destroot {
+   move {*}[glob ${destroot}${python.prefix}/share/*] \
+      ${destroot}${prefix}/share
+   xinstall -m 644 -W ${worksrcpath} CHANGELOG LICENSE README.md \
+      ${destroot}${prefix}/share/doc/${name}
+}
+
+livecheck.regex     /${name}-(\[0-9.\]+)${extract.suffix}

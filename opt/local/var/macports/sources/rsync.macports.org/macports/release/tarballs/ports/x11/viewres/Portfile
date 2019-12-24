@@ -1,0 +1,36 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                viewres
+version             1.0.6
+revision            0
+categories          x11 graphics
+license             X11
+maintainers         {jeremyhu @jeremyhu} openmaintainer
+description         Graphical class browser for Xt
+long_description \
+   The viewres program displays a tree showing the widget class hierarchy \
+   of the Athena Widget Set.  Each node in the tree can be expanded to show \
+   the resources that the corresponding class adds (i.e. does not inherit \
+   from its parent) when a widget is created.  This application allows the \
+   user to visually examine the structure and inherited resources for the \
+   Athena Widget Set.
+
+platforms           darwin
+
+homepage            https://www.x.org/
+master_sites        xorg:individual/app/
+use_bzip2           yes
+
+checksums           rmd160  c3a88c997708c9b8db84c94bd690bacc433178e9 \
+                    sha256  11c15db02066c1d5fc3febf9b185d16c1112f87e37c4b101a484dcefffb80934 \
+                    size    135200
+
+depends_build       port:pkgconfig
+
+depends_lib         port:xorg-libXaw
+
+livecheck.type      regex
+livecheck.regex     ${name}-(\[\\d.\]+)${extract.suffix}
+livecheck.url       https://xorg.freedesktop.org/archive/individual/app/?C=M&O=D

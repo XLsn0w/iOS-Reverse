@@ -1,0 +1,34 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         PPI 1.270
+license             {Artistic-1 GPL}
+platforms           darwin
+maintainers         nomaintainer
+supported_archs     noarch
+
+description         Parse, Analyze and Manipulate Perl (without perl)
+long_description    ${description}
+
+checksums           rmd160  539c7a6bdf02430a99832c41e864af6d0b4a8783 \
+                    sha256  622a698c781bb85d2bdf7bbfe040fe70d33b79774c9ae01fce2375dc73faf457 \
+                    size    251100
+
+if {${perl5.major} != ""} {
+    depends_build-append \
+                    port:p${perl5.major}-class-inspector \
+                    port:p${perl5.major}-encode \
+                    port:p${perl5.major}-test-deep \
+                    port:p${perl5.major}-test-nowarnings \
+                    port:p${perl5.major}-test-object \
+                    port:p${perl5.major}-test-subcalls
+
+    depends_lib-append \
+                    port:p${perl5.major}-clone \
+                    port:p${perl5.major}-io-string \
+                    port:p${perl5.major}-params-util \
+                    port:p${perl5.major}-task-weaken
+}

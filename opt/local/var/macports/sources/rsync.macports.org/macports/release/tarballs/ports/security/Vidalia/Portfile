@@ -1,0 +1,37 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           cmake 1.0
+PortGroup           qt4 1.0
+
+name                Vidalia
+version             0.2.15
+categories          security net aqua
+maintainers         nomaintainer
+description         Vidalia is a controller GUI for the Tor software
+long_description    Vidalia is a cross-platform controller GUI for the Tor software, \
+                    built using the Qt framework. Vidalia runs on most platforms \
+                    supported by Qt 4.2 or later
+
+platforms           darwin
+license             {GPL-2+ OpenSSLException}
+homepage            https://www.torproject.org/projects/vidalia.html.en
+master_sites        https://www.torproject.org/dist/vidalia/
+distname            vidalia-${version}
+
+checksums           rmd160  26dccaba3be689ab815f35ebc07b060b9581a583 \
+                    sha256  4598fdd9fb8e1d6fcdd02b908f331dba6e34ffdd72046ab94c2ef091a8c18809
+
+depends_lib-append  port:tor
+
+patchfiles          patch-TorSettings.h.diff
+
+configure.args      ${qt_cmake_defines}
+
+destroot {
+    file copy ${worksrcpath}/src/vidalia/Vidalia.app ${destroot}${applications_dir}/Vidalia.app
+}
+
+livecheck.type      regexm
+livecheck.url       ${homepage}
+livecheck.regex     The most recent stable release is: (\[\\d\.\]+)

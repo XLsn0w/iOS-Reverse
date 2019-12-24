@@ -1,0 +1,60 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Devel-NYTProf 6.06
+revision            1
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+
+description         Powerful feature-rich perl source code profiler
+long_description    Devel::NYTProf is a powerful feature-rich perl source code profiler. \
+                    \n  o Performs per-line statement profiling for fine detail \
+                    \n  o Performs per-subroutine statement profiling for overview \
+                    \n  o Performs per-block statement profiling (the first profiler to do so) \
+                    \n  o Accounts correctly for time spent after calls return \
+                    \n  o Performs inclusive and exclusive timing of subroutines \
+                    \n  o Subroutine times are per calling location (a powerful feature) \
+                    \n  o Can profile compile-time activity, just run-time, or just END time \
+                    \n  o Uses novel techniques for efficient profiling \
+                    \n  o Sub-microsecond (100ns) resolution on systems with clock_gettime() \
+                    \n  o Very fast - the fastest statement and subroutine profilers for perl \
+                    \n  o Handles applications that fork, with no performance cost \
+                    \n  o Immune from noise caused by profiling overheads and I/O \
+                    \n  o Program being profiled can stop/start the profiler \
+                    \n  o Generates richly annotated and cross-linked html reports \
+                    \n  o Trivial to use with mod_perl - add one line to httpd.conf \
+                    \n  o Includes an extensive test suite \
+                    \n  o Tested on very large codebases \
+                    \n\
+                    \nNYTProf is effectively two profilers in one: a statement profiler, and a subroutine profiler.
+
+checksums           rmd160  cc3e2193f263de9a43c612688649fb1e83a14219 \
+                    sha256  a14227ca79f1750b92cc7b8b0a5806c92abc4964a21a7fb100bd4907d6c4be55 \
+                    size    468188
+
+platforms           darwin
+
+if {${perl5.major} != ""} {
+    depends_build-append \
+                    port:p${perl5.major}-sub-name
+
+    depends_lib-append \
+                    port:p${perl5.major}-file-which \
+                    port:p${perl5.major}-json-maybexs \
+                    port:p${perl5.major}-test-differences
+
+    depends_test-append \
+                    port:p${perl5.major}-moose \
+                    port:p${perl5.major}-test-pod \
+                    port:p${perl5.major}-test-pod-coverage
+
+    patchfiles      patch-Makefile.PL.diff \
+                    patch-bin-nytprofhtml.diff
+
+    post-patch {
+        reinplace "s|__MP_CPP__|${configure.cpp}|" ${worksrcpath}/Makefile.PL
+        reinplace "s|__MP_PERL5_MAJOR__|${perl5.major}|" ${worksrcpath}/bin/nytprofhtml
+    }
+}

@@ -1,0 +1,37 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+github.setup        kkos oniguruma 6.9.3 v
+revision            0
+name                oniguruma6
+maintainers         {mps @Schamschula} openmaintainer
+categories          devel
+
+license             BSD
+platforms           darwin
+
+description         A regular expressions library.
+long_description    Oniguruma is a regular expressions library in which \
+                    different character encoding can be specified for every \
+                    expression. Supports Unicode Porperty/Script.
+
+checksums           rmd160  aabeb3a0cc5af8d6fe2d1ef162b9d501f36ced41 \
+                    sha256  4ad934dc7d3fdb46ae4a6f2e75e91a954553206502a5a045482918517c0d7372 \
+                    size    570911
+
+conflicts           oniguruma5
+
+use_autoreconf      yes
+
+post-destroot {
+    set dest_doc ${destroot}${prefix}/share/doc/oniguruma
+    xinstall -d ${dest_doc}
+    xinstall -m 644 -W ${worksrcpath} \
+        AUTHORS COPYING HISTORY README index.html \
+        ${dest_doc}
+    copy ${worksrcpath}/doc ${dest_doc}
+}
+
+github.livecheck.regex  {(\d\.\d+(\.\d+)?(?!_))}

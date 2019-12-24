@@ -1,0 +1,54 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem 1.0
+PortGroup           compiler_blacklist_versions 1.0
+PortGroup           cxx11 1.1
+PortGroup           github 1.0
+
+github.setup        bredelings BAli-Phy 3.0.3
+name                bali-phy
+revision            0
+description         Estimation of phylogeny and multiple alignment via MCMC
+long_description    Estimation of phylogeny and multiple alignment via MCMC \
+                    BAli-Phy that estimates multiple sequence alignments and \
+                    evolutionary trees from DNA, amino acid, or codon sequences.\
+                    BAli-Phy uses MCMC and Bayesian  methods to estimate \
+                    evolutionary trees, positive selection, and branch lengths \
+                    while averaging over alternative alignments. \
+                     \
+                    BAli-Phy can also estimate phylogenies from a fixed \
+                    alignment (like MrBayes and BEAST) using substitution \
+                    models like GTR+gamma.  BAli-Phy automatically estimates \
+                    relative rates for each gene.
+categories          science
+platforms           darwin
+license             GPL-2+
+maintainers         {gmail.com:benjamin.redelings @bredelings} openmaintainer
+homepage            http://www.bali-phy.org/
+
+checksums           rmd160  60c6b2da4f196f68b958e3360f9415fb689729bc \
+                    sha256  4cdfb16b50c4a06e1cf6691d22cc3a5401e0cdb55dbb0ff379c779eb660e060d \
+                    size    12455696
+
+depends_build-append \
+                    port:pkgconfig \
+                    port:automake \
+                    port:autoconf \
+                    port:libtool \
+                    port:eigen3
+
+depends_lib         port:boost \
+                    path:lib/pkgconfig/cairo.pc:cairo
+
+patchfiles          scripts.patch
+
+# Needs support for -std=c++14.
+compiler.blacklist-append \
+                    {clang < 602}
+
+# build in source directory until we switch to meson
+pre-configure       { system -W ${worksrcpath} "./bootstrap.sh"}
+
+configure.args      --with-system-boost --with-system-eigen
+configure.env-append \
+                     BOOST_SUFFIX=-mt

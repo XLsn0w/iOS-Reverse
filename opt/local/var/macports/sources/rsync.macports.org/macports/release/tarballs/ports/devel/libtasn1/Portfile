@@ -1,0 +1,35 @@
+# -*- Mode: Tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:et:sw=4:ts=4:sts=4
+
+PortSystem      1.0
+
+name            libtasn1
+version         4.14
+revision        0
+categories      devel
+# libs are LGPL; executables, examples and tests are GPL
+license         {LGPL-2.1+ GPL-3+}
+maintainers     {mps @Schamschula} openmaintainer
+description     ASN.1 structure parser library
+homepage        https://www.gnu.org/software/libtasn1/
+platforms       darwin
+
+long_description \
+    The libtasn1 library was developed for ASN1 (Abstract Syntax Notification \
+    One) structures management.
+
+master_sites    gnu
+
+checksums       rmd160  bb9ed36d7d07b08fd1f7cb6d42e7a63f949b0721 \
+                sha256  9e604ba5c5c8ea403487695c2e407405820d98540d9de884d6e844f9a9c5ba08 \
+                size    1771184
+
+# Fix for 4.9 build failure.
+# See https://lists.gnu.org/archive/html/help-libtasn1/2016-07/msg00001.html
+configure.args  --disable-gcc-warnings
+
+test.run        yes
+test.target     check
+
+livecheck.type  regex
+livecheck.url   https://ftp.gnu.org/pub/gnu/libtasn1/
+livecheck.regex ${name}-(\\d+(\\.\\d+)*)

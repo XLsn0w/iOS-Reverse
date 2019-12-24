@@ -1,0 +1,62 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+github.setup        anholt libepoxy 1.5.3
+license             MIT permissive
+categories          graphics
+maintainers         {devans @dbevans} openmaintainer
+platforms           darwin
+
+description         Epoxy is a library for handling OpenGL function \
+                    pointer management for you
+
+long_description    ${description}
+
+checksums           rmd160  1c8d31ef5d04586e4d56081ca27d18c146d46c68 \
+                    sha256  d301e7d37258c07cff94f84132fe668a2d43f4a0db29166398367b4e57060e60 \
+                    size    326825
+
+# Yes, mesa and xorg-libX11 are *build* dependencies.  The library will function correctly
+# if they are not present because it loads mesa dynamically only when GLX is used.  When
+# OpenGL.framework is used, there is no need to have mesa at runtime.
+#
+# Clients of this library must link mesa directly and have it listed as their dependency
+# in order to use mesa with libepoxy.
+
+depends_build       port:pkgconfig \
+                    port:autoconf \
+                    port:automake \
+                    port:libtool \
+                    port:xorg-util-macros \
+                    port:mesa \
+                    port:xorg-libX11
+
+patchfiles          prefix.patch
+
+post-patch {
+    reinplace "s|@PREFIX@|${prefix}|g" ${worksrcpath}/src/dispatch_common.c
+}
+
+configure.cmd       ./autogen.sh
+
+configure.args      --disable-silent-rules \
+                    --enable-glx
+
+variant python27 conflicts python36 python37 description {build with python 2.7} {
+    depends_build-append    port:python27
+    configure.python        ${prefix}/bin/python2.7
+}
+variant python36 conflicts python27 python37 description {build with python 3.6} {
+    depends_build-append    port:python36
+    configure.python        ${prefix}/bin/python3.6
+}
+variant python37 conflicts python27 python36 description {build with python 3.7} {
+    depends_build-append    port:python37
+    configure.python        ${prefix}/bin/python3.7
+}
+
+if {![variant_isset python27] && ![variant_isset python37]} {
+    default_variants-append +python36
+}

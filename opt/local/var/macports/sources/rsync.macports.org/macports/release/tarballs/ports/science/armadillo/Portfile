@@ -1,0 +1,70 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem                      1.0
+PortGroup                       cmake 1.0
+PortGroup                       compiler_blacklist_versions 1.0
+PortGroup                       mpi 1.0
+
+name                            armadillo
+version                         9.800.1
+revision                        0
+categories                      science
+platforms                       darwin
+maintainers                     {mps @Schamschula} openmaintainer
+license                         Apache-2
+
+description                     Armadillo C++ linear algebra library
+
+long_description                Armadillo is a C++ linear algebra library (matrix maths) \
+                                aiming towards a good balance between speed and ease of use. \
+                                Integer, floating point and complex numbers are supported, \
+                                as well as a subset of trigonometric and statistics functions. \
+                                Various matrix decompositions are provided through optional \
+                                integration with LAPACK or high-performance LAPACK-compatible \
+                                libraries.
+
+homepage                        http://arma.sf.net/
+master_sites                    sourceforge:project/arma
+
+use_xz                          yes
+
+checksums                       rmd160  217d66a6ed1a2dde86bfc54c93debb68c9b8714c \
+                                sha256  ebcf57e031465848d2110d2d9f0b09a3bfd31d7e117327e6142935f2e783daee \
+                                size    4713172
+
+depends_build-append            port:pkgconfig
+
+depends_lib-append              port:hdf5
+
+cmake.out_of_source             yes
+
+mpi.setup
+mpi.enforce_variant             hdf5
+ 
+configure.args-append           -DARPACK_LIBRARY=
+
+variant arpack description {compile with ARPACK support} {
+    depends_lib-append          port:arpack
+    configure.args-delete       -DARPACK_LIBRARY=
+}
+
+variant superlu description {compile with SuperLU support} {
+    depends_lib-append          port:superlu
+    configure.args-append       -DARMA_USE_SUPERLU=ON
+}
+
+# Fix https://trac.macports.org/ticket/59173,
+# also see https://trac.macports.org/ticket/56554
+if {[variant_isset gcc44] || [variant_isset gcc45] || [variant_isset gcc46] || \
+    [variant_isset gcc47] || [variant_isset gcc48] || [variant_isset gcc49] || \
+    [variant_isset gcc5] || [variant_isset gcc6] || [variant_isset gcc7] || \
+    [variant_isset gcc8] || [variant_isset gcc9]} {
+    configure.cxx_stdlib        libstdc++
+}
+
+# Snow Leopard (and older) will fail to build with the error "Need a newer compiler"
+compiler.blacklist-append       *gcc-3.* *gcc-4.0 *gcc-4.2 {clang <= 211.10.1}
+
+livecheck.type                  regex
+livecheck.url                   ${homepage}download.html
+livecheck.regex                 /${name}-(\[0-9.\]+)${extract.suffix}

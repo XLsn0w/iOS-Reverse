@@ -1,0 +1,38 @@
+PortSystem 1.0
+PortGroup python 1.0
+
+set realname        empy
+name                py-${realname}
+version             3.3.4
+maintainers         openmaintainer {mmoll @mamoll}
+license             LGPL
+platforms           darwin freebsd
+description         powerful and robust templating system for python
+long_description    py-empy is a system for embedding Python expressions \
+                    and statements in template text. It takes an EmPy \
+                    source file, processes it, and produces output. This \
+                    is accomplished via expansions, which are special \
+                    signals to the py-empy system and are set off by a \
+                    special prefix.
+
+homepage            http://www.alcyone.com/software/empy/
+master_sites        ${homepage}
+distname            empy-${version}
+checksums           rmd160  64c061e8a8d4c4f3978e6c166ba4cdf484f2641c \
+                    sha256  9126211471fc7ff83fdd40beca93eb6de5681758fbe68b4cf8af6326259df1b1 \
+                    size    138495
+
+
+python.versions     27 35 36 37 38
+python.default_version 27
+
+if {${name} eq ${subport}} {
+    livecheck.type      regex
+    livecheck.url       ${homepage}
+    livecheck.regex     The current version of empy is (\[0-9.\]+\[0-9\])
+} else {
+    post-destroot {
+        file copy ${worksrcpath}/doc ${destroot}${prefix}/share/doc/${subport}
+    }
+    livecheck.type      none
+}

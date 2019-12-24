@@ -1,0 +1,13 @@
+--- Makefile.orig	2015-08-09 16:36:50.000000000 -0500
++++ Makefile	2016-12-26 15:26:20.000000000 -0600
+@@ -32,8 +32,8 @@
+ # for linux and Apple OS X
+ CC = gcc
+ CLDFLAGS = -g
+-CFLAGS = $(LIBINC) $(CLDFLAGS) -O2 -Wall -I$(MOTIFI) -I/opt/X11/include
+-LDFLAGS = $(LIBLNK) $(CLDFLAGS) -L$(MOTIFL) -L/opt/X11/lib
++CFLAGS = $(LIBINC) $(CLDFLAGS) -O2 -Wall -I$(MOTIFI)
++LDFLAGS = $(LIBLNK) $(CLDFLAGS) -L$(MOTIFL)
+ XLIBS = -lXm -lXp -lXt -lXext -lXmu -lX11
+ LIBS = $(XLIBS) $(LIBLIB) -lm
+ 

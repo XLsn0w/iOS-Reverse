@@ -1,0 +1,35 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-certifi
+version             2019.09.11
+set distversion     [regsub -all {(\.)0} ${version} {\1}]
+revision            0
+categories-append   devel net
+platforms           darwin
+license             {MPL-1.1 GPL-2+ LGPL-2.1+}
+supported_archs     noarch
+
+python.versions     27 34 35 36 37 38
+
+maintainers         {stromnov @stromnov} openmaintainer
+
+description         Python package for providing Mozilla's CA Bundle.
+long_description    ${description}
+
+homepage            https://pypi.python.org/pypi/certifi
+master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
+
+distname            ${python.rootname}-${distversion}
+
+checksums           rmd160  56b2913c217f352b07e45ed4e5e77bde70f66c31 \
+                    sha256  e4f3620cfea4f83eedc95b24abd9cd56f3c4b146dd0177e83a21b4eb49e21e50 \
+                    size    154855
+
+if {${name} ne ${subport}} {
+    livecheck.type      none
+} else {
+    livecheck.version   ${distversion}
+}

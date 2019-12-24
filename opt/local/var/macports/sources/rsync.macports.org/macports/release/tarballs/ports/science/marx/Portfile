@@ -1,0 +1,36 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                marx
+version             5.3.3
+categories          science
+platforms           darwin
+maintainers         {gmx.de:moritz.guenther @hamogu} openmaintainer
+description         Simulate the Chandra X-ray observatory
+long_description    marx is a suite of programs created and maintained by the \
+                    MIT/CXC/HETG group group and is designed to enable the \
+                    user to simulate the on-orbit performance of the Chandra \
+                    X-ray Observatory. marx provides a detailed ray-trace \
+                    simulation of how Chandra responds to a variety of \
+                    astrophysical sources and can generate standard FITS \
+                    event files and images as output. It contains detailed \
+                    models for Chandra’s High Resolution Mirror Assembly \
+                    (HRMA), the HETG and LETG gratings, and all the focal \
+                    plane detectors.
+license             GPL-2
+homepage            http://space.mit.edu/cxc/marx/
+master_sites        ftp://space.mit.edu/pub/cxc/marx/v5.3
+
+checksums           rmd160  c117e0d48256b08a59e89c9aac61f2cd84a050ce \
+                    sha256  60b8c2a17f3e37910eef48deed4e8d3fd7b51b21748c7e930048298a011f168f \
+                    size    13500384
+
+distname            marx-dist-${version}
+worksrcdir          marx-${version}
+
+use_parallel_build  no
+
+livecheck.url       ${homepage}
+livecheck.type      regex
+livecheck.regex     {MARX\s(\d+(?:\.\d+)*)\sdocumentation}

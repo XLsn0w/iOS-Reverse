@@ -1,0 +1,41 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-construct
+version             2.9.45
+revision            0
+categories-append   devel
+platforms           darwin
+license             MIT
+supported_archs     noarch
+
+python.versions     27 34 35 36 37
+
+maintainers         dckd.nl:macports {michaelld @michaelld} openmaintainer
+
+description         python module for parsing and building binary or textual data structures
+
+long_description    \
+    Construct is a python library for parsing and building of data structures \
+    (binary or textual). It is based on the concept of defining data \
+    structures in a declarative manner, rather than procedural code: more \
+    complex constructs are composed of a hierarchy of simpler ones.
+
+homepage            http://construct.readthedocs.org
+master_sites        pypi:c/construct/
+
+distname            construct-${version}
+
+checksums           rmd160  b2bc3deb9c377cbb95f61caacf7ae0b5849baf96 \
+                    sha256  2271a0efd0798679dea825ff47e22a4c550456a5db0ba8baa82f7eae0af0118c \
+                    size    56397
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                        port:py${python.version}-setuptools
+    depends_lib-append  port:py${python.version}-six
+
+    livecheck.type      none
+}

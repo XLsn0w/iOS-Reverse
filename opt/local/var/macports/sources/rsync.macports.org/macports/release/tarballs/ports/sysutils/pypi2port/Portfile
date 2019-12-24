@@ -1,0 +1,52 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                pypi2port
+livecheck.version   2018-07-14
+version             [string map {- {}} ${livecheck.version}]
+svn.revision        576
+categories          sysutils macports
+platforms           darwin
+maintainers         nomaintainer
+license             BSD
+supported_archs     noarch
+
+description         A python script to generate MacPorts Portfiles
+long_description    ${description} from pypi
+homepage            https://trac.macports.org/wiki/${name}
+
+fetch.type          svn
+svn.url             https://github.com/macports/macports-contrib/trunk/${name}
+
+variant python27 conflicts python37 description {Use Python 2.7} {}
+variant python37 conflicts python27 description {Use Python 3.7} {}
+if {[variant_isset python37]} {
+    python.default_version 37
+} else {
+    default_variants +python27
+    python.default_version 27
+}
+
+depends_run-append  port:py${python.version}-requests
+
+worksrcdir          ${name}
+
+build {}
+
+post-patch {
+    reinplace "s|#!/usr/bin/env python|#!${python.bin}|" ${worksrcpath}/${name}.py
+}
+
+destroot {
+    xinstall ${worksrcpath}/${name}.py ${destroot}${prefix}/bin/${name}
+
+    set docdir ${prefix}/share/doc/${subport}
+    xinstall -d ${destroot}${docdir}
+    xinstall -m 0644 ${worksrcpath}/README.txt ${destroot}${docdir}
+}
+
+livecheck.type      regexm
+livecheck.url       https://github.com/macports/macports-contrib/commits/master.atom
+livecheck.regex     {<title>[^<]*pypi2port[^<]*</title>\s*<updated>([0-9-]+)T}

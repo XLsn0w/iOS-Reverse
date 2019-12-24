@@ -1,0 +1,9 @@
+--- src/platform/darwin.sh.orig	2015-03-05 19:07:50.000000000 -0500
++++ src/platform/darwin.sh	2015-03-05 19:08:37.000000000 -0500
+@@ -43,5 +43,5 @@
+ 	fi
+ }
+ 
+-GETOPT="$(brew --prefix gnu-getopt 2>/dev/null || { which port &>/dev/null && echo /opt/local; } || echo /usr/local)/bin/getopt"
++GETOPT=@@PREFIX@@/bin/getopt
+ SHRED="srm -f -z"

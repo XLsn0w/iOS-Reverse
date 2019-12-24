@@ -1,0 +1,48 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           texlive 1.0
+
+name                texlive-lang-czechslovak
+version             50792
+revision            0
+
+categories          tex
+maintainers         {dports @drkp}
+license             Copyleft Permissive
+description         TeX Live: Czech/Slovak
+long_description    Support for Czech/Slovak.
+
+checksums           texlive-lang-czechslovak-50792-run.tar.xz \
+                    rmd160  c942368c2d78df06a9d39dfca71df45b203caf34 \
+                    sha256  528a4e85f0c404b15540423238868ed1e85ba246ce07b97f9590de05cfc91154 \
+                    texlive-lang-czechslovak-50792-doc.tar.xz \
+                    rmd160  4d15eff0f9af73194cf83e49d929348153ed69cf \
+                    sha256  3905f0443fbc79240ab9200143022bbd50595dc41beb0ac8fa54ec1a08de50b6 \
+                    texlive-lang-czechslovak-50792-src.tar.xz \
+                    rmd160  a1d6e28e408d9a5500fa7f2d6842be267668a8bd \
+                    sha256  e4b57663cfc4e0c2c9f3f933e0144c5d145da064bdffcd83fd28068a4b4bafc2
+
+depends_lib         port:texlive-basic port:texlive-latex
+
+texlive.formats      \
+    {1 cslatex pdftex - {-etex cslatex.ini}} \
+    {1 pdfcslatex pdftex - {-etex cslatex.ini}} \
+    {1 csplain pdftex - {-etex -enc csplain-utf8.ini}} \
+    {1 pdfcsplain pdftex - {-etex -enc csplain-utf8.ini}} \
+    {1 luacsplain luatex - {-etex csplain.ini}} \
+    {1 pdfcsplain xetex - {-etex csplain.ini}} \
+    {1 pdfcsplain luatex - {-etex csplain.ini}}
+
+texlive.languages      \
+    {czech loadhyph-cs.tex 2 3 {} {hyph-cs.pat.txt} {hyph-cs.hyp.txt} {} } \
+    {slovak loadhyph-sk.tex 2 3 {} {hyph-sk.pat.txt} {hyph-sk.hyp.txt} {} }
+
+texlive.maps      \
+    {Map cs-charter.map} \
+    {Map csfonts.map}
+
+texlive.binaries    cslatex csplain luacsplain pdfcslatex pdfcsplain vlna
+
+
+texlive.texmfport

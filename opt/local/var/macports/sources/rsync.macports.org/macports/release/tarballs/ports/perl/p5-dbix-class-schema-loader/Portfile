@@ -1,0 +1,56 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         DBIx-Class-Schema-Loader 0.07049
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         Dynamic definition of a DBIx::Class::Schema
+long_description    DBIx::Class::Schema::Loader automates the definition \
+                    of a DBIx::Class::Schema by scanning database table \
+                    definitions and setting up the columns, primary keys, \
+                    and relationships.
+
+platforms           darwin
+
+checksums           rmd160  6aa1ab82080f55a8bf471316e45ff07ef7633387 \
+                    sha256  e869cdde1378cfebccf229b0cde58d2746dc6080b75f56d072aa5f1fce76a764 \
+                    size    217280
+
+if {${perl5.major} != ""} {
+    depends_build-append \
+                    port:p${perl5.major}-config-any \
+                    port:p${perl5.major}-config-general \
+                    port:p${perl5.major}-dbd-sqlite \
+                    port:p${perl5.major}-moose \
+                    port:p${perl5.major}-moosex-markasmethods \
+                    port:p${perl5.major}-moosex-nonmoose \
+                    port:p${perl5.major}-namespace-autoclean \
+                    port:p${perl5.major}-test-deep \
+                    port:p${perl5.major}-test-differences \
+                    port:p${perl5.major}-test-exception \
+                    port:p${perl5.major}-test-warn
+
+    depends_lib-append \
+                    port:p${perl5.major}-carp-clan \
+                    port:p${perl5.major}-class-accessor-grouped \
+                    port:p${perl5.major}-class-c3-componentised \
+                    port:p${perl5.major}-class-inspector \
+                    port:p${perl5.major}-class-unload \
+                    port:p${perl5.major}-curry \
+                    port:p${perl5.major}-data-dump \
+                    port:p${perl5.major}-dbix-class \
+                    port:p${perl5.major}-digest-md5 \
+                    port:p${perl5.major}-hash-merge \
+                    port:p${perl5.major}-lingua-en-inflect-number \
+                    port:p${perl5.major}-lingua-en-inflect-phrase \
+                    port:p${perl5.major}-lingua-en-tagger \
+                    port:p${perl5.major}-mro-compat \
+                    port:p${perl5.major}-namespace-clean \
+                    port:p${perl5.major}-parent \
+                    port:p${perl5.major}-scope-guard \
+                    port:p${perl5.major}-string-toidentifier-en \
+                    port:p${perl5.major}-try-tiny
+}

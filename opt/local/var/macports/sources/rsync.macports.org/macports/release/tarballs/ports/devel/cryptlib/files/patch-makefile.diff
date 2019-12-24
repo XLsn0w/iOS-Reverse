@@ -1,0 +1,31 @@
+--- makefile.orig	2019-03-08 18:29:42.000000000 -0600
++++ makefile	2019-03-09 02:53:46.000000000 -0600
+@@ -90,7 +90,7 @@
+ # Further cc flags are gathered dynamically at runtime via the ccopts.sh
+ # script.
+ 
+-CFLAGS			= -c -D__UNIX__ -DNDEBUG -I.
++CFLAGS			+= -c -D__UNIX__ -DNDEBUG -I.
+ CFLAGS_DEBUG	= -c -D__UNIX__ -I. -g -O1
+ CFLAGS_DEBUGGCC	= -c -D__UNIX__ -I. -ggdb3 -fno-omit-frame-pointer -O1
+ CFLAGS_ANALYSE	= -c -D__UNIX__ -I.
+@@ -514,6 +514,8 @@
+ 	if [ -f "$(DYLIBNAME)" ] ; then \
+ 		cp "$(DYLIBNAME)" "$(DESTDIR)$(PATH_LIB)" ; \
+ 		chmod 755 "$(DESTDIR)$(PATH_LIB)/$(DYLIBNAME)" ; \
++		ln -s "$(DYLIBNAME)" "$(DESTDIR)$(PATH_LIB)/lib$(PROJ).$(MAJ).dylib" ; \
++		ln -s "$(DYLIBNAME)" "$(DESTDIR)$(PATH_LIB)/lib$(PROJ).dylib" ; \
+ 	fi
+ 	cp cryptlib.h "$(DESTDIR)$(PATH_INCLUDE)"
+ 	chmod 644 "$(DESTDIR)$(PATH_INCLUDE)/cryptlib.h"
+@@ -1623,8 +1625,9 @@
+ 				fi
+ 
+ $(DYLIBNAME):	$(OBJS) $(EXTRAOBJS) $(TESTOBJS)
+-				@$(LD) -dynamiclib -compatibility_version $(MAJ).$(MIN) \
++				$(LD) $(LDFLAGS) -dynamiclib -compatibility_version $(MAJ).$(MIN) \
+ 					-current_version $(MAJ).$(MIN).$(PLV) \
++					-install_name $(PATH_LIB)/$(DYLIBNAME) \
+ 					`./tools/getlibs.sh $(LD) $(OSNAME)` \
+ 					-o $(DYLIBNAME) $(OBJS) $(EXTRAOBJS)
+ 

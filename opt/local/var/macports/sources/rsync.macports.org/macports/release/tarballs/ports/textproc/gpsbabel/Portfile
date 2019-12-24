@@ -1,0 +1,116 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+github.setup        gpsbabel gpsbabel 1_5_4 gpsbabel_
+# some tricks because version at github is x_y_z
+version             [join [lrange [split ${version} _] 0 2] .]
+#revision            0
+
+if {${subport} eq ${name}} {
+    PortGroup       qt5 1.0
+} else {
+    PortGroup       qmake5 1.0
+}
+
+categories          textproc comms
+license             GPL-2+
+maintainers         nomaintainer
+description         GPSBabel converts/uploads GPS waypoints, tracks, and routes
+long_description    GPSBabel converts GPS waypoints, tracks, and routes \
+                    from one format to another, whether that format is a \
+                    common mapping format like Delorme, Streets and \
+                    Trips, or even a serial upload or download to a GPS \
+                    unit such as those from Garmin and Magellan.
+platforms           darwin
+homepage            https://www.gpsbabel.org
+
+depends_lib-append  port:expat \
+                    port:libusb-compat
+
+checksums           rmd160  b38b81b38cd50cc4d1c36faa962afb02edb72cd3 \
+                    sha256  fbec8cc36ff4b361e3eada286d3018d34579f919ac5398988e5e85061153fa22
+
+compiler.cxx_standard   2011
+
+if {${subport} eq ${name}} {
+
+    patchfiles-append  patch-delbin.cc.diff
+
+    # use MacPorts libraries
+    # see https://gitweb.gentoo.org/repo/gentoo.git/tree/sci-geosciences/gpsbabel
+    patchfiles-append  patch-macports_libs.diff
+    use_autoreconf      yes
+    # see https://github.com/gpsbabel/gpsbabel/commit/15f8b8b6ec5145a56d06d509b2e90076f75dd867
+    # see https://github.com/gpsbabel/gpsbabel/commit/30a345577a644125502f6e4f8b58ea3077ec8dad
+    patchfiles-append  patch-qt5.diff
+    # avoid error: ordered comparison between pointer and zero ('const char *' and 'int')
+    patchfiles-append  patch-bushnell.cc.diff
+
+    configure.universal_args-delete \
+        --disable-dependency-tracking
+
+    depends_lib-append  \
+        port:shapelib   \
+        port:minizip    \
+        port:zip
+
+    configure.args-append \
+    QMAKE=${qt_qmake_cmd} \
+    LRELEASE=${qt_lrelease_cmd} \
+    LUPDATE=${qt_lupdate_cmd}
+
+    configure.args-append  \
+        --with-zlib=system
+
+    post-destroot {
+        xinstall -m 755 -d ${destroot}${prefix}/share/doc/${name}
+        xinstall -m 644 -W ${worksrcpath} \
+            AUTHORS COPYING README.contrib README.igc \
+            README.mapconverter README.xmapwpt \
+            ${destroot}${prefix}/share/doc/${name}
+    }
+}
+
+subport ${name}-app {
+
+    worksrcdir ${worksrcdir}/gui
+
+    # avoid requiring config.h in the parent directory
+    patchfiles-append  patch-no_config.diff
+    # allow the selection of qtwebkit
+    patchfiles-append  patch-webengine_or_webkit.diff
+    # by default, do not report statistics
+    patchfiles-append  patch-no_report.diff
+
+    depends_lib-append port:${name}
+
+    post-extract {
+        # copied from Makefile.in in ${worksrcdir}/..
+        xinstall -m 0644 ${filespath}/makefile_macports_install ${build.dir}
+            }
+
+    variant qtwebkit description {use Webkit instead of WebEngine} {
+        configure.args-append CONFIG+=MACPORTS_USE_WEBKIT
+
+        qt5.depends_component \
+            qtwebkit
+        }
+    if {![variant_isset qtwebkit]} {
+        supported_archs x86_64
+
+        qt5.depends_component  \
+            qtdeclarative      \
+            qtlocation         \
+            qtwebchannel       \
+            qtwebengine
+    }
+
+    destroot.args                            \
+        -f makefile_macports_install         \
+        PREFIX=${prefix}                     \
+        APPLICATION_DIR=${applications_dir}  \
+        LRELEASE=${qt_lrelease_cmd}          \
+        LUPDATE=${qt_lupdate_cmd}
+}

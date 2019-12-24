@@ -1,0 +1,16 @@
+--- gqrx.pro.orig
++++ gqrx.pro
+@@ -61,10 +61,11 @@
+     PREFIX=/usr/local
+ }
+ 
+-target.path  = $$PREFIX/bin
++target.path  = @APPSDIR@
+ INSTALLS    += target 
+ 
+-#CONFIG += debug
++CONFIG -= debug
++CONFIG += cxx11 @ARCHES@
+ 
+ # disable debug messages in release
+ CONFIG(debug, debug|release) {

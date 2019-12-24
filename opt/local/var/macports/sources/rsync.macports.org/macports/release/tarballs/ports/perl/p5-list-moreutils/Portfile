@@ -1,0 +1,34 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         List-MoreUtils 0.428
+maintainers         nomaintainer
+license             Apache-2
+description         Provide the stuff missing in List::Util
+long_description    List::MoreUtils provides some trivial but commonly \
+                    needed functionality on lists which is not going to go \
+                    into List::Util.
+
+platforms           darwin
+
+checksums           rmd160  4baf540c44f14c1223e6f453a9852424a6cd6065 \
+                    sha256  713e0945d5f16e62d81d5f3da2b6a7b14a4ce439f6d3a7de74df1fd166476cc2
+
+if {${perl5.major} != ""} {
+    depends_build-append \
+                    port:p${perl5.major}-config-autoconf \
+                    port:p${perl5.major}-inc-latest \
+                    port:p${perl5.major}-test-leaktrace \
+                    port:p${perl5.major}-test-writevariants
+
+# requires latest XSLoader 0.22+
+    depends_lib-append \
+                    port:p${perl5.major}-exporter-tiny \
+                    port:p${perl5.major}-list-moreutils-xs \
+                    port:p${perl5.major}-xsloader
+
+    supported_archs noarch
+}

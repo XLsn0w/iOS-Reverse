@@ -1,0 +1,21 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Net-Server 2.009
+license             {Artistic-1 GPL}
+platforms           darwin
+maintainers         nomaintainer
+supported_archs     noarch
+
+description         Extensible, general Perl server engine
+long_description    Net::Server is an extensible, generic Perl server \
+                    engine. Net::Server combines the good properties \
+                    from Net::Daemon (0.34), NetServer::Generic \
+                    (1.03), and Net::FTPServer (1.0), and also from \
+                    various concepts in the Apache Webserver.
+
+checksums           rmd160  3c7d76a898ef080bf9e27087e5fec2a00b259e52 \
+                    sha256  8267c6560355e2e0f483d3cc16195f342f32fe13cae9dde75a0a1ece5e9a813f

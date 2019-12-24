@@ -1,0 +1,31 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Net-Pcap 0.18
+revision            1
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+
+description         Interface to pcap(3) LBL packet capture library
+long_description    Net::Pcap is a Perl binding to the LBL pcap(3) \
+                    library, version 0.4. The README for libpcap describes \
+                    itself as: a system-independent interface for user-level \
+                    packet capture. libpcap provides a portable framework \
+                    for low-level network monitoring.  Applications \
+                    include network statistics collection, security \
+                    monitoring, network debugging, etc.
+platforms           darwin
+
+checksums           rmd160  1959ae0cc70fdd8b4cdb2d9028123fd83338c8d5 \
+                    sha256  cb9bd44948c23544bb9d4e28261dbd0dbb3e7564709487a7855576e0d9b68307
+
+if {${perl5.major} != ""} {
+    depends_lib-append \
+                    port:libpcap
+
+    patchfiles      fix-build-netpcap.patch \
+                    Net-Pcap-0.18-Adapt-a-test-to-libpcap-1.8.0.patch
+}

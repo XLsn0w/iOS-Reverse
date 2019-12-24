@@ -1,0 +1,109 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+PortGroup           mpi 1.0
+
+set realname        tables
+name                py-${realname}
+version             3.6.0
+revision            1
+categories-append   science
+platforms           darwin
+license             BSD
+
+python.versions     27 34 35 36 37 38
+
+maintainers         {mmoll @mamoll} openmaintainer
+
+description         Package for managing hierarchical datasets
+long_description    PyTables is a package for managing hierarchical datasets \
+                    and designed to efficiently and easily cope with \
+                    extremely large amounts of data
+
+homepage            https://pytables.github.io/
+master_sites        pypi:t/tables/ \
+                    http://sourceforge.net/projects/pytables/files/pytables/${version}
+
+checksums           rmd160  63669412aa325d85a7c45b10966263534a9808c0 \
+                    sha256  db3488214864fb313a611fca68bf1c9019afe4e7877be54d0e61c84416603d4d \
+                    size    7818293
+
+distname            ${realname}-${version}
+
+mpi.setup
+
+if {${name} ne ${subport}} {
+    # Last version that supports python 2.7
+    if {${python.version} eq 27} {
+        version        3.5.2
+        revision       1
+        distname       ${realname}-${version}
+        checksums      rmd160  9e5aa9f3b270888c853eb5f30cd6461a362bb1c1 \
+                       sha256  b220e32262bab320aa41d33125a7851ff898be97c0de30b456247508e2cc33c2 \
+                       size    7825372
+    }
+
+    build.target        build_ext
+    build.args          --inplace \
+                        --hdf5=${prefix} \
+                        --bzip2=${prefix} \
+                        --lzo=${prefix} \
+                        --blosc=${prefix}
+
+    destroot.args       --hdf5=${prefix} \
+                        --bzip2=${prefix} \
+                        --lzo=${prefix} \
+                        --blosc=${prefix}
+
+    pre-destroot {
+        # need to wrap this in a pre-destroot phase so that ${mpi.cc} expands to the right value
+        if {[mpi_variant_isset]} {
+            destroot.cmd       env CC=${mpi.cc} ${destroot.cmd}
+        }
+    }
+    depends_build-append \
+                        port:py${python.version}-cython
+
+    depends_lib-append  port:hdf5 \
+                        port:py${python.version}-numpy \
+                        port:py${python.version}-numexpr \
+                        port:py${python.version}-cython \
+                        port:zlib \
+                        port:bzip2 \
+                        port:lzo2 \
+                        port:blosc
+
+    post-extract {
+        # Fix permissions
+        fs-traverse item ${worksrcpath} {
+            if {[file isdirectory ${item}]} {
+                file attributes ${item} -permissions a+rx
+            } elseif {[file isfile ${item}]} {
+                file attributes ${item} -permissions a+r
+            }
+        }
+
+        file rename ${worksrcpath}/src/utils.h ${worksrcpath}/src/xxx_utils.h
+    }
+
+    post-patch {
+        delete {*}[glob ${worksrcpath}/tables/*.c]
+        reinplace -q "s:utils.h:xxx_utils.h:" {*}[glob ${worksrcpath}/{src,tables}/*.{c,pxd,pyx}]
+    }
+
+    post-destroot    {
+        xinstall -m 755 -d ${destroot}${prefix}/share/doc/${subport}
+        xinstall -m 644 -W ${worksrcpath} LICENSE.txt README.rst \
+            RELEASE_NOTES.txt THANKS VERSION \
+            ${destroot}${prefix}/share/doc/${subport}
+    }
+}
+
+if {${name} eq ${subport}} {
+    livecheck.type      regex
+    livecheck.url       https://pypi.python.org/pypi/tables/json
+    livecheck.regex     {tables-(\d+(?:\.\d+)*)\.[tz]}
+} else {
+    livecheck.type      none
+}

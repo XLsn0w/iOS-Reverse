@@ -1,0 +1,67 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem                  1.0
+PortGroup                   github 1.0
+
+github.setup                jordansissel xdotool 3.20160805.1 v
+categories                  x11 devel
+platforms                   darwin
+maintainers                 {ryandesign @ryandesign}
+license                     BSD
+
+description                 X11 keyboard and mouse simulation utility
+
+long_description            ${name} lets you programatically (or manually) \
+                            simulate keyboard input and mouse activity\; \
+                            move, resize, hide and show windows\; \
+                            modify window properties like the title\; etc.
+
+notes                       "To use xdotool (and avoid the error message\
+                            \"Error: XTEST extension unavailable on '(null)'\")\
+                            you need to enable the XTEST extension. If you're\
+                            using Apple's X11.app, the command to do so is:\
+                            \n\ndefaults write org.x.X11 enable_test_extensions -boolean true\
+                            \n\nIf you're using the MacPorts X11.app, use:\
+                            \n\ndefaults write org.macports.X11 enable_test_extensions -boolean true\
+                            \n\nThis only needs to be done once."
+
+homepage                    http://www.semicomplete.com/projects/xdotool/
+github.tarball_from         releases
+
+checksums                   rmd160  33a99746cba56e7b8fdd151cc236326acf27057d \
+                            sha256  35be5ff6edf0c620a0e16f09ea5e101d5173280161772fca18657d83f20fcca8 \
+                            size    105388
+
+depends_build               port:pkgconfig \
+                            path:bin/perl:perl5
+
+depends_lib                 port:libxkbcommon \
+                            port:xorg-libXinerama \
+                            port:xorg-libXtst
+
+patchfiles                  patch-Makefile.diff
+
+use_configure               no
+
+variant universal {}
+
+if {[vercmp [macports_version] 2.5.99] >= 0} {
+build.env                   PREFIX=${prefix} \
+                            CC=${configure.cc} \
+                            "CFLAGS=${configure.cflags} [get_canonical_archflags cc]" \
+                            "LDFLAGS=${configure.ldflags} [get_canonical_archflags ld]"
+} else {
+build.env                   PREFIX=${prefix} \
+                            CC=${configure.cc} \
+                            CFLAGS="${configure.cflags} [get_canonical_archflags cc]" \
+                            LDFLAGS="${configure.ldflags} [get_canonical_archflags ld]"
+}
+destroot.env                PREFIX=${prefix} \
+                            INSTALLMAN=${prefix}/share/man
+
+post-destroot {
+    set docdir ${prefix}/share/doc/${subport}
+    xinstall -d ${destroot}${docdir} ${destroot}${prefix}/share/examples
+    xinstall -m 0644 -W ${worksrcpath} CHANGELIST COPYRIGHT README ${destroot}${docdir}
+    copy ${worksrcpath}/examples ${destroot}${prefix}/share/examples/${name}
+}

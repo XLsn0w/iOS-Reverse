@@ -1,0 +1,47 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-zopeinterface
+version             4.6.0
+python.versions     27 34 35 36 37 38
+categories-append   zope
+license             ZPL-2.1
+platforms           darwin
+maintainers         {mcalhoun @MarcusCalhoun-Lopez} openmaintainer
+description         Python interfaces for Zope
+long_description    ${description}
+
+homepage            https://zopetoolkit.readthedocs.io/
+master_sites        pypi:z/zope.interface
+distname            zope.interface-${version}
+
+checksums           rmd160  9953182209587f1804e2270bdc9e2bc1a5748707 \
+                    sha256  1b3d0dcabc7c90b470e59e38a9acaa361be43b3a6ea644c0063951964717f0e5 \
+                    size    150884
+
+if {${name} ne ${subport}} {
+
+    depends_build   port:py${python.version}-setuptools
+
+    post-destroot {
+        xinstall -d ${destroot}${prefix}/share/doc/${subport}
+        xinstall -m 644 -W ${worksrcpath} \
+            CHANGES.rst  README.rst \
+            ${destroot}${prefix}/share/doc/${subport}
+    }
+
+    variant tests description {Add dependencies needed to run tests} {
+        depends_build-append port:py${python.version}-zope-event
+        test.run    yes
+        test.cmd    ${python.bin} setup.py
+        test.target test
+    }
+
+    livecheck.type      none
+} else {
+    livecheck.type      regex
+    livecheck.url       https://pypi.python.org/pypi/zope.interface/json
+    livecheck.regex     zope.interface-(\\d+(?:\\.\\d+)*)${extract.suffix}
+}

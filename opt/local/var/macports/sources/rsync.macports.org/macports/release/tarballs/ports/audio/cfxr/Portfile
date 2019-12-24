@@ -1,0 +1,38 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem       1.0
+PortGroup        github 1.0
+PortGroup        xcode 1.0
+
+github.setup     nevyn cfxr 0.2.1
+platforms        darwin
+categories       audio aqua
+license          MIT
+maintainers      orthogonalspace.ca:reid
+description      A generator for simple sound effects.
+long_description A port of DrPetter's sfxr with a native Mac UI. \
+                 In DrPetter's words: Its original purpose was to provide a \
+                 simple means of getting basic sound effects into a game for \
+                 those people who were working hard to get their entries \
+                 done within the 48 hours and didn't have time to spend \
+                 looking for suitable ways of doing this.
+
+homepage         http://thirdcog.eu/apps/cfxr
+
+checksums        rmd160  8b9e33d4d7cf262a6e44565e9829730f294e7f8d \
+                 sha256  3049b9dd92496bd7511c31130c4a3b494508889cb05f6084bd3554369f3eb6a9
+
+post-patch {
+        reinplace "s|/Library/Frameworks/SDL.framework|${frameworks_dir}/SDL.framework|g" \
+            ${worksrcpath}/${name}.xcodeproj/project.pbxproj
+}
+
+xcode.configuration     Release
+xcode.build.settings    FRAMEWORK_SEARCH_PATHS=${frameworks_dir}
+xcode.destroot.settings FRAMEWORK_SEARCH_PATHS=${frameworks_dir}
+
+depends_lib      port:libsdl-framework port:libsdl
+
+livecheck.type   regex
+livecheck.url    ${homepage}
+livecheck.regex  ${name} (\\d.\\d.\\d)

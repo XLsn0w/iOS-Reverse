@@ -1,0 +1,59 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+PortGroup           mpi 1.0
+
+name                py-netcdf4
+version             1.2.9
+revision            4
+categories-append   science
+platforms           darwin
+maintainers         {fastmail.fm:jswhit @jswhit} \
+                    openmaintainer
+license             MIT
+
+description         Python/numpy interface to netCDF
+long_description    netCDF version 4 has many features not found in \
+                    earlier versions of the library and is implemented \
+                    on top of HDF5. This module can read and write files \
+                    in both the new netCDF 4 and the old netCDF \
+                    3 format, and can create files that are readable by \
+                    HDF5 clients.
+homepage            https://unidata.github.io/netcdf4-python/
+
+master_sites        pypi:n/netCDF4
+distname            netCDF4-${version}
+
+checksums           rmd160  232de81a67802e90c21117e32c2b549d184470d2 \
+                    sha256  259edab1f03b1c1b93bdbaa804d50211a0c9d8a15eee4f23988b5685c6c0d2c0 \
+                    size    538450
+
+mpi.enforce_variant netcdf
+mpi.setup
+
+build.env-append    USE_NCCONFIG=1
+destroot.env-append USE_NCCONFIG=1
+
+python.versions     27 34 35 36 37
+
+if {${name} ne ${subport}} {
+    depends_lib-append  port:netcdf \
+                        port:py${python.version}-numpy \
+                        port:py${python.version}-cython
+
+    post-patch {
+        reinplace -W ${worksrcpath} "s,@@PREFIX@@,${prefix}," setup.py
+    }
+
+    pre-configure {
+        # py-netcdf4's setup.py uses nc-config for flags and libs but not compiler
+        configure.cc    {*}[exec ${prefix}/bin/nc-config --cc]
+    }
+
+    livecheck.type      none
+} else {
+    livecheck.type      regex
+    livecheck.url       https://pypi.python.org/pypi/netCDF4
+    livecheck.regex     >netCDF4-(.*)${extract.suffix}<
+}

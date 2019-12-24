@@ -1,0 +1,86 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+github.setup        transmission transmission 2.94
+revision            2
+name                transmission-x11
+categories          net x11
+license             {GPL-2 OpenSSLException}
+maintainers         nomaintainer
+description         Lightweight BitTorrent client
+long_description    Transmission is a free, lightweight BitTorrent client. \
+                    It features a simple, intuitive interface on top of an \
+                    efficient, cross-platform back-end. Transmission is open \
+                    source (MIT license) and runs on Mac OS X (Cocoa interface), \
+                    Linux/NetBSD/FreeBSD/OpenBSD (GTK+ interface) and BeOS \
+                    (native interface). This is the GTK+ version.
+
+homepage            https://transmissionbt.com
+
+platforms           darwin freebsd
+
+# Do not remove this as it allows transmission and this port to share files
+dist_subdir         transmission
+
+checksums           rmd160  be98df0828b1b7ac5668f6d6c65c70c9cea9a05f \
+                    sha256  aadf9bdcf07e8065f7160d3012cce36b6f0c9eeca4773dbd90fb1902fe487c4c \
+                    size    6342235
+
+depends_build       port:intltool \
+                    port:pkgconfig \
+                    port:autoconf \
+                    port:automake \
+                    port:libtool
+
+depends_lib         port:miniupnpc \
+                    path:lib/libssl.dylib:openssl \
+                    port:curl \
+                    port:gettext \
+                    port:libevent
+
+# reconfigure using upstream autogen.sh for intltool 0.51 compatibility
+
+configure.cmd       ./autogen.sh
+
+configure.args      --enable-daemon \
+                    --enable-cli \
+                    --without-gtk \
+                    --disable-mac
+
+post-extract {
+    # https://gitweb.gentoo.org/repo/gentoo.git/commit/?id=c13b5e88c6e9c7bd2698d844cb5ed127ed809f7e
+    # Prevent m4_copy error when running aclocal
+    #  m4_copy: won't overwrite defined macro: glib_DEFUN
+    delete ${worksrcpath}/m4/glib-gettext.m4
+
+}
+
+default_variants    +gtk
+
+variant aqua description {Build Aqua front-end} {
+    configure.args-replace  --disable-mac --enable-mac
+}
+
+variant gtk description {Build Gtk3 front-end} {
+    depends_lib-append      port:gtk3 \
+                            port:libnotify \
+                            port:desktop-file-utils
+
+    depends_run             port:adwaita-icon-theme
+
+    configure.args-replace  --without-gtk --with-gtk
+
+    post-activate {
+        system "${prefix}/bin/update-desktop-database ${prefix}/share/applications"
+        system "${prefix}/bin/gtk-update-icon-cache-3.0 -f -t ${prefix}/share/icons/hicolor"
+    }
+}
+
+platform darwin 8 {
+    pre-fetch {
+        ui_error "${name} requires Mac OS X 10.5 or greater."
+        return -code error "incompatible Mac OS X version"
+    }
+}

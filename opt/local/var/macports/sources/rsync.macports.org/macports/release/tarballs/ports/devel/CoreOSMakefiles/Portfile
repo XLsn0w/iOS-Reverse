@@ -1,0 +1,30 @@
+PortSystem              1.0
+name                    CoreOSMakefiles
+version                 77
+categories              devel
+platforms               darwin
+maintainers             nomaintainer
+license                 APSL-1.1
+description             Darwin Core OS Common Makefiles
+long_description        These are some makefiles which are required to build \
+                        some Darwin Core OS projects. Note that this port \
+                        implies MAKEFILEPATH=${prefix}/share/Makefiles
+
+homepage                http://opensource.apple.com/source/${name}/
+master_sites            http://opensource.apple.com/tarballs/${name}/
+
+checksums               rmd160  ab3816588c11c9c9ef6720717d323846d69ebefe \
+                        sha256  6b8a9521bb65a2868181696f12515eb4c2498fb05a8f28075e29cb1eda67bae6
+
+supported_archs         noarch
+universal_variant       no
+use_configure           no
+
+depends_build           path:bin/unifdef:developer_cmds
+
+destroot.args           DEVELOPER_DIR=${destroot}${prefix}/share
+
+build {}
+
+livecheck.type          regex
+livecheck.regex         "CoreOSMakefiles-(\[\\d.\]+)"

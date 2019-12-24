@@ -1,0 +1,86 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                w3m
+version             0.5.3
+revision            13
+categories          www
+license             MIT
+maintainers         nomaintainer
+description         pager/text based browser
+long_description    w3m is a pager/text-based WWW browser. \
+                    It is a similar application to Lynx, but it has \
+                    several features Lynx doesn't have, like tables, frames\
+                    and inline image rendering. Its 8-bit support is second\
+                    to none.
+
+platforms           darwin
+homepage            http://w3m.sourceforge.net/
+
+depends_lib         port:boehmgc port:zlib path:lib/libssl.dylib:openssl port:ncurses \
+                    port:gettext port:libiconv
+
+if {${name} eq ${subport}} {
+    master_sites    sourceforge:project/w3m/w3m/w3m-${version}
+
+    checksums       md5     1b845a983a50b8dec0169ac48479eacc \
+                    sha1    444b6c8cf7094ee95f8e9de96b37f814b9d83237 \
+                    sha256  e994d263f2fd2c22febfbe45103526e00145a7674a0fda79c822b97c2770a9e3
+
+    # LC_ALL=C sed -i '' 's|^+++ w3m/|+++ |' 010_upstream.patch
+    # LC_ALL=C sed -i '' 's|^+++ b/|+++ |' 020_debian.patch
+    patchfiles      debian/010_upstream.patch \
+                    debian/020_debian.patch
+
+    conflicts       w3m-devel
+}
+
+subport w3m-devel {
+    PortGroup       github 1.0
+
+    github.setup    tats w3m 169789b1480710712d587d5859fab9d93eb952a2
+    version         20180520
+    revision        1
+
+    checksums       rmd160  76853eefec217a90c8876599f33e3d2fb74bf3b8 \
+                    sha256  1bb513056fba2b581ce0e45e6e4d6f15eae1dd0b0af78dce9ecb49a1c73b87e8 \
+                    size    2182420
+
+    conflicts       w3m
+}
+
+configure.args      --with-gc=${prefix} \
+                    --with-ssl=${prefix} \
+                    --enable-keymap=w3m \
+                    --with-termlib=ncurses \
+                    --with-libiconv-prefix=${prefix} \
+                    --with-libintl-prefix=${prefix} \
+                    --disable-image \
+                    --mandir=${prefix}/share/man
+
+post-destroot {
+   xinstall -d ${destroot}${prefix}/share/doc/w3m
+   xinstall -m 644 -W ${worksrcpath}/doc FAQ.html HISTORY MANUAL.html README \
+      README.cookie README.dict README.func README.img README.m17n \
+      README.mouse README.passwd README.pre_form README.tab STORY.html \
+      keymap.default keymap.lynx menu.default menu.submenu \
+      ${destroot}${prefix}/share/doc/w3m
+}
+
+variant inline_image_gtk2 description {View inline images with GTK2} {
+   configure.args-delete   --disable-image
+   configure.args-append   --with-imagelib=gtk2
+   depends_lib-append      port:gtk2
+}
+
+variant inline_image_imlib2 description {View inline images with imlib2} {
+   configure.args-delete   --disable-image
+   configure.args-append   --with-imagelib=imlib2
+   depends_lib-append      port:imlib2
+}
+
+livecheck.type      regex
+livecheck.version   "${version}-37"
+livecheck.url       https://packages.debian.org/unstable/w3m
+livecheck.regex     ${name}_(\\d+(?:\\.\\d+)*-\\d+)(?:\\.\\d+)?.debian.tar.xz

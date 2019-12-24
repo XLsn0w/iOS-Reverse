@@ -1,0 +1,106 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                mupdf
+version             1.16.1
+categories          graphics
+platforms           darwin
+maintainers         {gmail.com:starkhalo @harciga} openmaintainer
+license             AGPL-3+
+
+description         lightweight PDF and XPS viewer and parser/rendering library
+
+long_description    MuPDF is a lightweight PDF and XPS viewer and \
+                    parser/rendering library. \
+                    \
+                    The renderer in MuPDF is tailored for high-quality \
+                    anti-aliased graphics. It renders text with metrics and \
+                    spacing accurate to within fractions of a pixel for the \
+                    highest fidelity in reproducing the look of a printed \
+                    page on screen. \
+                    \
+                    MuPDF is also small, fast, and yet complete. It supports \
+                    PDF 1.7 with transparency, encryption, hyperlinks, \
+                    annotations, search and many other bells and whistles. \
+                    MuPDF can also read XPS documents (OpenXPS ECMA-388).
+
+homepage            https://www.mupdf.com/
+
+master_sites        ${homepage}downloads/archive/
+distname            ${name}-${version}-source
+
+checksums           rmd160  4787d4699504cab9e3fee9884f1faaa410f805c9 \
+                    sha256  e71da73dd593dd779b8e0995978ec071139ae51ca7bcccd095dd8922278be447 \
+                    size    60805318
+
+depends_build       port:pkgconfig
+
+depends_lib         port:freetype \
+                    port:harfbuzz \
+                    port:jbig2dec \
+                    port:jpeg \
+                    port:openjpeg \
+                    port:zlib
+
+patchfiles          patch-Makerules.diff
+
+use_configure       no
+
+build.args          PREFIX=${prefix}
+build.args-append   CC=${configure.cc} \
+                    CXX=${configure.cxx} \
+                    CPP=${configure.cpp} \
+                    XCFLAGS="${configure.cflags} [get_canonical_archflags cc]" \
+                    XLIBS="${configure.ldflags} [get_canonical_archflags ld]" \
+                    HAVE_GLUT=yes \
+                    HAVE_X11=no \
+                    USE_SYSTEM_LIBS=yes \
+                    build=release \
+                    verbose=yes
+
+destroot.destdir    prefix=${destroot}${prefix}
+destroot.args-append \
+                    HAVE_GLUT=yes \
+                    HAVE_X11=no \
+                    USE_SYSTEM_LIBS=yes
+
+variant x11 {
+    depends_lib-append \
+                    port:mesa \
+                    port:xorg-libXcursor \
+                    port:xorg-libXext \
+                    port:xorg-libXinerama \
+                    port:xorg-libXrandr
+
+    build.args-replace \
+                    HAVE_X11=no HAVE_X11=yes
+    destroot.args-replace \
+                    HAVE_X11=no HAVE_X11=yes
+}
+
+variant universal   {}
+
+post-extract {
+# delete thirdparty software other than mujs
+    delete ${worksrcpath}/thirdparty/curl
+    delete ${worksrcpath}/thirdparty/freeglut
+    delete ${worksrcpath}/thirdparty/freetype
+    delete ${worksrcpath}/thirdparty/harfbuzz
+    delete ${worksrcpath}/thirdparty/jbig2dec
+    delete ${worksrcpath}/thirdparty/jpeg
+    delete ${worksrcpath}/thirdparty/libjpeg
+    delete ${worksrcpath}/thirdparty/openjpeg
+    delete ${worksrcpath}/thirdparty/zlib
+}
+
+# https://trac.macports.org/ticket/33240
+# Mac OS X Tiger has an old version of `make`, needs to use GNU make
+platform darwin 8 {
+    depends_build-append port:gmake
+    build.cmd ${prefix}/bin/gmake
+}
+
+livecheck.type      regex
+livecheck.url       ${master_sites}
+livecheck.regex     ${name}-(\\d+(?:\\.\\d+)*\[a-z\]?)-source

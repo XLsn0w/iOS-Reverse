@@ -1,0 +1,176 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+PortGroup               perl5 1.0
+PortGroup               texlive 1.0
+
+perl5.branches          5.28
+name                    auto-multiple-choice
+categories              x11 tex education
+platforms               darwin
+license                 GPL-2+
+maintainers             {laposte.fr:joel.brogniart @nortcele} openmaintainer
+
+description             Auto Multiple Choice - Multiple Choice Papers Management
+long_description        Utility to manage multiple choice questionnaires, \
+                        with optionally mixed questions and answers. \
+                        AMC provides automatic marking from papers' scans. \
+                        Annotated papers are produced. Marks can be exported \
+                        as an OpenOffice.org sheet file.
+
+homepage                http://www.auto-multiple-choice.net/
+
+subport auto-multiple-choice-devel {}
+
+set gitlab.home https://gitlab.com
+set gitlab.author jojo_boulix
+set gitlab.project ${name}
+
+if {${subport} eq ${name}} {
+    # release
+    set gitlab.commit       "c6041a162202380b065b1b1abbdb016bb6d4b6a8"
+    set amc_revision        "201812291614"
+    set amc_date            "201812291614"
+    revision                1
+    version                 1.4.0-${amc_revision}
+    checksums               rmd160  205d1907927c3e3b230e19f3460d151dfa3dfa7d \
+                            sha256  8362dd01bd902556940a1415f23d00278b36c27e1e3d62e2190e32d78864b0fe \
+                            size    5125388
+    build.cmd               ${prefix}/bin/gmake
+    conflicts               auto-multiple-choice-devel
+} else {
+    # devel
+    set gitlab.commit       "b8e377a2926dfccd860a63414b5f51c7abac6dd9"
+    set amc_revision        "201910131933"
+    set amc_date            "201910131933"
+    version                 1.4.0-${amc_revision}
+    checksums               rmd160  5cb7dded388bd9b6acc329a0726f8acfd7cc8c36 \
+                            sha256  9e51ca3b79c2cb352ad01e8d49d992f924edd15c5c06f2eb7f19424571d40f17 \
+                            size    5768126
+    build.cmd               ${prefix}/bin/gmake
+    conflicts               auto-multiple-choice
+}
+
+master_sites            https://gitlab.com/jojo_boulix/auto-multiple-choice/repository/archive.tar.gz?ref=${gitlab.commit}&dummy=
+distname                ${gitlab.project}-${gitlab.commit}-${gitlab.commit}
+
+depends_build-append    \
+                        port:dblatex \
+                        port:gmake \
+                        port:p${perl5.major}-xml-libxml
+
+depends_lib-append      port:opencv
+
+depends_run             \
+                        port:gdk-pixbuf2 \
+                        port:libnotify \
+                        port:librsvg \
+                        port:netpbm \
+                        port:p${perl5.major}-archive-zip \
+                        port:p${perl5.major}-clone \
+                        port:p${perl5.major}-dbd-sqlite \
+                        port:p${perl5.major}-digest-md5 \
+                        port:p${perl5.major}-email-mime \
+                        port:p${perl5.major}-email-sender \
+                        port:p${perl5.major}-file-basedir \
+                        port:p${perl5.major}-file-mimeinfo \
+                        port:p${perl5.major}-glib-object-introspection \
+                        port:p${perl5.major}-gtk3 \
+                        port:p${perl5.major}-locale-codes \
+                        port:p${perl5.major}-locale-gettext \
+                        port:p${perl5.major}-module-load-conditional \
+                        port:p${perl5.major}-openoffice-oodoc \
+                        port:p${perl5.major}-perlmagick \
+                        port:p${perl5.major}-text-csv \
+                        port:p${perl5.major}-xml-simple \
+                        port:p${perl5.major}-xml-writer \
+                        port:poppler \
+                        port:qpdf \
+                        port:sqlite3 \
+                        port:texlive \
+                        port:texlive-fonts-extra \
+                        port:texlive-lang-japanese \
+                        port:texlive-latex-extra
+
+configure {
+    if {![variant_isset mactex]} {
+        set amc.texmflocal ${texlive_texmflocal}
+    }
+    system -W ${worksrcpath} "${build.cmd} version_files AMCCONF=macports BASEPATH=${prefix} PERLPATH=${perl5.bin} PERLDIR=${perl5.lib} SYSTEM_TYPE=macports TEXDIR=${amc.texmflocal}/tex/latex/AMC TEXDOCDIR=${amc.texmflocal}/doc/latex/AMC"
+}
+
+pre-destroot {
+    destroot.args-append PERLDIR=${perl5.lib}
+
+    if {![variant_isset mactex]} {
+        set amc.texmflocal ${texlive_texmflocal}
+    }
+    destroot.args-append TEXDIR="${amc.texmflocal}/tex/latex/AMC"
+    destroot.args-append TEXDOCDIR="${amc.texmflocal}/doc/latex/AMC"
+}
+
+destroot.args           AMCCONF=macports \
+                        BASEPATH=${prefix}
+
+# The mactex variant expects MacTeX to be installed
+# and installs dblatex's stylefiles to MacTeX's texmf (local)
+set amc.texmflocal ""
+set amc.mactex_bin ""
+
+variant mactex description {The mactex variant allow Auto Multiple Choice to use a MacTeX installation \
+instead of Macports texlive tools. To install the mactex variant \
+/Library/TeX/texbin must be added to binpath in macports.conf.} {
+    # First, check if MacTeX actually seems to be there…
+    set amc.mactex_candidates { \
+       "/Library/TeX/texbin" \
+       "/usr/texbin" \
+    }
+    foreach dir ${amc.mactex_candidates} {
+        if [file executable "${dir}/kpsewhich"] {
+            set amc.mactex_bin ${dir}
+            break
+        }
+    }
+    if { ${amc.mactex_bin} != "" } {
+        set amc.texmflocal \
+            [exec ${amc.mactex_bin}/kpsewhich --expand-var='\$TEXMFLOCAL']
+        regsub -all {'} ${amc.texmflocal} "" amc.texmflocal
+    } else {
+        return -code error "Cannot find MacTeX installation; aborting"
+    }
+
+    depends_run-delete      \
+                            port:texlive \
+                            port:texlive-fonts-extra \
+                            port:texlive-lang-japanese \
+                            port:texlive-latex-extra
+
+    notes "The mactex variant will install styles to MacTeX's texmf-local
+    ${amc.texmflocal}
+(which is outside macport's common directory structure).
+For the mactex variant to work,
+${amc.mactex_bin} must also be added to binpath in macports.conf"
+
+    # AND, since we're installing files outside macports' normal directories
+    destroot.violate_mtree  yes
+}
+
+proc amc.mktexlsr {} {
+    if {![variant_isset mactex]} {
+        texlive.mktexlsr
+    } else {
+        global amc.mactex_bin
+        system "${amc.mactex_bin}/mktexlsr"
+        if [file exists "${amc.mactex_bin}/mtxrun"] {
+            system "${amc.mactex_bin}/mtxrun --generate"
+        }
+    }
+}
+
+post-activate {
+    amc.mktexlsr
+}
+
+post-deactivate {
+    amc.mktexlsr
+}

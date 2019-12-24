@@ -1,0 +1,139 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           compiler_blacklist_versions 1.0
+
+name                guile
+categories          lang
+maintainers         nomaintainer
+platforms           darwin
+license             LGPL-2.1+
+
+# current version
+version             2.2.4
+revision            2
+checksums           rmd160  ffd6522e6ea2102dd63fcf92aab8ac076970c240 \
+                    sha256  33b904c0bf4e48e156f3fb1d0e6b0392033bd610c6c9d9a0410c6e0ea96a3e5c \
+                    size    18094974
+
+compiler.c_standard 2011
+
+# https://trac.macports.org/ticket/59365
+# Most likely related to the 'stack-check' issue.
+# To be reviewed once Xcode 11.2 comes out.
+compiler.blacklist-append {clang > 1099}
+
+# previous version of guile that works well on PPC - was last at rev 1
+platform darwin powerpc {
+    version             2.0.14
+    revision            2
+    checksums           rmd160  754aaf1bf3c6bed9afdde49c5154b87047408a1e \
+                        sha256  8aeb2f353881282fe01694cce76bb72f7ffdd296a12c7a1a39255c27b0dfe5f1
+    compiler.c_standard 1989
+}
+
+# Failed to destroot guile:
+# /opt/local/lib/guile/2.0/ccache/ice-9/and-let-star.go differs in ... and
+# cannot be merged
+universal_variant   no
+
+description         GNU's Ubiquitous Intelligent Language for Extension (guile)
+long_description    \
+        Guile is an interpreter for the Scheme programming \
+        language, packaged for use in a wide variety of \
+        environments. Guile implements Scheme as described in \
+        the Revised^5 Report on the Algorithmic Language Scheme \
+        (usually known as R5RS), providing clean and general \
+        data and control structures. \
+\
+        Guile goes beyond the rather austere language presented \
+        in R5RS, extending it with a module system, full access \
+        to POSIX system calls, networking support, multiple \
+        threads, dynamic linking, a foreign function call \
+        interface, powerful string processing, and many other \
+        features needed for programming in the real world.
+
+distname            guile-${version}
+homepage            https://www.gnu.org/software/guile/guile.html
+master_sites        gnu
+
+depends_lib         port:readline \
+                    port:gettext \
+                    port:libiconv \
+                    port:libtool \
+                    port:gmp \
+                    port:libunistring \
+                    port:boehmgc \
+                    port:libffi \
+                    port:ncurses
+
+# guile-config is a wrapper around pkg-config
+depends_lib-append  port:pkgconfig
+
+# fixes: sed: -i may not be used with stdin
+depends_build-append port:gsed
+configure.env-append SED=${prefix}/bin/gsed
+build.env-append    SED=${prefix}/bin/gsed
+
+configure.args      CPPFLAGS="-I${prefix}/include" \
+                    LDFLAGS="-L${prefix}/lib" \
+                    --infodir="${prefix}/share/info" \
+                    --mandir="${prefix}/share/man" \
+                    --enable-regex \
+                    --disable-error-on-warning \
+                    --disable-silent-rules
+
+# Unable to cross compile, so we need to be able to run the built code
+if {${os.arch} eq "i386" && ${os.major} >= 11} {
+    supported_archs i386 x86_64
+    set universal_archs_supported {i386 x86_64}
+} elseif {${os.arch} eq "i386" && ${build_arch} eq "x86_64"} {
+    supported_archs i386 x86_64 ppc
+    set universal_archs_supported {i386 x86_64 ppc}
+} elseif {${os.arch} eq "i386"} {
+    supported_archs i386 ppc
+    set universal_archs_supported {i386 ppc}
+} elseif {${build_arch} eq "ppc64"} {
+    supported_archs ppc ppc64
+    set universal_archs_supported {ppc ppc64}
+} else {
+    supported_archs ${build_arch}
+    set universal_archs_supported ${build_arch}
+}
+
+platform darwin {
+#    if {[variant_isset universal]} {
+#        set merger_host(x86_64) x86_64-apple-${os.platform}${os.major}
+#        set merger_host(i386) i686-apple-${os.platform}${os.major}
+#        set merger_host(ppc64) powerpc64-apple-${os.platform}${os.major}
+#        set merger_host(ppc) powerpc-apple-${os.platform}${os.major}
+#        set merger_configure_args(x86_64) "--build=x86_64-apple-${os.platform}${os.major}"
+#        set merger_configure_args(i386) "--build=i686-apple-${os.platform}${os.major}"
+#        set merger_configure_args(ppc) "--build=powerpc-apple-${os.platform}${os.major}"
+#        set merger_configure_args(ppc64) "--build=powerpc64-apple-${os.platform}${os.major}"
+#    } else
+    if {${build_arch} eq "i386"} {
+        configure.args-append \
+            --host=i686-apple-${os.platform}${os.major} \
+            --build=i686-apple-${os.platform}${os.major}
+    } elseif {${build_arch} eq "x86_64"} {
+        configure.args-append \
+            --host=x86_64-apple-${os.platform}${os.major} \
+            --build=x86_64-apple-${os.platform}${os.major}
+    } elseif {${build_arch} eq "ppc"} {
+        configure.args-append \
+            --host=powerpc-apple-${os.platform}${os.major} \
+            --build=powerpc-apple-${os.platform}${os.major}
+    } elseif {${build_arch} eq "ppc64"} {
+        configure.args-append \
+            --host=powerpc64-apple-${os.platform}${os.major} \
+            --build=powerpc64-apple-${os.platform}${os.major}
+    }
+}
+
+test.run        yes
+test.target     check
+
+livecheck.type  regex
+livecheck.url   "https://ftp.gnu.org/pub/gnu/guile/?C=N;O=D"
+livecheck.regex "${name}-(\\d+(?:\\.\\d+)*)${extract.suffix}"

@@ -1,0 +1,61 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           compiler_blacklist_versions 1.0
+PortGroup           meson 1.0
+
+name                girara
+version             0.3.3
+revision            0
+categories          devel gnome
+platforms           darwin
+license             zlib
+maintainers         {gmail.com:starkhalo @harciga} \
+                    openmaintainer
+description         Cross-platform widget toolkit based on GTK+
+long_description \
+    girara is a library that implements a user interface that focuses on    \
+    simplicity and minimalism. Currently based on GTK+, a cross-platform    \
+    widget toolkit, it proves an interface that focueses on three main com- \
+    ponents: A so-called view widget that represents the actual application \
+    (e.g. a website (browser), an image (image viewer) or the document      \
+    (document viewer)), an input bar that is used to execute commands of    \
+    the application and the status bar which provides the user with current \
+    information.
+
+homepage            https://git.pwmt.org/pwmt/girara/
+
+master_sites        ${homepage}/-/archive/${version}
+
+checksums           rmd160  a9f44614d6abc2b7d1befe867ba451da50eee8fd \
+                    sha256  4456ddd6f0420fa6f1677a4a8f438f0401c38c2521585db3ee42e339a730798f \
+                    size    72372
+
+depends_build-append \
+                    port:pkgconfig \
+                    port:intltool
+
+depends_lib         path:lib/pkgconfig/glib-2.0.pc:glib2 \
+                    port:gtk3 \
+                    port:libnotify \
+                    port:json-c
+
+# blacklist compilers that don't support -std=c11
+compiler.blacklist  *gcc* {clang < 300}
+
+platform darwin     {
+# Before 10.7 there's no getline() in stdio.h
+# http://stackoverflow.com/a/1117158/205907
+    if {${os.major} < 11} {
+# Using CVS project implementation
+# http://www.opensource.apple.com/source/cvs/cvs-47/cvs/lib/getline.c?txt
+# http://www.opensource.apple.com/source/cvs/cvs-47/cvs/lib/getline.h?txt
+# http://www.opensource.apple.com/source/cvs/cvs-47/cvs/lib/getdelim.c?txt
+# http://www.opensource.apple.com/source/cvs/cvs-47/cvs/lib/getdelim.h?txt
+        patchfiles-append   patch-getline.diff
+    }
+}
+
+livecheck.type      regex
+livecheck.url       ${homepage}/tags
+livecheck.regex     [quotemeta ${name}]-(\\d\\.\\d\\.\\d)[quotemeta ${extract.suffix}]

@@ -1,0 +1,36 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+PortGroup               qmake 1.0
+
+name                    tea
+version                 48.0.0
+revision                0
+checksums               rmd160  fa3ef95c8750e7573b47547e3cbaa4fb080446cc \
+                        sha256  1beb0b6aa3ff3f1e7e6ece6aff0937ee8b65e9c9fccde693f66a15e042bc1134 \
+                        size    435886
+
+description             TEA is the powerful text editor for GNU/Linux and *BSD.
+long_description        ${description}
+maintainers             {ryandesign @ryandesign} openmaintainer
+categories              editors
+license                 GPL-3
+platforms               darwin
+
+homepage                https://tea.ourproject.org
+master_sites            ${homepage}/dloads/
+use_bzip2               yes
+
+depends_lib-append      port:aspell \
+                        port:hunspell \
+                        port:zlib
+
+patchfiles-append       tea-qmake.pro.patch
+
+destroot {
+    copy ${worksrcpath}/bin/tea.app ${destroot}${applications_dir}
+}
+
+livecheck.type          regex
+livecheck.url           [lindex ${master_sites} 0]
+livecheck.regex         ${name}-(\[0-9.\]+)${extract.suffix}

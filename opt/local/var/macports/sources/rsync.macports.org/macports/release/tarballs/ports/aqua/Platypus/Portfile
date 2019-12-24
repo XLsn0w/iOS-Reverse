@@ -1,0 +1,98 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           xcode 1.0
+
+name                Platypus
+version             5.3
+revision            2
+license             GPL-2
+categories          aqua devel
+maintainers         {amake @amake} openmaintainer
+conflicts           Platypus44
+description         Program for creating application wrappers around scripts.
+
+long_description    Platypus is a program for creating application \
+    wrappers around scripts, i.e. creating Mac OS X applications that execute a \
+    script they are bundled with. Scripts can thus be run transparently from \
+    the graphical window environment without having to resort to using the \
+    command line interface. It supports drag and drop on created apps, running \
+    as root using Authentication Manager and more.
+
+homepage            http://www.sveinbjorn.org/platypus/
+master_sites        http://www.sveinbjorn.org/files/software/platypus/
+distname            platypus${version}.src
+use_zip             yes
+
+checksums           md5     a597ec7a6706dd0514d0d5ece1787a44 \
+                    sha1    10ab73718cb995322becd0860d004954e94a60ac \
+                    rmd160  f0bd84eb5349ca74f434bf05056578d1070e4184 \
+                    sha256  b5b707d4f664ab6f60eed545d49a7d38da7557ce8268cc4791886eee7b3ca571 \
+                    size    17401194
+
+pre-fetch {
+    if {${os.major} < 12} {
+        return -code error "This version of ${name} is only for OS X 10.8 or later."
+    }
+}
+
+supported_archs     i386 x86_64
+
+macosx_deployment_target 10.8
+
+xcode.target        Platypus
+
+universal_variant   no
+
+worksrcdir          .
+
+patchfiles          0001-Remove-install-CLI-tool.patch \
+                    0002-Remove-Sparkle.patch \
+                    0003-Remove-Sparkle-from-Xcode-project.patch \
+                    0004-Remove-uninstall-feature.patch
+
+patch.pre_args      -p1
+
+post-patch {
+    reinplace "s|/usr/local|${prefix}|" ${worksrcpath}/CLT/man/platypus.1 ${worksrcpath}/Common.h
+    reinplace "s|CODE_SIGN_IDENTITY = \".*\";|CODE_SIGN_IDENTITY = \"\";|g" ${worksrcpath}/Platypus.xcodeproj/project.pbxproj
+}
+
+# This is a temporary kludge. The new Xcode build system fails to destroot this
+# for reasons that are poorly understood.  Remove this when a better fix is
+# known.
+# See https://trac.macports.org/ticket/57234
+if {[vercmp ${xcodeversion} 10.0] >= 0} {
+    destroot.pre_args  -UseNewBuildSystem=NO
+}
+
+post-destroot {
+    # The destroot target installs these as well, but they are unwanted as they
+    # are also gzipped as resources inside Platypus.app
+    delete ${destroot}${applications_dir}/ScriptExec.app \
+        ${destroot}${applications_dir}/platypus_clt
+
+    file copy ${worksrcpath}/Application/Resources/InstallCommandLineTool.sh ${worksrcpath}
+    set cli_install_script ${worksrcpath}/InstallCommandLineTool.sh
+    reinplace "s|^chown|#chown|g" ${cli_install_script}
+    # The program dynamically replaces these template placeholders on invocation.
+    # See Common.h and InstallCommandLineTool.sh
+    reinplace "s|%%CMDLINE_PROGNAME_BUNDLE%%|platypus_clt.gz|g" ${cli_install_script}
+    reinplace "s|%%CMDLINE_SCRIPTEXEC_GZIP_NAME%%|ScriptExec.gz|g" ${cli_install_script}
+    reinplace "s|%%CMDLINE_MANPAGE_GZIP_NAME%%|platypus.1.gz|g" ${cli_install_script}
+    reinplace "s|%%CMDLINE_DEFAULT_ICON_NAME%%|PlatypusDefault.icns|g" ${cli_install_script}
+    reinplace "s|%%CMDLINE_NIB_NAME%%|MainMenu.nib|g" ${cli_install_script}
+    reinplace "s|%%CMDLINE_BIN_PATH%%|${destroot}${prefix}/bin|g" ${cli_install_script}
+    reinplace "s|%%CMDLINE_TOOL_PATH%%|${destroot}${prefix}/bin/platypus|g" ${cli_install_script}
+    reinplace "s|%%CMDLINE_SHARE_PATH%%|${destroot}${prefix}/share/platypus|g" ${cli_install_script}
+    reinplace "s|%%CMDLINE_MANDIR_PATH%%|${destroot}${prefix}/share/man/man1|g" ${cli_install_script}
+    reinplace "s|%%CMDLINE_MANPAGE_PATH%%|${destroot}${prefix}/share/man/man1/platypus.1.gz|g" ${cli_install_script}
+    reinplace "s|%%CMDLINE_SCRIPT_EXEC_PATH%%|${destroot}${prefix}/share/platypus/ScriptExec|g" ${cli_install_script}
+    reinplace "s|%%CMDLINE_ICON_PATH%%|${destroot}${prefix}/share/platypus/PlatypusDefault.icns|g" ${cli_install_script}
+
+    system -W ${worksrcpath} "./InstallCommandLineTool.sh ${destroot}${applications_dir}/Platypus.app/Contents/Resources"
+}
+
+livecheck.type  regex
+livecheck.url   ${homepage}
+livecheck.regex "${name} (\\d+(?:\\.\\d+)*)"

@@ -1,0 +1,19 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         ExtUtils-Helpers 0.026
+platforms           darwin
+maintainers         nomaintainer
+license             {Artistic-1 GPL}
+
+description         ExtUtils::Helpers - Various portability utilities for module builders
+
+long_description    This module provides various portable helper functions for module building modules.
+
+supported_archs     noarch
+
+checksums           rmd160  bd6d179eaa3c84d8d390559d76880ac47a103321 \
+                    sha256  de901b6790a4557cf4ec908149e035783b125bf115eb9640feb1bc1c24c33416

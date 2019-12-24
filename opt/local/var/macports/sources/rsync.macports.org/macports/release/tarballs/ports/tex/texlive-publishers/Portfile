@@ -1,0 +1,30 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           texlive 1.0
+
+name                texlive-publishers
+version             50870
+revision            0
+
+categories          tex
+maintainers         {dports @drkp}
+license             Copyleft Permissive
+description         TeX Live: Publisher styles, theses, etc.
+long_description    Publisher styles, theses, etc.
+
+checksums           texlive-publishers-50870-run.tar.xz \
+                    rmd160  dffa5d222b3a8f2baf002c96288e08f35db88d4f \
+                    sha256  377f7d3d8faeb8941bbb1fa306135d8bc45abcf6ad72efd01068a1096661f437 \
+                    texlive-publishers-50870-doc.tar.xz \
+                    rmd160  df3371bb1a0c30875099ec9a9ab4d2923e850149 \
+                    sha256  434227cbb5e6282f3dabbbf099a7a1b30c9204cce7c9daa882984cae424d8499 \
+                    texlive-publishers-50870-src.tar.xz \
+                    rmd160  5b0d3224393d1e55d1008d975317802aa93e5d43 \
+                    sha256  f2df6f5d52e1b1ef55ec1c9931f92369052c5aebbe830c6433d703bfb314e060
+
+depends_lib         port:texlive-latex
+
+depends_lib-append  port:texlive-latex-recommended port:texlive-latex-extra
+
+texlive.texmfport

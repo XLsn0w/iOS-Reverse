@@ -1,0 +1,141 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           cmake 1.0
+PortGroup           github 1.0
+PortGroup           cxx11 1.1
+
+github.setup        balint256 gr-baz 3cedf4bc261e01043daab66c70321889df4f701d
+version             20181012
+revision            3
+checksums           rmd160 71a8dfad14f9f31c8ac7c27173e445d8f34192d1 \
+                    sha256 17dfc144267a2f53e7ae0fc67c708287b9d5b02390d5934509daf0c642253be6 \
+                    size   511866
+
+# allow gr-baz to work with both gnuradio and gnuradio-devel ...
+
+depends_lib-append  path:lib/libgnuradio-runtime.dylib:gnuradio
+
+# ... but not with gnuradio-next
+
+pre-fetch {
+    if {![catch {set installed [lindex [registry_active gnuradio-next] 0]}]} {
+        # gnuradio-next is installed; this version of gr-osmosdr does not work with gnuradio-next
+        ui_msg "\nError: ${name} requires the gnuradio or gnuradio-devel port, and will not work with the gnuradio-next port.  deactivate gnuradio-next, and then install or activate gnuradio or gnuradio-devel.\n"
+        return -code error "Invalid port dependency: gnuradio-next"
+    }
+}
+
+homepage            http://wiki.spench.net/wiki/Gr-baz
+
+categories          science comms
+maintainers         {michaelld @michaelld} openmaintainer
+description         Provides augmented functionality (blocks, GRC definitions, apps, etc) for GNU Radio.
+long_description    ${description}
+license             GPL-3
+platforms           darwin
+
+depends_build-append \
+    port:pkgconfig \
+    port:swig-python
+
+depends_lib-append \
+    port:boost \
+    path:lib/libvolk.dylib:volk
+
+depends_test-append \
+    port:cppunit
+
+# for docs
+
+depends_lib-append \
+    port:doxygen
+
+# temporary fix, for Boost 1.68.0 compatibility
+
+patchfiles-append \
+    patch-fix_boost_1.68.0.diff
+patch.pre_args -p1
+
+# do VPATH (out of source tree) build
+
+cmake.out_of_source yes
+
+# remove top-level library path, such that internal libraries are used
+# instead of any already-installed ones.
+
+configure.ldflags-delete -L${prefix}/lib
+
+# specify the Python dependencies
+
+depends_lib-append \
+    port:python27
+
+# specify the Python version to use
+
+configure.args-append \
+    -DPYTHON_EXECUTABLE=${frameworks_dir}/Python.framework/Versions/2.7/bin/python2.7 \
+    -DPYTHON_INCLUDE_DIR=${frameworks_dir}/Python.framework/Versions/2.7/Headers \
+    -DPYTHON_LIBRARY=${frameworks_dir}/Python.framework/Versions/2.7/Python \
+    -DGR_PYTHON_DIR=${frameworks_dir}/Python.framework/Versions/2.7/lib/python2.7/site-packages
+
+# enable all variants except +debug and +universal
+
+default_variants +uhd +rtl +armadillo
+
+variant uhd description "Install ${name} with support for UHD" {
+
+    # allow uhd or uhd-devel
+
+    depends_lib-append \
+        path:lib/libuhd.dylib:uhd
+
+    configure.args-append \
+        -DUHD_INCLUDE_DIRS=${prefix}/include \
+        -DUHD_LIBRARIES=${prefix}/lib/libuhd.dylib
+
+}
+
+if {![variant_isset uhd]} {
+
+    configure.args-append \
+        -DUHD_INCLUDE_DIRS= \
+        -DUHD_LIBRARIES=
+
+}
+
+variant rtl description "Install ${name} with support for RTL SDR hardware (via libusb)" {
+
+    depends_lib-append path:lib/libusb-1.0.dylib:libusb
+
+    configure.args-append \
+        -DLIBUSB_INCLUDE_DIR=${prefix}/include/libusb-1.0 \
+        -DLIBUSB_LIBRARIES=${prefix}/lib/libusb-1.0.dylib
+
+}
+
+if {![variant_isset rtl]} {
+
+    configure.args-append \
+        -DLIBUSB_INCLUDE_DIR= \
+        -DLIBUSB_LIBRARIES=
+
+}
+
+variant armadillo description "Install ${name} with support for MUSIC DOA estimator block (via armadillo)" {
+
+    depends_lib-append port:armadillo
+
+    configure.args-append \
+        -DARMADILLO_INCLUDE_DIR=${prefix}/include \
+        -DARMADILLO_LIBRARY=${prefix}/lib/libarmadillo.dylib
+
+}
+
+if {![variant_isset armadillo]} {
+
+    configure.args-append \
+        -DARMADILLO_INCLUDE_DIR= \
+        -DARMADILLO_LIBRARY=
+
+}

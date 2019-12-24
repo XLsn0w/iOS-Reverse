@@ -1,0 +1,51 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+github.setup        splitbrain dokuwiki 2018-04-22b release_stable_
+revision            1
+categories          www
+license             GPL-2
+platforms           darwin
+maintainers         {khindenburg @kurthindenburg} openmaintainer
+supported_archs     noarch
+
+description         simple to use wiki aimed at documentation projects
+long_description    dokuwiki is a simple to use wiki aimed at a small \
+                    companies documentation needs. It works on plain texts files \
+                    and thus needs no database. It has a simple but powerful \
+                    syntax which makes sure the datafiles remain readable outside \
+                    the Wiki.
+
+checksums           rmd160  6940600c5e592ab496d4074762c65c0f4b54765a \
+                    sha256  18d8a02351e68fef9e4899b944b095efa1928327f9006bae4fd58ceaf383809d \
+                    size    3693376
+
+foreach php {php56 php70 php71 php72 php73} {
+    variant ${php} description "Use ${php}" "
+        depends_run \
+                port:${php} \
+                port:${php}-openssl
+    "
+}
+
+if {![variant_isset php56] && ![variant_isset php70] && ![variant_isset php71] && ![variant_isset php72]} {
+   default_variants +php73
+}
+
+use_configure       no
+
+build               {}
+
+set docroot ${destroot}${prefix}/www/${name}
+
+destroot {
+    xinstall -m 755 -d ${docroot}
+    copy {*}[glob ${worksrcpath}/*] ${docroot}
+}
+
+notes "
+For Installation Instructions see \
+http://www.dokuwiki.org/install
+"

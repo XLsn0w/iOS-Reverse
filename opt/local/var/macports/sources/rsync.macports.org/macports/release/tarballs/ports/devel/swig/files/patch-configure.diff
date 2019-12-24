@@ -1,0 +1,13 @@
+--- configure.orig
++++ configure
+@@ -9854,8 +9854,8 @@
+       { $as_echo "$as_me:${as_lineno-$LINENO}: checking for PHP header files" >&5
+ $as_echo_n "checking for PHP header files... " >&6; }
+             case $PHP in
+-        *7.*)
+-          PHPCONFIG=`echo "$PHP"|sed 's/7\...*$/-config&/'` ;;
++        *7*)
++          PHPCONFIG=`echo "$PHP"|sed 's/\(7.*\)$/-config\1/'` ;;
+         *)
+           PHPCONFIG=$PHP-config ;;
+       esac

@@ -1,0 +1,31 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+PortGroup           bitbucket 1.0
+
+bitbucket.setup     Mekk mercurial-extension_utils 1.4.0
+name                py-mercurial_extension_utils
+
+categories-append   devel
+license             GPL
+maintainers         nomaintainer
+description         Utility methods for Mercurial extensions
+long_description    ${description}
+
+
+platforms           darwin
+
+checksums           rmd160  6319dccf8844f23d88b2ae95c54ab886006c3c1b \
+                    sha256  66ddd08fb9f1f1f2aa6442ac1b634092842c018c9c1243cca9442c6edbee9234 \
+                    size    22099
+
+python.versions     27
+
+if {${name} ne ${subport}} {
+    depends_run         port:mercurial
+
+    depends_build       port:py${python.version}-setuptools
+
+    livecheck.type      none
+}

@@ -1,0 +1,35 @@
+--- setup.py.orig	2018-08-28 13:57:58.000000000 -0400
++++ setup.py	2019-10-25 16:56:57.000000000 -0400
+@@ -211,26 +211,17 @@
+ 
+ usr_local = '/usr/local'
+ if osp.exists(usr_local):
+-    add_dir_if_exists(
+-        include_dirs,
+-        osp.join(usr_local, 'include'),
+-        osp.join(usr_local, 'include/freetds'),
+-        osp.join(usr_local, 'freetds/include')
+-    )
+-    add_dir_if_exists(
+-        library_dirs,
+-        osp.join(usr_local, 'lib'),
+-        osp.join(usr_local, 'lib/freetds'),
+-        osp.join(usr_local, 'freetds/lib')
+-    )
++    # 2014-10-18, petr, do not link against /usr/local
++    pass
+ 
+ if sys.platform == 'darwin':
+     fink = '/sw'
+     if osp.exists(fink):
+-        add_dir_if_exists(include_dirs, osp.join(fink, 'include'))
+-        add_dir_if_exists(library_dirs, osp.join(fink, 'lib'))
++        # 2014-10-18, petr, do not link against /sw (fink)
++        pass
+ 
+-    macports = '/opt/local'
++    # 2014-10-18, petr, avoid hard-conding prefix
++    macports = '@MP_PREFIX@'
+     if osp.exists(macports):
+         # some mac ports paths
+         add_dir_if_exists(

@@ -1,0 +1,41 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+github.setup        phaag nfdump 1.6.15 v
+revision            2
+categories          net
+maintainers         nomaintainer
+license             BSD
+platforms           darwin
+
+description         collect and process netflow data
+long_description    Part of the NfSen project, the nfdump tools are \
+                    command-line programs to collect and process netflow data.
+
+checksums           rmd160  5f12b04ba2bc4b4debaa36a25c8e3e1331423727 \
+                    sha256  81ceb967e878606441c024b8ae5c9e6beaba5213450cc18dc3f02c1b26e5054c
+
+depends_lib         port:rrdtool
+
+# https://github.com/phaag/nfdump/issues/32
+use_parallel_build  no
+
+configure.cflags-append -std=gnu89
+configure.args      --enable-sflow \
+                    --enable-nfprofile \
+                    --enable-nsel \
+                    --with-rrdpath=${prefix}
+
+post-destroot {
+    xinstall -d ${destroot}${prefix}/share/doc/${name}
+    xinstall -m 644 -W ${worksrcpath} BSD-license.txt ChangeLog README ToDo \
+        ${destroot}${prefix}/share/doc/${name}
+}
+
+variant flowtools description {Enable support for flow-tools} {
+    depends_lib-append  port:flow-tools
+    configure.args-append   --enable-ftconv \
+        --with-ftpath=${prefix}
+}

@@ -1,0 +1,25 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+PortGroup           github 1.0
+PortGroup           cmake 1.1
+PortGroup           cxx11 1.1
+
+github.setup        zeux pugixml 1.8.1 v
+
+categories          textproc
+platforms           darwin
+license             MIT
+maintainers         hates.ms:nikkoara openmaintainer
+
+description         C++ Library for XML processing
+
+long_description    C++ library for creating and manipulating XML DOMs. Features: \
+                    efficient parsing of XML, XPath 1.0 support, full Unicode support.
+
+checksums           sha256  929c4657c207260f8cc28e5b788b7499dffdba60d83d59f55ea33d873d729cd4 \
+                    rmd160  5663e6f5226f0ce12b4c93d16a5b8cda1811ea57
+
+configure.args-append -DBUILD_SHARED_LIBS=ON
+configure.args-append -DCMAKE_CXX_FLAGS='-std=c++11'

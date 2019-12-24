@@ -1,0 +1,65 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+PortGroup               github 1.0
+
+github.setup            tinyproxy tinyproxy 1.8.4
+revision                1
+categories              net www
+platforms               darwin
+maintainers             nomaintainer
+license                 GPL-2+
+
+description             fast, lightweight HTTP proxy
+
+long_description        tinyproxy is a lightweight HTTP proxy. Designed from \
+                        the ground up to be fast and yet small, it is an ideal \
+                        solution for sites where a full-featured HTTP proxy is \
+                        required, but the system resources required to run a \
+                        more demanding HTTP proxy are unavailable.
+
+homepage                https://tinyproxy.github.io
+github.tarball_from     releases
+use_xz                  yes
+
+checksums               rmd160  5fd68912b1977badf261756b34a1de7efc183a72 \
+                        sha256  a41f4ddf0243fc517469cf444c8400e1d2edc909794acda7839f1d644e8a5000
+
+depends_build-append    port:asciidoc \
+                        port:libxml2
+
+patchfiles              patch-configure.diff
+
+configure.args          --disable-regexcheck \
+                        --disable-silent-rules
+
+post-destroot {
+    xinstall -d -o nobody -g nobody ${destroot}${prefix}/var/run/tinyproxy
+
+    move ${destroot}${prefix}/etc/tinyproxy.conf ${destroot}${prefix}/etc/tinyproxy.conf.default
+
+    set docdir ${destroot}${prefix}/share/doc/${name}
+    xinstall -d ${docdir}
+    xinstall -m 644 -W ${worksrcpath} \
+        AUTHORS \
+        ChangeLog \
+        COPYING \
+        docs/filter-howto.txt \
+        docs/http-error-codes.txt \
+        docs/http-rfcs.txt \
+        README \
+        TODO \
+        ${docdir}
+}
+
+startupitem.create      yes
+startupitem.netchange   yes
+startupitem.executable  ${prefix}/sbin/tinyproxy -c ${prefix}/etc/tinyproxy.conf -d
+
+variant reverse description {Enable reverse proxying} {
+    configure.args-append   --enable-reverse
+}
+
+variant transparent description {Enable transparent proxying} {
+    configure.args-append   --enable-transparent
+}

@@ -1,0 +1,44 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           cmake 1.0
+PortGroup           compilers 1.0
+
+compilers.choose    cc cxx
+compilers.setup     -gcc
+
+name                mlpack
+version             2.2.5
+revision            2
+categories          math devel science
+platforms           darwin
+license             BSD
+maintainers         {takeshi @tenomoto} openmaintainer
+description         a scalable C++ machine learning library
+long_description \
+    mlpack is an intuitive, fast, scalable C++ machine learning library, \
+    meant to be a machine learning analog to LAPACK. \
+    It aims to implement a wide array of machine learning methods and \
+    functions as a \"swiss army knife\" for machine learning researchers.
+homepage            http://mlpack.org/index.html
+master_sites        https://github.com/${name}/${name}/archive/
+worksrcdir          ${name}-${name}-${version}
+
+checksums           rmd160  899cddfe2d5ae1e6ef38ba06bdb10046e4f1d94e \
+                    sha256  6bba8b28a50dc3b8afacd357aca57a658cf5b8d90a57d38f357d7e2eafcf09bb
+
+depends_lib         port:armadillo \
+                    port:boost \
+                    port:libxml2
+
+cmake.out_of_source yes
+
+configure.args-append \
+                    -DDEBUG=OFF \
+                    -DPROFILE=OFF \
+                    -DARMA_EXTRA_DEBUG=OFF \
+                    -DBOOST_ROOT=${prefix} \
+                    -DARMADILLO_INCLUDE_DIR=${prefix}/include \
+                    -DARMADILLO_LIBRARY=${prefix}/lib/libarmadillo.dylib
+
+build.target        ""

@@ -1,0 +1,64 @@
+PortSystem 1.0
+
+name            xorg-libXtst
+version         1.2.3
+revision        1
+categories      x11 devel
+license         X11
+maintainers     {jeremyhu @jeremyhu} openmaintainer
+description     X.org libXt
+homepage        https://www.x.org
+platforms       darwin macosx
+long_description X.org libXtst library.
+master_sites     xorg:individual/lib/
+
+distname    libXtst-${version}
+checksums           sha1    27d004db631bee3a82155d3caf961d9584207d36 \
+                    rmd160  1cfba7e6eced26d56677fb78de1e4c4a37ff9938 \
+                    sha256  4655498a1b8e844e3d6f21f3b2c4e2b571effb5fd83199d428a6ba7ea4bf5204
+
+use_bzip2   yes
+use_parallel_build      yes
+
+depends_build   port:pkgconfig
+
+depends_lib     port:xorg-libXext \
+                port:xorg-libXi \
+                port:xorg-xorgproto
+
+configure.args \
+	--without-xmlto \
+	--without-fop \
+	--disable-specs
+
+build.args V=1
+
+# Depending on ghostscript for the PDF documentation creates a dependency
+# loop, so you may want to install first without the docs variant
+variant docs description "Install extra documentation" {
+	depends_build-append \
+		port:fop \
+		port:xmlto \
+		port:xorg-sgml-doctools
+
+	depends_skip_archcheck-append \
+		xmlto
+
+	configure.args-delete \
+		--without-xmlto \
+		--without-fop \
+		--disable-specs
+
+	configure.args-append \
+		--with-xmlto \
+		--with-fop \
+		--enable-specs
+
+	configure.env-append \
+		XMLTO=${prefix}/bin/xmlto \
+		FOP=${prefix}/bin/fop
+}
+
+livecheck.type  regex
+livecheck.url   https://xorg.freedesktop.org/archive/individual/lib/?C=M&O=D
+livecheck.regex libXtst-(\\d+(?:\\.\\d+)*)

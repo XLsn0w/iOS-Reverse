@@ -1,0 +1,37 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                bmake
+version             20171207
+categories          devel
+platforms           darwin
+license             BSD
+maintainers         nomaintainer
+homepage            http://www.crufty.net/help/sjg/bmake.html
+master_sites        http://www.crufty.net/ftp/pub/sjg/
+
+description         Portable NetBSD make
+long_description    bmake is the portable version of NetBSD make.
+
+checksums           rmd160  41fe45f90b5e2f6f82957f3f5f41355bd1e1b118 \
+                    sha256  1703667e53a0498c0903b20612ebcbb41b886a94b238624cfeadd91a4111d39a \
+                    size    555275
+
+worksrcdir          ${name}
+
+configure.cmd       ./boot-strap
+configure.args-append \
+                    op=configure
+
+build.cmd           ./boot-strap
+build.target        op=build
+
+destroot.target     op=install
+destroot.args-append \
+                    --prefix=${prefix}
+
+
+livecheck.type      regex
+livecheck.url       ${master_sites}
+livecheck.regex     "${name}-(\[\\d\]+)${extract.suffix}"

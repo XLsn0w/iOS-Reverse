@@ -1,0 +1,24 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           cmake 1.1
+PortGroup           cxx11 1.1
+
+github.setup        MisterTea EternalTerminal 6.0.4 et-v
+revision            0
+name                et
+categories          net
+license             Apache-2
+platforms           darwin
+maintainers         {l2dy @l2dy} openmaintainer
+description         a remote shell that automatically reconnects without interrupting the session
+long_description    Eternal Terminal (ET) is ${description}.
+
+checksums           rmd160  1b2acc51dec656bb28cad9dffd55a26f667da80c \
+                    sha256  f06a21e0f5dd6dc91749c210a7eec4d7df86f8bbcab2633107d61e7b4206a272 \
+                    size    2174069
+
+depends_lib         port:gflags \
+                    port:libsodium \
+                    port:protobuf3-cpp

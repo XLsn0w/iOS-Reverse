@@ -1,0 +1,25 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+PortGroup               github 1.0
+
+github.setup            frankmorgner openpace 1.1.0
+revision                1
+categories              security libs
+platforms               darwin
+license                 GPL-3
+maintainers             {lbschenkel @lbschenkel} openmaintainer
+
+description             Cryptographic library for EAC version 2
+long_description        OpenPACE implements Extended Access Control (EAC) \
+                        version 2 as specified in BSI TR-03110.
+
+github.tarball_from     releases
+checksums               rmd160  9962fbf76f82809bc6cc91ef98df85ad112e5066 \
+                        sha256  30eac481a4256efc374367110076593b770516c221653a9d1f8fa275bf324dc6 \
+                        size    3428532
+
+depends_build           port:gengetopt port:help2man port:pkgconfig
+depends_lib             port:openssl
+
+configure.args          --disable-silent-rules

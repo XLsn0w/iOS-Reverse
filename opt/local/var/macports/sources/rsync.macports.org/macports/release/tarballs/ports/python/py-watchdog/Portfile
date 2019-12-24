@@ -1,0 +1,39 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-watchdog
+version             0.9.0
+revision            0
+
+categories-append   sysutils
+platforms           darwin
+license             Apache-2
+maintainers         {petr @petrrr} openmaintainer
+
+description         Python API and shell utilities to monitor file system events.
+long_description    ${description}
+
+homepage            https://github.com/gorakhargosh/watchdog
+master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}/
+distname            ${python.rootname}-${version}
+
+checksums           sha256  965f658d0732de3188211932aeb0bb457587f04f63ab4c1e33eab878e9de961d \
+                    rmd160  7a6cea352e1077d76ca71c240281dcd08ce25f09 \
+                    size    85549
+
+python.versions     27 34 35 36 37
+
+if {${name} ne ${subport}} {
+    depends_lib-append      port:py${python.version}-argh \
+                            port:py${python.version}-pathtools \
+                            port:py${python.version}-setuptools \
+                            port:py${python.version}-yaml
+
+    if {${os.major} <= 10} {
+        patchfiles  patch.osx-10.6.setup.py
+    }
+
+    livecheck.type  none
+}

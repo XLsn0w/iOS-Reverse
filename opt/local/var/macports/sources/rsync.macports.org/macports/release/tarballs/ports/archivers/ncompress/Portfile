@@ -1,0 +1,52 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+github.setup        vapier ncompress 4.2.4.5 v
+revision            0
+checksums           rmd160  6a7a2a0859577b5acc07b80226b2f906b85298cb \
+                    sha256  11446bc7d3e27a9f2094321c17a9b120351fdbe3378a19bba1088d9f801229bd \
+                    size    35586
+
+categories          archivers
+platforms           darwin
+maintainers         {ryandesign @ryandesign} openmaintainer
+license             public-domain
+conflicts           gzip
+
+description         fast, simple LZW file compressor
+
+long_description    Compress is a ${description}. Compress does not have the \
+                    highest compression rate, but it is one of the fastest \
+                    programs to compress data. Compress is the de facto \
+                    standard in the UNIX community for compressing files.
+
+patchfiles          test.patch
+
+use_configure       no
+
+variant universal {}
+
+build.target        compress
+build.args          BINDIR="${prefix}/bin" \
+                    CC="${configure.cc}" \
+                    CFLAGS="${configure.cflags} [get_canonical_archflags cc]" \
+                    LDFLAGS="${configure.ldflags} [get_canonical_archflags ld]" \
+                    MANDIR="${prefix}/share/man/man1"
+
+test.run            yes
+test.target         check
+
+destroot.args       {*}${build.args}
+
+post-destroot {
+    set docdir ${prefix}/share/doc/${subport}
+    xinstall -d ${destroot}${docdir}
+    xinstall -m 0644 -W ${worksrcpath} \
+        Acknowleds \
+        Changes \
+        LZW.INFO \
+        README.md \
+        ${destroot}${docdir}
+}

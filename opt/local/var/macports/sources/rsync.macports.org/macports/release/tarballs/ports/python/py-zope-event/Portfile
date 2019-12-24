@@ -1,0 +1,49 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-zope-event
+set real_name       zope.event
+version             4.4
+revision            0
+python.versions     27 35 36 37 38
+maintainers         {mps @Schamschula} openmaintainer
+platforms           darwin
+description         Very basic event publishing system
+license             ZPL-2.1
+
+long_description \
+    The zope.event package provides a simple event system, including an \
+    event publishing API, intended for use by applications which are unaware of \
+    any subscribers to their events, and a very simple event-dispatching system \
+    on which more sophisticated event dispatching systems can be built.
+
+categories-append   zope
+
+homepage            https://pypi.python.org/pypi/${real_name}
+master_sites        pypi:z/${real_name}
+distname            ${real_name}-${version}
+
+checksums           rmd160  8df0e80e114c841fa8833c0314902090a7f31571 \
+                    sha256  69c27debad9bdacd9ce9b735dad382142281ac770c4a432b533d6d65c4614bcf \
+                    size    18818
+
+if {${name} ne ${subport}} {
+    depends_build       port:py${python.version}-setuptools
+
+    variant tests description {Add dependencies needed to run tests} {
+        test.run        yes
+        depends_build   port:py${python.version}-nose
+        test.cmd        nosetests-${python.branch}
+        test.target
+    }
+} else {
+    livecheck.type      regex
+    livecheck.regex     ${real_name}-(\[0-9.\]+)${extract.suffix}
+}
+
+subport py34-${python.rootname} {
+    replaced_by py35-${python.rootname}
+    PortGroup obsolete 1.0
+}

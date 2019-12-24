@@ -1,0 +1,84 @@
+--- makefile.orig	2018-11-12 09:16:22.000000000 -0600
++++ makefile	2018-11-26 14:42:43.000000000 -0600
+@@ -16,7 +16,7 @@
+ CC = cc
+ LIBS =  -lX11 -lm
+ LDR = ${FC} 
+-LIBSG = -L/usr/X11R6/lib -lGLU -lGL -lXmu -lX11 -lm
++LIBSG = -L@PREFIX@/lib -lGLU -lGL -lXmu -lX11 -lm
+ ARCH := $(shell getconf LONG_BIT)
+ AFLAG= -m$(ARCH)
+ EXTEN=
+@@ -34,10 +34,10 @@
+  ifeq ($(os), Ubuntu)
+     EXTEN = exten
+     EXTENZ = exten2
+-    LIBSG = -L/usr/X11R6/lib -lGLU -lGL -lX11 -lm
++    LIBSG = -L@PREFIX@/lib -lGLU -lGL -lX11 -lm
+  endif
+  ifeq ($(os), Debian)
+-    LIBSG = -L/usr/lib/X11 -lGLU -lGL -lX11 -lm
++    LIBSG = -L@PREFIX@/lib -lGLU -lGL -lX11 -lm
+  endif
+ 
+  choosefc := 'yes'
+@@ -91,25 +91,13 @@
+ 
+ ifeq ($(uname), Linux)
+ CC = gcc
+-comgcc := $(shell gcc --version | grep 5.4)
+-ifneq ($(comgcc), $(empty))
+-   EXTRAZ = -Wno-implicit-function-declaration
+-   EXT = ${EXTRAZ}
+-endif
+ FFLAGS = -g ${AFLAG}
+-LIBS =  -L/usr/X11R6/lib -lX11 -lm
++LIBS =  -L@PREFIX@/lib -lX11 -lm
+ ifeq ($(AFLAG),"-m64")
+-LIBS =  -L/usr/X11R6/lib64 -lX11 -lm
++LIBS =  -L@PREFIX@/lib64 -lX11 -lm
+ endif
+ LDR = ${FC} -g ${AFLAG}
+-CFLAGS = ${AFLAG} ${EXTRAZ} -c -g -I/usr/X11R6/include -DDOBACK -DHASTIMER -DCOLOR_OFFSET=0.0
+- ifeq ($(os), Debian)
+-    CFLAGS = ${AFLAG} ${EXTRAZ} -c -I/usr/include/X11 -DDOBACK -DHASTIMER -DCOLOR_OFFSET=0.0
+-    LIBS =  -L/usr/lib/X11 -lX11 -lm
+-    ifeq ($(AFLAG),"-m64")
+-       LIBS =  -L/usr/X11R6/lib64 -lX11 -lm
+-    endif
+- endif
++CFLAGS = ${AFLAG} ${EXTRAZ} -c -g -I@PREFIX@/include -DDOBACK -DHASTIMER -DCOLOR_OFFSET=0.0
+ ifeq ($(os), FreeBSD)
+ CFLAGS = ${CFLAGS} -DFREEBSD
+ endif
+@@ -120,15 +108,15 @@
+ # Mac OS X g77
+ #
+ CC=cc
+-CFLAGS= -std=gnu89 -Wno-return-type -DDARWIN -I/usr/X11R6/include -DDOBACK -DHASTIMER -DCOLOR_OFFSET=0.0 -Wno-logical-op-parentheses
++CFLAGS= -std=gnu89 -Wno-return-type -DDARWIN -I@PREFIX@/include -DDOBACK -DHASTIMER -DCOLOR_OFFSET=0.0 -Wno-logical-op-parentheses
+ FFLAGS=-O3 -funroll-loops
+-LIBS = -L/usr/X11R6/lib -lX11 -lm
+-LIBSG = -L/usr/X11R6/lib -lGLU "-Wl,-dylib_file,/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib:/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib" -lGL -lXmu -lX11 -lm
++LIBS = -L@PREFIX@/lib -lX11 -lm
++LIBSG = -L@PREFIX@/lib -lGLU "-Wl,-dylib_file,/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib:/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib" -lGL -lXmu -lX11 -lm
+ EXT= -std=gnu89 -Wno-return-type -DDARWIN ${EXTRAZ}
+ FFLAGS=-O3 -funroll-loops
+-LIBS = -L/usr/X11R6/lib -lX11 -lm
+-LIBSG = -L/usr/X11R6/lib -lGLU "-Wl,-dylib_file,/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib:/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib" -lGL -lXmu -lX11 -lm
+-CFLAGS= -g -std=gnu89 -Wno-return-type -DDARWIN -I/usr/X11R6/include -DDOBACK -DHASTIMER -DCOLOR_OFFSET=0.0 -Wno-logical-op-parentheses
++LIBS = -L@PREFIX@/lib -lX11 -lm
++LIBSG = -L@PREFIX@/lib -lGLU "-Wl,-dylib_file,/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib:/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib" -lGL -lXmu -lX11 -lm
++CFLAGS= -g -std=gnu89 -Wno-return-type -DDARWIN -I@PREFIX@/include -DDOBACK -DHASTIMER -DCOLOR_OFFSET=0.0 -Wno-logical-op-parentheses
+ LDR = ${FC}
+ endif
+ 
+@@ -259,7 +247,7 @@
+ # and the full opengl version of molden 'gmolden', (does not need glut)
+ # (make gmolden)
+ #
+-LIBSOGL = -lglut -lGLU -lGL -lXmu -lX11 -lm
++LIBSOGL = -L@PREFIX@/lib -lglut -lGLU -lGL -lXmu -lX11 -lm
+ #
+ # on linux :
+ #

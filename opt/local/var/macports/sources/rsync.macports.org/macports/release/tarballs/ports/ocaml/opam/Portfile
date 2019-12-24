@@ -1,0 +1,43 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+github.setup        ocaml opam 2.0.5
+
+name                opam
+revision            1
+platforms           darwin
+categories          ocaml sysutils
+license             LGPL-2
+maintainers         {@pmetzger pmetzger} openmaintainer
+homepage            http://opam.ocaml.org/
+description         OPAM is a package manager for OCaml
+long_description    OPAM is a package manager for OCaml that can install \
+                    multiple versions of OCaml and libraries in a users home \
+                    directory.
+
+github.tarball_from releases
+distname            opam-full-${version}
+
+checksums           rmd160  5eac031210343fda4f027fe2637270c735c6d055 \
+                    sha256  776c7e64d6e24c2ef1efd1e6a71d36e007645efae94eaf860c05c1929effc76f \
+                    size    7922459
+
+depends_build       port:ocaml
+
+# This prevents configure from trying to use a program to fetch dependencies.
+# We don't need or want one.
+configure.env-append  FETCH=no
+
+# * patch-stop-fetch-check.diff dikes out a test that will prevent us
+#   from disabling fetch. Otherwise FETCH=no will fail and we'll need to
+#   depend on curl or wget.
+# * patch-makefile.diff is a kludge to put documentation files into
+#   share/doc/opam-installer -- without this, they'd end up in
+#   doc/opam-installer, and there is no /opt/local/doc.
+patchfiles          patch-stop-fetch-check.diff \
+                    patch-makefile.diff
+
+use_parallel_build  no
+build.target        lib-ext all

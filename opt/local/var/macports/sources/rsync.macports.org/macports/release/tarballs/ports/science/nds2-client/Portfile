@@ -1,0 +1,64 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem        1.0
+PortGroup         cmake 1.0
+
+name              nds2-client
+version           0.16.2
+revision          0
+categories        science
+platforms         darwin
+license           GPL-2
+maintainers       {ligo.org:ed.maros @emaros} openmaintainer
+
+description       Network Data Server Client
+long_description \
+  Client tool for accessing streamed LIGO data using the Network \
+  Data Server version 2.
+
+homepage          https://wiki.ligo.org/DASWG/NDSClient
+master_sites      http://software.ligo.org/lscsoft/source/
+
+checksums         rmd160  9653ad19cc2af2d194c8331e5cac99c6beb95119 \
+                  sha256  485ce5cc1650f384897e5ddcd259ad2f4f6b63e309372990b997d86b54cf529e \
+                  size    535845
+
+depends_build-append \
+                  port:doxygen \
+                  path:bin/dot:graphviz \
+                  port:pkgconfig
+
+default_variants  +gssapi
+
+cmake.out_of_source yes
+
+configure.args    -DPYTHON=false \
+                  -DPYTHON_EXECUTABLE=false \
+                  -DWITH_SASL=no \
+                  -DWITH_GSSAPI=no \
+                  -DCMAKE_INSTALL_SYSCONFDIR=${prefix}/etc \
+                  -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+                  -DCMAKE_EXPORT_COMPILE_COMMANDS=1
+
+variant sasl description "Use cyrus-sasl2 for authentication" conflicts gssapi {
+
+    configure.args-replace          -DWITH_SASL=no -DWITH_SASL=${prefix}
+    depends_lib-append              port:cyrus-sasl2
+}
+
+variant gssapi description "Use kerberos5 gssapi for authentication" conflicts sasl {
+
+    configure.args-replace          -DWITH_GSSAPI=no -DWITH_GSSAPI=${prefix}
+    depends_lib-append              port:kerberos5
+
+}
+
+test.run           yes
+test.cmd           ${prefix}/bin/ctest
+test.target        -R '.*'
+
+use_parallel_build yes
+
+livecheck.type     regex
+livecheck.url      ${master_sites}
+livecheck.regex    {nds2-client-(\d+(?:\.\d+)*).tar.gz}

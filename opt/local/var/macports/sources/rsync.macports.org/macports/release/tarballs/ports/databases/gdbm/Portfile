@@ -1,0 +1,61 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           clang_dependency 1.0
+
+name                gdbm
+version             1.18.1
+revision            1
+categories          databases
+platforms           darwin
+license             GPL-3+
+maintainers         nomaintainer
+
+description         The GNU database manager
+long_description    The GNU `dbm' is a library of database functions \
+                    that use extendible hashing and works similar to \
+                    the standard UNIX `dbm' functions. These routines \
+                    are provided to a programmer needing to create and \
+                    manipulate a hashed database.
+homepage            https://www.gnu.org/software/gdbm/gdbm.html
+
+depends_lib         port:gettext \
+                    port:readline
+
+master_sites        gnu
+
+checksums           rmd160  041c0dd2ae49d724ba509ce70a4349d246a9767d \
+                    sha256  86e613527e5dba544e73208f42b78b7c022d4fa5a6d5498bf18c8d6f745b91dc \
+                    size    941863
+
+# Don't link using "-flat_namespace -undefined suppress" on Yosemite and
+# later (#45709).
+patchfiles          yosemite-libtool.patch
+
+if {${os.platform} eq "darwin" && ${os.major} < 11 && ${cxx_stdlib} eq "libc++"} {
+    # This port is in the dependency chain for clang 3.7 and later
+    clang_dependency.extra_versions 3.7
+}
+
+configure.ccache    no
+
+configure.args      --disable-silent-rules \
+                    ac_cv_prog_AWK=awk
+
+post-install {
+    # gdbm @1.8.3_1 installed files outside the destroot; remove them if found
+    foreach file {share/info/gdbm.info share/man/man3/gdbm.3} {
+        set filepath ${prefix}/${file}
+        if {[file exists ${filepath}] && [registry_file_registered ${filepath}] == "0"} {
+            if {[catch {delete ${filepath}}]} {
+                ui_warn "Cannot delete ${filepath}; please remove it manually"
+            }
+        }
+    }
+}
+
+variant compat description {Install dbm/ndbm compatibility files} {
+    configure.args-append --enable-libgdbm-compat
+}
+
+livecheck.regex     ${name}-(\\d+(?:\\.\\d+)*)\\.tar

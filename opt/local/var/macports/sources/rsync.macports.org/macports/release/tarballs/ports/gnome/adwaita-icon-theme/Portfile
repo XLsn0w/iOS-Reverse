@@ -1,0 +1,39 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                adwaita-icon-theme
+version             3.34.0
+set branch          [join [lrange [split ${version} .] 0 1] .]
+categories          gnome
+maintainers         {devans @dbevans} openmaintainer
+license             LGPL-3
+platforms           darwin
+description         Adwaita icon theme
+
+long_description    Fullcolor, symbolic and cursor assets for the $description, \
+                    the default icon theme for GTK+ 3.
+
+homepage            https://www.gnome.org/
+master_sites        gnome:sources/$name/$branch/
+
+use_xz              yes
+
+checksums           rmd160  07f393de906df4053400dede28adfd5e86c48df9 \
+                    sha256  40b7e91f8263552b64d0f9beff33150291b086618ce498c71bf10035e48c7c7f \
+                    size    18538068
+
+depends_build       port:pkgconfig \
+                    port:icon-naming-utils
+
+depends_lib         port:gtk3 \
+                    port:librsvg
+
+patchfiles          patch-configure.ac.diff
+
+use_autoreconf      yes
+autoreconf.args     -fvi
+
+use_parallel_build  no
+
+livecheck.type      gnome

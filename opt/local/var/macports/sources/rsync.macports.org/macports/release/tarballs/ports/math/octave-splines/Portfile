@@ -1,0 +1,18 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           octave 1.0
+
+octave.setup        splines 1.3.3
+revision            0
+platforms           darwin
+license             GPL-3+ public-domain
+maintainers         {mps @Schamschula} openmaintainer
+description         Additional Cubic spline functions.
+long_description    ${description}
+
+checksums           rmd160  c4b34b5811cfe60b182a1c9d42341a1f2ec76821 \
+                    sha256  0a4bf9544b1fedb4aed4222eff1333928b0e3c903f140822eb857585e0d5919b \
+                    size    29321
+
+supported_archs     noarch

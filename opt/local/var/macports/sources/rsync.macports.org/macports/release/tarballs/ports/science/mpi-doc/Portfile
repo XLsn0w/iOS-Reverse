@@ -1,0 +1,41 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+universal_variant    no
+
+# make sure to keep in sync with mpich
+name                mpi-doc
+version             3.3.1
+
+license             BSD
+categories          science parallel net
+platforms           darwin
+maintainers         nomaintainer
+homepage            http://www.mpich.org/
+supported_archs     noarch
+
+description         Message Passing Interface (MPI) Library Man Pages
+long_description    ${description}
+
+master_sites        ${homepage}static/tarballs/${version}/
+distname            mpich-${version}
+
+checksums           rmd160  0cece6eeb8c3fe9ddd16eae47be5dae45f3b7941 \
+                    sha256  fe551ef29c8eea8978f679484441ed8bb1d943f6ad25b63c235d4b9243d551e5 \
+                    size    27275466
+
+use_configure       no
+
+build {}
+
+destroot {
+    delete ${destroot}${prefix}/share/man/man1
+    delete ${destroot}${prefix}/share/man/man3
+    move ${worksrcpath}/man/man1 ${destroot}${prefix}/share/man/
+    move ${worksrcpath}/man/man3 ${destroot}${prefix}/share/man/
+}
+
+livecheck.type      regex
+livecheck.regex     mpich-(\[0-9.p\]+)${extract.suffix}
+livecheck.url       ${homepage}downloads/index.php?s=downloads

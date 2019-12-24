@@ -1,0 +1,65 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+name                cppzmq
+maintainers         {michaelld @michaelld} openmaintainer
+platforms           darwin
+categories          devel sysutils net
+license             Permissive
+
+description         High-level C++ Binding for 0MQ
+long_description    ${description}
+
+subport cppzmq-devel {}
+
+if {${subport} eq ${name}} {
+
+    # release
+
+    github.setup zeromq cppzmq 4.4.1 v
+    checksums rmd160 f15223e182c9ade4909bb509b302524dccd8e4ef \
+              sha256 48edc70fa76d2eb4a205347e279fc91e72e0fd4bcbd1617a029130df264bd24e \
+              size   31643
+    revision  0
+
+    # bump the epoch because I moved the version from 20170720 to 4.2.2
+
+    epoch           1
+
+    conflicts       ${name}-devel
+    long_description ${description}: \
+        This port follows the release version of ${name}, which is typically updated every 6 months. If for some reason this port does not build or function as desired, try the ${name}-devel port.
+
+} else {
+
+    # devel
+
+    github.setup zeromq cppzmq fdb2f1397104f68100ea5fa1e288f1a4d0caf9ed
+    version   20191016-[string range ${github.version} 0 7]
+    checksums rmd160 baa4f01d7022564ac1a772c2a437cf03b2f5b50e \
+              sha256 8e1d6361b593916efb3882226e53455ad07143a30ee772a37c730b23872d73dc \
+              size   32651
+    revision  0
+
+    conflicts       ${name}
+    long_description ${description}: \
+        This port follows the GIT master version of ${name}, which is typically updated every few days to weeks.
+
+}
+
+depends_lib-append  path:lib/libzmq.dylib:zmq
+
+# this is just a header; skip all steps and manually do destroot
+
+supported_archs     noarch
+
+use_configure no
+
+build {}
+
+destroot {
+    xinstall -m 755 -d ${destroot}${prefix}/include
+    copy ${worksrcpath}/zmq.hpp ${destroot}${prefix}/include
+}

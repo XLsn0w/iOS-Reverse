@@ -1,0 +1,60 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-yaml
+version             5.1.2
+revision            0
+categories-append   devel
+platforms           darwin
+license             MIT
+
+python.versions     27 34 35 36 37 38
+
+maintainers         {stromnov @stromnov} openmaintainer
+
+description         YAML 1.1 parser and emitter for Python
+long_description    PyYAML is a YAML parser and emitter for Python, which \
+                    supports YAML 1.1, unicode input and output, low-level \
+                    event-based parser and emitter API, high-level API for \
+                    serializing and deserializing native Python objects.
+
+homepage            https://github.com/yaml/pyyaml
+master_sites        pypi:P/PyYAML
+
+distname            PyYAML-${version}
+
+checksums           rmd160  d39318d6b982cf78959f1b83f55bde92f022dd83 \
+                    sha256  01adf0b6c6f61bd11af6e10ca52b7d4057dd0be0343eb9283c878cf3af56aee4 \
+                    size    265034
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                        port:py${python.version}-cython
+    depends_lib-append  port:libyaml
+
+    patchfiles          patch-setup.py
+
+    post-patch {
+        reinplace "s|__PREFIX__|${prefix}|g" ${worksrcpath}/setup.py
+    }
+
+    post-destroot {
+        set docdir ${prefix}/share/doc/${subport}
+        xinstall -m 755 -d ${destroot}${docdir}
+        xinstall -m 755 -d ${destroot}${docdir}/examples
+        xinstall -m 755 -d \
+            ${destroot}${docdir}/examples/yaml-highlight
+        xinstall -m 644 -W ${worksrcpath} \
+            LICENSE README \
+            ${destroot}${docdir}
+        xinstall -m 644 -W ${worksrcpath}/examples/yaml-highlight \
+            yaml_hl.cfg yaml_hl.py \
+            ${destroot}${docdir}/examples/yaml-highlight
+    }
+
+    livecheck.type      none
+} else {
+    livecheck.name      PyYAML
+}

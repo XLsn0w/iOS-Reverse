@@ -1,0 +1,19 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Object-Realize-Later 0.21
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         Object::Realize::Later - Delayed creation of objects
+long_description    ${description}
+
+platforms           darwin
+
+checksums           rmd160  93331997fb317af3f751cc5b8b0a1c6b393d2197 \
+                    sha256  8f7b9640cc8e34ea92bcf6c01049a03c145e0eb46e562275e28dddd3a8d6d8d9 \
+                    size    12375
+
+supported_archs     noarch

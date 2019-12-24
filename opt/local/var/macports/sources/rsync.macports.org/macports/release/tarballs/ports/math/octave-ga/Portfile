@@ -1,0 +1,18 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           octave 1.0
+
+octave.setup        ga 0.10.1
+revision            0
+platforms           darwin
+license             GPL-2+
+maintainers         nomaintainer
+description         Genetic optimization code.
+long_description    ${description}
+
+checksums           rmd160 02ef83739f8dde94f5483d43aca324f0c69fbe26 \
+                    sha256 6d6ca5fece43958e4ad5a5c88dccebf5976d5b29f21b7bab1608bcd8af0e7202 \
+                    size   29398
+
+supported_archs     noarch

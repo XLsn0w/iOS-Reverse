@@ -1,0 +1,54 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                latexmk
+version             4.65
+
+checksums           rmd160  858015aa60b135e93a2a6ac74d7fb18d57647aa0 \
+                    sha256  fbd99fa6c606cc9378052cc1f974b2a6b1a72e1a635c87a2a7c3543386ad6ce8 \
+                    size    447290
+
+categories          tex print
+platforms           darwin
+maintainers         {cal @neverpanic} openmaintainer
+supported_archs     noarch
+license             GPL-2+
+
+description         Automates the process of generating a LaTeX document
+long_description \
+    Latexmk completely automates the process of generating a LaTeX document. \
+    Essentially, it is a highly specialized cousin of the general make       \
+    utility.  Given the source files for a document, latexmk issues the      \
+    appropriate sequence of commands to generate a .dvi, .ps, .pdf or        \
+    hardcopy version of the document.  It can also be set to run             \
+    continuously with a previewer\; the latex program, etc, are rerun        \
+    whenever one of the source files is modified.
+
+homepage            http://www.phys.psu.edu/~collins/software/latexmk-jcc/
+master_sites        ${homepage}
+distname            ${name}-[string map {. ""} $version]
+
+use_zip             yes
+worksrcdir          ${name}
+
+depends_run         bin:latex:texlive-latex
+
+use_configure       no
+build               {}
+
+destroot {
+    set bindir ${destroot}${prefix}/bin
+    file mkdir ${bindir}
+    xinstall -m 755 -v ${worksrcpath}/${name}.pl ${bindir}/${name}
+    set mandir ${destroot}${prefix}/share/man/man1
+    file mkdir ${mandir}
+    xinstall -m 644 -v ${worksrcpath}/${name}.1 ${mandir}
+    set docdir ${destroot}${prefix}/share/doc/${name}
+    file mkdir ${docdir}
+    xinstall -m 644 -v -W ${worksrcpath} \
+        CHANGES COPYING README ${name}.pdf ${name}.txt ${docdir}
+}
+
+livecheck.type      regex
+livecheck.regex     "(\[0-9a-z.\]+) dated"

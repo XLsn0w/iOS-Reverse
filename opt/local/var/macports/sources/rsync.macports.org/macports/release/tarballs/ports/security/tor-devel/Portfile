@@ -1,0 +1,48 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                tor-devel
+conflicts           tor
+version             0.4.2.3-alpha
+revision            0
+categories          security
+platforms           darwin
+maintainers         nomaintainer
+license             BSD
+
+description         anonymizing overlay network for TCP
+
+long_description    Tor provides a distributed network of servers \
+                    (onion routers). Users bounce their TCP streams \
+                    (web traffic, FTP, SSH, etc.) around the \
+                    routers. This makes it hard for recipients, \
+                    observers, and even the onion routers \
+                    themselves to track the source of the stream.
+
+homepage            https://www.torproject.org/
+master_sites        https://dist.torproject.org/
+distname            tor-${version}
+
+checksums           rmd160  68d221a46664a776c6fc5c36ab4f86973b991de8 \
+                    sha256  ec3914be69ef3bf322a24d98ee8de6e194afa3327a4b92844b6b76af80f89d1e \
+                    size    7534968
+
+depends_lib         port:libevent \
+                    path:lib/libssl.dylib:openssl \
+                    port:zlib
+
+configure.args      --disable-silent-rules
+
+# https://gitweb.torproject.org/torspec.git/tree/proposals/278-directory-compression-scheme-negotiation.txt
+# All clients should aim at supporting the same set of supported compression schemes to avoid fingerprinting.
+configure.args-append \
+                    --disable-lzma \
+                    --disable-zstd
+
+test.run            yes
+test.target         check
+
+livecheck.type      regex
+livecheck.url       ${master_sites}?C=M\;O=D
+livecheck.regex     tor-(\\d+\\.\\d+\\.\\d+\\.\\d+(-alpha|-beta|-rc)?)${extract.suffix}

@@ -1,0 +1,36 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           python 1.0
+
+name                py-oct2py
+
+python.versions     27 36 37
+python.default_version 27
+
+github.setup        blink1073 oct2py 5.0.4 v
+checksums           rmd160 4ba5572a02e16d91a4834189c7483d25bebd919e \
+                    sha256 ad577307b89692a05f91ccda893ad41fe1e27be947d35dbe5bdf34b1521b63ce \
+                    size   439445
+revision            0
+
+license             MIT
+maintainers         {michaelld @michaelld} openmaintainer
+description         Python to GNU Octave bridge --> run m-files from Python.
+long_description    ${description}
+platforms           darwin
+
+if {${name} ne ${subport}} {
+    depends_lib-append \
+        port:octave \
+        port:py${python.version}-metakernel \
+        port:py${python.version}-octave_kernel
+}
+
+foreach {old new} {34 36 35 36} {
+    subport py${old}-${python.rootname} "
+        replaced_by py${new}-${python.rootname}
+        PortGroup obsolete 1.0
+    "
+}

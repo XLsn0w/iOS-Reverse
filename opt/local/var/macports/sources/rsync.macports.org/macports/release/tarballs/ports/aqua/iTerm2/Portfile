@@ -1,0 +1,73 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           xcodeversion 1.0
+use_xcode           yes
+
+if {${os.major} > 16} {
+    version             3.3.5
+    revision            1
+    checksums \
+        rmd160  612cb41be30fe2940bc300055afbb77938d4a19d \
+        sha256  6ce9e5650fa4245fc5b702c58cdea43b6d3fe995abc7b52520377f840fd8a492 \
+        size    18852672
+    patchfiles          patch-Makefile-XC10.diff
+    patchfiles-append   patch-CVE-2019-9535.diff
+} else {
+    version             3.2.0
+    revision            0
+    checksums \
+        rmd160  07915ff5db0545c0c059f47e7f71761e023a26e1 \
+        sha256  017aff348352369abcc994caaca0f6112e1f17c4d65041acdb9f19830b2b96bd \
+        size    11969144
+    patchfiles          patch-Makefile.diff
+}
+
+github.setup        gnachman iTerm2 ${version} v
+categories          aqua shells
+platforms           darwin
+maintainers         {mark @markemer} openmaintainer
+license             GPL-2+
+supported_archs     x86_64
+
+description         Enhanced terminal emulator program, successor to iTerm
+long_description    \
+    iTerm2 is a replacement for Terminal and the successor to iTerm. Its focus is on \
+    performance, internationalization, and supporting innovative features \
+    that make your life better.
+
+homepage            https://iterm2.com/
+
+
+github.livecheck.regex {(\d+(?:\.\d+)*)}
+
+
+post-patch {
+    reinplace "s|CODE_SIGN_IDENTITY = \".*\";|CODE_SIGN_IDENTITY = \"\";|g" ${worksrcpath}/iTerm2.xcodeproj/project.pbxproj
+}
+
+compiler.cpath
+compiler.library_path
+
+use_configure       no
+
+build.target        prod
+
+destroot.destdir    APPS=${destroot}${applications_dir}
+
+post-destroot {
+    # Fix version number; see iTerm2/tools/updateVersion.py for version keys
+    foreach {key} {CFBundleGetInfoString CFBundleShortVersionString CFBundleVersion} {
+        system "/usr/libexec/PlistBuddy -c \"Set :${key} ${version}\" ${destroot}${applications_dir}/iTerm2.app/Contents/Info.plist"
+    }
+}
+
+minimum_xcodeversions {16 9.0 17 10.0}
+
+if {${os.platform} eq "darwin" && ${os.major} < 16} {
+    pre-fetch {
+        ui_error "${subport} @${version} requires OS X 10.12 or newer"
+        return -code error "unsupported Mac OS X version"
+    }
+}

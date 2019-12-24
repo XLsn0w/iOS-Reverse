@@ -1,0 +1,31 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                pgpdump
+version             0.31
+categories          security
+platforms           darwin
+license             BSD
+maintainers         nomaintainer
+
+description         PGP packet visualizer
+
+long_description    pgpdump is a PGP packet visualizer which displays \
+                    the packet format of OpenPGP (RFC 2440 + bis) and \
+                    PGP version 2 (RFC 1991).
+
+depends_lib         port:bzip2 \
+                    port:zlib
+
+homepage            http://www.mew.org/~kazu/proj/pgpdump/en/
+master_sites        http://www.mew.org/~kazu/proj/pgpdump/
+
+checksums           rmd160  cfb2882dcc9c08ea15588e21bac92f4a29db5b86 \
+                    sha256  206ae52d4a8bbfa095b6ceefcc8b53ccabcdb75696db3bae5e05c15433729813
+
+build.args          CC='${configure.cc}'
+
+livecheck.type      regex
+livecheck.url       ${homepage}
+livecheck.regex     {The current version is (\d(?:\.\d+)+)}

@@ -1,0 +1,57 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           cmake 1.0
+PortGroup           cxx11 1.1
+
+name                jsoncpp
+categories          devel
+platforms           darwin
+maintainers         {michaelld @michaelld} openmaintainer
+license             MIT
+
+description         JSON C++ library
+
+long_description    JSON data format manipulation C++ library
+
+subport jsoncpp-devel {}
+
+if {${subport} eq ${name}} {
+
+    # release
+    github.setup    open-source-parsers jsoncpp 1.9.1
+    checksums       rmd160 83f09e5315eb913eb9867d0b082f90bac195e29f \
+                    sha256 79c71d0816dd11e32e76561a4481c30352a1ea922c1cddce81608a2621c18dfe \
+                    size   203119
+    revision        0
+
+    conflicts       jsoncpp-devel
+
+} else {
+
+    # devel
+
+    github.setup open-source-parsers jsoncpp 7329223f58a803cf6e1b57e82afabd1f2081573b
+    version   20191013-[string range ${github.version} 0 7]
+    checksums rmd160 1e5ae36fc0a5a8e43649eeb5b37d4fdd30de73f6 \
+              sha256 a1884a5c2a95ea2786e39b2ea3c1886801eb308a7aad7a0f67addb57a582be70 \
+              size   211075
+    revision  0
+
+    conflicts       jsoncpp
+    long_description ${description}: \
+        This port follows the GIT master version of ${name}, which is typically updated every few days to weeks.
+
+    # temporary patch to fix build errors, mostly in how [[deprecated]] is used
+    patchfiles-append patch-fix-build.diff
+    patch.pre_args -p1
+
+}
+
+cmake.out_of_source yes
+
+configure.args-append \
+    -DBUILD_SHARED_LIBS=ON \
+    -DJSONCPP_WITH_POST_BUILD_UNITTEST=OFF \
+    -DCCACHE_FOUND=NO

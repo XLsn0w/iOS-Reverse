@@ -1,0 +1,36 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-roman
+version             3.2
+revision            0
+categories-append   textproc
+license             PSF-2.1.1
+platforms           darwin
+supported_archs     noarch
+maintainers         {aronnax @lpsinger} openmaintainer
+
+description         Integer to Roman numerals converter
+long_description    ${description}
+
+homepage            https://pypi.python.org/pypi/${python.rootname}/
+master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}/
+distname            ${python.rootname}-${version}
+
+checksums           rmd160  2e67286345ec1021dd28fac57d18c7fb119180a0 \
+                    sha256  b1aa46b531f896b9d3aa05ede8208d785626be16b02c0df57c971fcb9940ae63 \
+                    size    7156
+
+python.versions     26 27 33 34 35 36 37 38
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                    port:py${python.version}-setuptools
+
+    test.run        yes
+    test.cmd        ${python.bin} setup.py
+
+    livecheck.type  none
+}

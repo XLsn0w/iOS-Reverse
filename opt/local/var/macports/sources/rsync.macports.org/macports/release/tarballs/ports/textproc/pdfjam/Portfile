@@ -1,0 +1,56 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+
+name                    pdfjam
+version                 2.08
+categories              textproc pdf
+maintainers             {gmail.com:jjstickel @jjstickel}
+license                 GPL-2
+platforms               darwin
+homepage                http://www2.warwick.ac.uk/fac/sci/statistics/staff/academic-research/firth/software/pdfjam
+master_sites            ${homepage}
+extract.suffix          .tgz
+distname                ${name}_[join [split ${version} .] {}]
+worksrcdir              ${name}
+supported_archs         noarch
+use_configure           no
+
+description             A few PDF manipulation tools.
+
+long_description \
+    PDFjam is a small collection of shell scripts which provide a  \
+    simple interface to some of the functionality of the excellent \
+    pdfpages package (by Andreas Matthias) for pdfLaTeX.
+
+checksums               sha1    981b504ef96369a203f85fefb42d4ea0d1194493 \
+                        rmd160  98452c703d3d799e8562763d2d828aa64e63b893
+
+depends_run \
+    bin:pdflatex:texlive-latex \
+    path:share/texmf-dist/tex/latex/pdfpages/pdfpages.sty:texlive-latex-recommended
+
+post-patch {
+    reinplace "s|/usr/local|${prefix}|g" \
+        ${worksrcpath}/bin/pdfjam \
+        ${worksrcpath}/man1/pdfjam.1 \
+        ${worksrcpath}/PDFjam-README.html
+}
+
+build {}
+
+destroot {
+    delete ${destroot}${prefix}/bin ${destroot}${prefix}/share/man/man1
+    copy ${worksrcpath}/bin ${destroot}${prefix}/bin
+    copy ${worksrcpath}/man1 ${destroot}${prefix}/share/man/man1
+
+    xinstall -m 644 ${worksrcpath}/pdfjam.conf ${destroot}${prefix}/etc/pdfjam.conf.sample
+
+    xinstall -m 755 -d ${destroot}${prefix}/share/doc/${name}
+    xinstall -m 644 -W ${worksrcpath} COPYING PDFjam-README.html VERSION \
+       ${destroot}${prefix}/share/doc/${name}
+}
+
+livecheck.type      regex
+livecheck.url       ${homepage}
+livecheck.regex     "<strong>(\[0-9.\]+)</strong>:"

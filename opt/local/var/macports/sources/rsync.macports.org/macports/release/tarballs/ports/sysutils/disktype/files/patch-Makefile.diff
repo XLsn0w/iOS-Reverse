@@ -1,0 +1,24 @@
+--- Makefile	2017-03-12 14:42:14.000000000 -0400
++++ Makefile	2017-03-12 14:43:41.000000000 -0400
+@@ -3,7 +3,6 @@
+ ###
+ 
+ RM = rm -f
+-CC = gcc
+ 
+ OBJS   = main.o lib.o \
+          buffer.o file.o cdaccess.o cdimage.o vpc.o compressed.o \
+@@ -13,10 +12,9 @@
+ 
+ TARGET = disktype
+ 
+-CPPFLAGS = -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
+-CFLAGS   = -Wall
+-LDFLAGS  =
+-LIBS     =
++CPPFLAGS += -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
++CFLAGS   += -Wall
++LDFLAGS  +=
+ 
+ ifeq ($(NOSYS),)
+   system = $(shell uname)

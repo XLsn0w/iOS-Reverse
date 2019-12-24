@@ -1,0 +1,55 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem 1.0
+PortGroup github 1.0
+PortGroup cmake 1.0
+
+github.setup            neovim neovim 0.3.8 v
+categories              editors
+platforms               darwin
+maintainers             {raimue @raimue} \
+                        openmaintainer
+license                 Apache-2 Vim GPL-2+
+
+description             Neovim is a aggressively refactored fork of Vim
+
+long_description \
+    Neovim is a project that seeks to aggressively refactor Vim. It already adds \
+    a new plugin architecture, job control, and a remote API.
+
+homepage                https://neovim.io
+
+checksums               rmd160  9f68a5c07083e5fae9be4c53e15798cdcfd857f6 \
+                        sha256  168075776a9297241d48f163a64dac42c85ed00110a3b957e8ba8f27e4363d42 \
+                        size    9234846
+
+# https://github.com/neovim/neovim/issues/9687
+patchfiles              patch-issue9687.diff
+
+depends_build-append    port:pkgconfig
+
+depends_lib             port:gettext \
+                        port:libuv \
+                        port:libvterm \
+                        port:libtermkey \
+                        port:unibilium \
+                        port:jemalloc \
+                        port:msgpack1 \
+                        port:lua \
+                        port:luajit \
+                        port:lua-lpeg \
+                        port:lua-mpack \
+                        port:lua-luabitop
+
+cmake.out_of_source     yes
+
+configure.args-append   -DUSE_BUNDLED=OFF \
+                        -DLUA_PRG=${prefix}/bin/lua \
+                        -DENABLE_JEMALLOC=ON
+
+notes {
+    If you want to share your existing Vim configuration with Neovim, you can add these symlinks:
+        ln -s ~/.vim ~/.config/nvim
+        ln -s ~/.vimrc ~/.config/nvim/init.vim
+    For possible incompatible changes and differences to Vim check ':help nvim-intro' in nvim.
+}

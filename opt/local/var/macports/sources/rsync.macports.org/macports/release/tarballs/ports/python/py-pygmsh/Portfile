@@ -1,0 +1,36 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           python 1.0
+
+name                py-pygmsh
+set real_name       pygmsh
+github.setup        nschloe pygmsh 6.0.2 v
+revision            0
+supported_archs     noarch
+
+worksrcdir          ${real_name}-${version}
+distfiles           ${real_name}-${version}${extract.suffix}
+
+license             MIT
+maintainers         {mps @Schamschula} openmaintainer
+description         PyGmsh combines power of Gmsh.
+long_description    ${description} with the versatility of Python and to provide \
+                    useful abstractions from the Gmsh scripting language so you can \
+                    create complex geometries more easily.
+categories-append   science
+
+python.versions     27 36 37 38
+
+platforms           darwin
+
+checksums           rmd160  8832d25ca8ce6977074edfb7a9f5231c16c08987 \
+                    sha256  909851738e6c6f2ae98c2fcb842f8cd5a489f4116204afcc845c18d3acd85c9c \
+                    size    41204
+
+if {${name} ne ${subport}} {
+    depends_lib-append  \
+                    port:py${python.version}-pbr \
+                    port:py${python.version}-setuptools
+}

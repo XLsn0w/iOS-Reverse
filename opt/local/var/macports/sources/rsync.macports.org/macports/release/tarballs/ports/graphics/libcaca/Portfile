@@ -1,0 +1,114 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+name                libcaca
+categories          graphics
+license             WTFPL-2 LGPL-2+
+maintainers         nomaintainer
+description         Colour AsCii Art library
+long_description    \
+    The libcaca library is a graphics library that outputs text \
+    instead of pixels, so that it can work on older video cards \
+    or text terminals. It is not unlike the famous AAlib library.
+platforms           darwin
+
+# common directory for storing downloaded tarballs
+dist_subdir         libcaca
+
+if {${name} eq ${subport}} {
+
+    github.setup    cacalabs libcaca 0.99.beta19 v
+    revision        6
+    checksums       \
+        rmd160 8623dbfe2584d6e5c633aa140f30139a13a59128 \
+        sha256 128b467c4ed03264c187405172a4e83049342cc8cc2f655f53a2d0ee9d3772f4 \
+        size   1203495
+
+    long_description ${long_description} ${subport} \
+provides the release version.
+    conflicts       libcaca-devel
+
+    master_sites    http://caca.zoy.org/raw-attachment/wiki/libcaca/
+}
+
+subport libcaca-devel {
+
+    github.setup cacalabs libcaca 813baea7a7bc28986e474541dd1080898fac14d7
+    version      20190101
+    checksums    rmd160 eb287b2d6aacb1e6025a1cfb7eac252194672932 \
+                 sha256 05f4a58ec98245502c3d42d5a1ff201086a95ae24e12f638d103daab9e98f932 \
+                 size   729339
+    revision     0
+
+    conflicts       libcaca
+    long_description ${long_description} ${subport} \
+provides the libcaca GIT master branch and is typically updated monthly.
+
+}
+
+homepage            http://caca.zoy.org/wiki/libcaca
+
+depends_build       port:pkgconfig
+depends_lib         port:ncurses port:zlib
+
+use_autoconf         yes
+# these dependencies are removed by use_autoconf, so add them after
+depends_build-append port:libtool port:autoconf port:automake
+autoconf.cmd         ./bootstrap
+
+# require C++11 for CppUnit API
+compiler.cxx_standard   2011
+configure.cxxflags-append -std=gnu++11
+
+configure.args      \
+    --disable-kernel \
+    --disable-slang \
+    --disable-win32 \
+    --disable-conio \
+    --disable-cocoa \
+    --disable-network \
+    --disable-vga \
+    --disable-csharp \
+    --disable-java \
+    --disable-cxx \
+    --disable-python \
+    --disable-ruby \
+    --disable-debug \
+    --disable-profiling \
+    --disable-plugins \
+    --disable-doc \
+    --disable-cppunit \
+    --disable-zzuf
+
+configure.args-append \
+    --mandir=${prefix}/share/man \
+    --enable-ncurses
+
+# Disable silent rules
+build.args-append   V=1
+
+variant	x11 {
+    depends_lib-append \
+        port:imlib2 \
+        port:freeglut \
+        port:libGLU \
+        port:mesa \
+        port:xorg-libX11
+}
+
+if {[variant_isset x11]} {
+    configure.args-append \
+        --enable-x11 --enable-gl \
+        --x-includes=${prefix}/include \
+        --x-libraries=${prefix}/lib
+} else {
+	configure.args-append \
+        --disable-x11 \
+        --disable-gl \
+        --disable-imlib2
+}
+
+test.run            yes
+test.target         check

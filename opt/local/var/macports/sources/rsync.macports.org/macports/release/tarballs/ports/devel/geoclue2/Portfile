@@ -1,0 +1,89 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           gobject_introspection 1.0
+PortGroup           active_variants 1.1
+
+name                geoclue2
+set gname           geoclue
+version             2.4.12
+set branch          [join [lrange [split ${version} .] 0 1] .]
+categories          devel net
+license             GPL-2+ LGPL-2.1+
+platforms           darwin
+maintainers         nomaintainer
+description         Geolocation library
+long_description    Geoclue is a modular geoinformation service built on top of the D-Bus messaging system. The goal of the Geoclue project is to make creating location-aware applications as simple as possible.
+
+homepage            https://www.freedesktop.org/wiki/Software/GeoClue/
+master_sites        https://www.freedesktop.org/software/geoclue/releases/${branch}/
+
+distname            ${gname}-${version}
+
+use_xz              yes
+
+checksums           rmd160  a523058591cab593818beabfd0dbee99d2e63214 \
+                    sha256  05d0e2ec077a685de2a9c63973fe6d18366ca53881d1f0750110b93c5c68caca \
+                    size    398124
+
+depends_build       port:intltool \
+                    port:pkgconfig \
+                    port:gtk-doc \
+                    port:autoconf \
+                    port:automake \
+                    port:libtool
+
+depends_lib         path:lib/pkgconfig/glib-2.0.pc:glib2 \
+                    port:json-glib \
+                    port:libnotify \
+                    port:libsoup \
+                    port:vala
+
+gobject_introspection yes
+
+# reconfigure using upstream autogen.sh for intltool 0.51 compatibility
+
+post-patch {
+    xinstall -m 755 ${filespath}/autogen.sh ${worksrcpath}
+}
+
+configure.cmd       ./autogen.sh
+
+configure.args      --disable-silent-rules \
+                    --disable-3g-source \
+                    --disable-cdma-source \
+                    --disable-modem-gps-source \
+                    --disable-nmea-source \
+                    --with-systemdsystemunitdir=no \
+                    --enable-compile-warnings=minimum
+
+variant debug description {Build with debug support} {
+    configure.args-append   --enable-debug
+}
+
+variant doc description {Build and install gtk-doc API docs} {
+    configure.args-append   --enable-gtk-doc
+}
+
+variant nmea description {Enable support for NMEA GPS sources using Avahi} {
+    depends_lib-append      port:avahi
+    configure.args-delete   --disable-nmea-source
+}
+
+variant quartz conflicts x11 {
+    require_active_variants path:lib/pkgconfig/glib-2.0.pc:glib2 quartz
+    configure.args-append --enable-demo-agent=no
+}
+
+variant x11 conflicts quartz {
+    require_active_variants path:lib/pkgconfig/glib-2.0.pc:glib2 x11
+}
+
+if {![variant_isset quartz]} {
+    default_variants +x11
+}
+
+livecheck.type      regex
+livecheck.name      ${gname}
+livecheck.url       ${master_sites}
+livecheck.regex     ${gname}-(\[\\d.\]+)${extract.suffix}

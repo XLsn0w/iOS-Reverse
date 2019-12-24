@@ -1,0 +1,49 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+
+name                    xaos
+version                 3.6
+categories              graphics
+platforms               darwin
+license                 GPL-2+
+maintainers             nomaintainer
+
+homepage                http://matek.hu/xaos/doku.php
+master_sites            sourceforge:project/xaos/XaoS/${version}/
+
+description             real-time interactive fractal zoomer
+
+long_description        XaoS is a fast portable real-time interactive \
+                        fractal zoomer. It displays the Mandelbrot set \
+                        (among other escape time fractals) and allows you to \
+                        zoom smoothly into the fractal. Various coloring \
+                        modes are provided for both the points inside and \
+                        outside the selected set. In addition, switching \
+                        between Julia and Mandelbrot fractal types and \
+                        on-the-fly plane switching is provided. The first \
+                        version was a minimal X Window Mandelbrot viewer \
+                        by Thomas later modified by Jan to support high \
+                        frame-rate zooming. Other additions were later \
+                        made by both Thomas and Jan including autopilot \
+                        (for those of you without drivers licenses), \
+                        palette changing, GIF saving, and fractal inversion.
+
+checksums               rmd160  4cfe8e7f5b98d28cd320f9ab21a9c2d76d122133 \
+                        sha256  989f3e38f7793810cbb1496d5291d44836a7d7c058422b9ee1cffb163a0b8d95 \
+                        size    2040707
+
+depends_lib             port:xorg-libXext \
+                        port:libpng \
+                        port:gsl
+
+# Fix "make: `install' is up to date" on case-insensitive filesystems.
+patchfiles              patch-Makefile.in.diff
+
+configure.cflags-append -I${prefix}/include
+configure.args          --with-long-double=yes \
+                        --disable-nls \
+                        --x-includes=${prefix}/include \
+                        --x-libraries=${prefix}/lib
+
+configure.universal_args-delete --disable-dependency-tracking

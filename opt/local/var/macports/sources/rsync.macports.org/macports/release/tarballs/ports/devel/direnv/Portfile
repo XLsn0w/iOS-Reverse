@@ -1,0 +1,59 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           golang 1.0
+
+name                direnv
+categories          devel sysutils
+platforms           darwin
+license             MIT
+
+maintainers         {michaelld @michaelld} openmaintainer
+
+description         ${name} is an environment switcher for the shell.
+
+long_description    \
+    ${description} It knows how to hook into bash, zsh, tcsh and fish shell to \
+    load or unload environment variables depending on the current \
+    directory. This allows project-specific environment variables without \
+    cluttering the \"~/.profile\" file.
+
+if {${name} eq ${subport}} {
+
+    go.setup        github.com/direnv/direnv 2.20.1 v
+    checksums       rmd160 8372c319e57ac8557c87b8dca32da6d874014afa \
+                    sha256 837b208c0bbee6f250f051d53cc1d89cfcd7899dad4363ade9845dd955bce425 \
+                    size   98939
+    revision        0
+
+    conflicts       direnv-devel
+}
+
+subport direnv-devel {
+
+    go.setup  github.com/direnv/direnv a3b75ed997c6369dc806ab3942d7479c034ae0d7
+    version   20191022-[string range ${github.version} 0 7]
+    checksums rmd160 cf2e43a4a534e101d5b7393c1428de4000faaf88 \
+              sha256 f1e7f78c4f205da9db2820756deae4c82ad593de33c6838b71f00c67257bcbbd \
+              size   99497
+    revision  0
+
+    conflicts       direnv
+    long_description ${long_description}: \
+        This port follows the GIT master version of ${name}, which is \
+        typically updated every few days to weeks.
+
+}
+
+# override github information
+
+homepage            http://direnv.net/
+
+depends_build-append port:shfmt
+
+build.cmd           make
+build.target        all
+
+destroot {
+    system "cd ${worksrcpath} && make install DESTDIR=${destroot}${prefix}"
+}

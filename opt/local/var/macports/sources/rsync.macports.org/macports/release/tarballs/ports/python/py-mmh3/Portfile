@@ -1,0 +1,38 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-mmh3
+version             2.5.1
+revision            0
+categories-append   textproc math
+maintainers         nomaintainer
+
+description         Python wrapper for MurmurHash (MurmurHash3), a set of fast and robust hash functions.
+long_description    ${description}
+
+homepage            https://pypi.python.org/pypi/${python.rootname}
+platforms           darwin
+license             Permissive
+
+master_sites        pypi:m/${python.rootname}
+distname            ${python.rootname}-${version}
+checksums           rmd160  9e5929ae21705cdaea4e19ca1965a5e8dd613dd7 \
+                    sha256  185209a217c52afe43e079e5b232d0ef0f3a262601eaaf4371326ab6dcbec508 \
+                    size    9797
+
+python.versions     27 35 36 37 38
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                    port:py${python.version}-setuptools
+
+    post-destroot {
+        set docdir ${prefix}/share/doc/${subport}
+        xinstall -d ${destroot}${docdir}
+        xinstall -m 0644 -W ${worksrcpath} README.rst ${destroot}${docdir}
+    }
+
+    livecheck.type      none
+}

@@ -1,0 +1,49 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-robotframework
+set internal_name   robotframework
+
+version             3.1.2
+license             Apache-2
+
+categories-append   devel
+maintainers         {jwa @jyrkiwahlstedt} openmaintainer
+description         ATDD framework
+long_description    ATDD framework with plugins
+
+homepage            http://robotframework.org/
+
+checksums           rmd160  fb96a4d37db6ed20ba532b9429ccae2aadfde168 \
+                    sha256  f10dd7c0c8c7962a4f80dd1e026b5db731b9391bc6e1f9ebb96d685eb1230dbc \
+                    size    638394
+
+use_zip             yes
+
+platforms           darwin
+python.versions         27 36 37
+python.default_version  37
+
+universal_variant   yes
+
+master_sites        pypi:r/robotframework
+distname            ${internal_name}-${version}
+
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                    port:py${python.version}-setuptools
+
+    post-destroot {
+        reinplace "s;${destroot};;" ${destroot}${python.prefix}/bin/robot
+        reinplace "s;${destroot};;" ${destroot}${python.prefix}/bin/rebot
+    }
+
+    livecheck.type     none
+} else {
+    livecheck.type     regex
+    livecheck.url      https://pypi.python.org/pypi/robotframework
+    livecheck.regex    ${internal_name}-(\[3-9\]\\.\[0-9.\]+)\\.zip
+}

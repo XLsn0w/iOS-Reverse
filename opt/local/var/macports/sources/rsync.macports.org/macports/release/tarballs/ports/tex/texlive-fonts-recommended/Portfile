@@ -1,0 +1,65 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           texlive 1.0
+
+name                texlive-fonts-recommended
+version             49603
+revision            0
+
+categories          tex
+maintainers         {dports @drkp}
+license             Copyleft Permissive
+description         TeX Live: Recommended fonts
+long_description    Recommended fonts, including the base 35 PostScript fonts, Latin Modern, TeX Gyre, and T1 and other encoding support for Computer Modern, in outline form.
+
+checksums           texlive-fonts-recommended-49603-run.tar.xz \
+                    rmd160  e7812f27d6bfd0d853086eabbf1bd1394b7c0f50 \
+                    sha256  a6c188c50606dc9f2f69f861e47797b2eb29e27bafb34551cd068219aae1b650 \
+                    texlive-fonts-recommended-49603-doc.tar.xz \
+                    rmd160  5a3a26c0dcb4c3420bd7554a34382613ce2854fa \
+                    sha256  f07577d98718aa3aa87363e96619f4e161937735bde81cd8f74c734409781715 \
+                    texlive-fonts-recommended-49603-src.tar.xz \
+                    rmd160  af2397598d392849bea8c12c43783e11a115ef46 \
+                    sha256  d65200b9046595dc34e151c399deecf7dd0c438d1282cad186df74f3b5c014a0
+
+depends_lib         port:texlive-basic
+
+texlive.maps      \
+    {Map uag.map} \
+    {Map ubk.map} \
+    {MixedMap cm-super-t1.map} \
+    {MixedMap cm-super-t2a.map} \
+    {MixedMap cm-super-t2b.map} \
+    {MixedMap cm-super-t2c.map} \
+    {MixedMap cm-super-ts1.map} \
+    {MixedMap cm-super-x2.map} \
+    {Map ucr.map} \
+    {MixedMap eurosym.map} \
+    {Map uhv.map} \
+    {Map lm.map} \
+    {Map marvosym.map} \
+    {MixedMap manfnt.map} \
+    {MixedMap mflogo.map} \
+    {Map unc.map} \
+    {Map upl.map} \
+    {Map pxfonts.map} \
+    {MixedMap rsfs.map} \
+    {Map usy.map} \
+    {Map qag.map} \
+    {Map qbk.map} \
+    {Map qcr.map} \
+    {Map qcs.map} \
+    {Map qhv.map} \
+    {Map qpl.map} \
+    {Map qtm.map} \
+    {Map qzc.map} \
+    {Map utm.map} \
+    {MixedMap tipa.map} \
+    {Map txfonts.map} \
+    {MixedMap wasy.map} \
+    {Map uzc.map} \
+    {Map uzd.map}
+
+
+texlive.texmfport

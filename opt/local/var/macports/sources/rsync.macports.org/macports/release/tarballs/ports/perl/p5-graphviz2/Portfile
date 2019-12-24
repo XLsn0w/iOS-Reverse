@@ -1,0 +1,55 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         GraphViz2 2.47
+license             {Artistic-1 GPL}
+maintainers         {ryandesign @ryandesign} openmaintainer
+description         GraphViz2 - An updated wrapper for AT&T's Graphviz that aims \
+                    to provide access to all the latest options available to users of Graphviz.
+
+long_description    ${description}
+
+platforms           darwin
+
+extract.suffix      .tgz
+
+checksums           rmd160  7e720a1cd2d4b168225856faf5ef70276a805c4c \
+                    sha256  37576e30a84bebcf94895505c3ce7507bc50fee4b690179c332d93f5cb16ad8b \
+                    size    232466
+
+if {${perl5.major} != ""} {
+    depends_lib-append \
+                    path:bin/dot:graphviz \
+                    port:p${perl5.major}-algorithm-dependency \
+                    port:p${perl5.major}-capture-tiny \
+                    port:p${perl5.major}-class-isa \
+                    port:p${perl5.major}-class-load \
+                    port:p${perl5.major}-config-tiny \
+                    port:p${perl5.major}-dbi \
+                    port:p${perl5.major}-dbix-admin-tableinfo \
+                    port:p${perl5.major}-data-section-simple \
+                    port:p${perl5.major}-date-simple \
+                    port:p${perl5.major}-file-homedir \
+                    port:p${perl5.major}-file-slurp \
+                    port:p${perl5.major}-file-which \
+                    port:p${perl5.major}-html-entities-interpolate \
+                    port:p${perl5.major}-html-tree \
+                    port:p${perl5.major}-http-tiny \
+                    port:p${perl5.major}-ipc-run3 \
+                    port:p${perl5.major}-lingua-en-pluraltosingular \
+                    port:p${perl5.major}-log-handler \
+                    port:p${perl5.major}-moo \
+                    port:p${perl5.major}-parse-recdescent \
+                    port:p${perl5.major}-set-array \
+                    port:p${perl5.major}-text-xslate \
+                    port:p${perl5.major}-tree-dag_node \
+                    port:p${perl5.major}-try-tiny \
+                    port:p${perl5.major}-type-tiny \
+                    port:p${perl5.major}-xml-bare \
+                    port:p${perl5.major}-xml-tiny
+
+    supported_archs noarch
+}

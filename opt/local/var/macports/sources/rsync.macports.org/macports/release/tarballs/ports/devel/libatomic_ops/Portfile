@@ -1,0 +1,41 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           muniversal 1.0
+
+name                libatomic_ops
+
+github.setup        ivmai libatomic_ops 7.6.10 v
+revision            0
+
+checksums           rmd160  3570de5b7cdd8cf75abe8e0bcda95db606fea5cd \
+                    sha256  281b75bfb00ccb3fa26a4a060b3eeb0d7410b4701e837b41413d1757e95afeb7 \
+                    size    138011
+
+maintainers         nomaintainer
+categories          devel
+platforms           darwin
+# Permissive for parts from boehmgc, MIT for parts to be linked with other
+# software, GPL for the separate GPL'd library
+license             Permissive MIT GPL-2
+
+description         library for hardware-provided atomic memory operations
+long_description    This package provides semi-portable access to \
+                    hardware-provided atomic memory operations.
+
+use_autoreconf      yes
+
+test.run            yes
+test.target         check
+
+# universal requires muniversal, but i386 tests fail on x86_64
+# universal_variant no
+
+##### compiler tweaking for older systems
+# on i386, requires newer gcc (6 tested) or clang 3.4+
+# on ppc, builds with older compilers (default compilers work)
+
+platform darwin i386 {
+    compiler.blacklist-append *gcc-3.* *gcc-4.*
+}

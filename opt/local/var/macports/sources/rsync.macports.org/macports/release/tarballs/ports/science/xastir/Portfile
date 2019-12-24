@@ -1,0 +1,58 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                xastir
+version             2.0.8
+revision            6
+categories          science
+license             GPL-2+
+platforms           darwin
+maintainers         nomaintainer
+
+description         Amateur Radio APRS tracking software
+
+long_description    ${description}
+
+homepage            http://www.xastir.org/
+master_sites        sourceforge:project/xastir/xastir-stable/xastir-${version}
+
+checksums           rmd160  2024eaaf1812113c088b601c996da0e768c531fe \
+                    sha256  775db0e3c4355051a9030b8398a1d995d48b3b721fa1c9bce5e3010300c1ebb6
+
+depends_build       port:autoconf \
+                    port:automake \
+                    port:pkgconfig
+
+depends_lib         port:xorg-libXp \
+                    port:xpm \
+                    port:xorg-libXt \
+                    port:fontconfig \
+                    lib:libXm:openmotif \
+                    port:libgeotiff \
+                    port:ImageMagick \
+                    port:gdal \
+                    port:pcre \
+                    port:db46 \
+                    port:tiff \
+                    port:proj4 \
+                    port:shapelib
+
+patchfiles          patch-acinclude.m4.diff \
+                    patch-bootstrap.sh.diff \
+                    patch-configure.ac.diff
+
+post-patch {
+    reinplace "s|@PREFIX@|${prefix}|g" ${worksrcpath}/bootstrap.sh
+}
+
+pre-configure {
+    system -W ${worksrcpath} "sh ./bootstrap.sh"
+}
+
+configure.args      --without-graphicsmagick
+
+configure.cppflags-append   -I${prefix}/include/db46
+configure.ldflags-append    -L${prefix}/lib/db46
+
+livecheck.regex     /${name}-(\[0-9.\]+)/

@@ -1,0 +1,11 @@
+--- completions/vpnc	2017-09-22 07:25:24.000000000 +0200
++++ completions/vpnc	2018-03-27 12:54:07.000000000 +0200
+@@ -68,7 +68,7 @@
+     else
+         # config name, /etc/vpnc/<name>.conf
+         local IFS=$' \t\n' reset=$(shopt -p nullglob); shopt -s nullglob
+-        local -a configs=( /etc/vpnc/*.conf )
++        local -a configs=( @@PREFIX@@/etc/vpnc/*.conf )
+         configs=( "${configs[@]##*/}" )
+         configs=( "${configs[@]%.conf}" )
+         $reset

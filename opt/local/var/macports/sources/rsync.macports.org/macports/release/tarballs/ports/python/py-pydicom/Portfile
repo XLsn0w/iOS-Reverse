@@ -1,0 +1,83 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+PortGroup           github 1.0
+github.setup        pydicom pydicom 1.3.0 v
+name                py-pydicom
+python.versions     27 34 35 36 37
+platforms           darwin
+license             MIT BSD
+maintainers         {eborisch @eborisch} \
+                    openmaintainer
+supported_archs     noarch
+
+description         Python Module for working with DICOM files
+
+long_description    pydicom is a pure python package for working with DICOM \
+                    files. It was made for inspecting and modifying DICOM \
+                    files in an easy pythonic way. The modifications can be \
+                    written again to a new file. As a pure python package, it \
+                    should run anywhere python runs without any other \
+                    requirements.
+
+homepage            https://pydicom.github.io/pydicom/stable/index.html
+
+checksums \
+    rmd160  557ee7f6961fb269b6613906c640e2846853801c \
+    sha256  39f2c32f718f29a81d04a76d74bbd3f646bc1c581d9eec1a85dca12a13239c07 \
+    size    7070670
+
+if {${name} ne ${subport}} {
+    depends_lib-append      port:py${python.version}-numpy
+
+    variant doc description "Build offline documentation" {
+        depends_build-append \
+            port:py${python.version}-alabaster \
+            port:py${python.version}-matplotlib\
+            port:py${python.version}-numpydoc \
+            port:py${python.version}-Pillow \
+            port:py${python.version}-sphinx \
+            port:py${python.version}-sphinx-gallery \
+            port:py${python.version}-sphinx-bootstrap-theme \
+            port:py${python.version}-sphinx_rtd_theme
+    }
+
+    post-extract {
+        reinplace s/sphinx-build/sphinx-build-${python.branch}/ \
+            doc/Makefile
+        if {${subport} eq "py27-pydicom"} {
+            reinplace {s/print(\(.*\), end=.*/print \1,/} \
+                examples/input_output/plot_read_dicom_directory.py
+        }
+    }
+
+    post-build {
+        if {[variant_isset doc]} {
+            system -W ${worksrcpath}/doc/ \
+                "env PYTHONPATH='${worksrcpath}/build/lib' make html"
+        }
+    }
+    
+    post-destroot {
+        set DOCDIR ${destroot}${prefix}/share/doc/${subport}
+        xinstall -d ${DOCDIR}
+        file copy ${worksrcpath}/LICENSE ${DOCDIR}
+
+        if {[variant_isset doc]} {
+            file copy ${worksrcpath}/doc/release-notes.rst ${DOCDIR}
+            file copy ${worksrcpath}/doc/_build/html ${DOCDIR}
+        }
+    }
+
+    if {${subport} eq "py27-pydicom"} {
+        # Backwards compatibility for upgraders
+        notes \
+"pydicom >= 1.0 changed the library name. Install py27-dicom for backward\
+compatibility if required. (Can be installed without conflict.) See\
+https://pydicom.github.io/pydicom/stable/transition_to_pydicom1.html\
+for more information."
+    }
+
+    livecheck.type        none
+}

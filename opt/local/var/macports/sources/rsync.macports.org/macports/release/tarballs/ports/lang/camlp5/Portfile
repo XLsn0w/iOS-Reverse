@@ -1,0 +1,51 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+set _version        7.08
+github.setup        camlp5 camlp5 [string map {. ""} ${_version}] rel
+version             ${_version}
+revision            0
+categories          lang ocaml
+license             BSD
+platforms           darwin
+maintainers         {pmetzger @pmetzger} openmaintainer
+
+description         Camlp5 is a preprocessor-pretty-printer of OCaml.
+long_description    Camlp5 is a preprocessor and pretty-printer for \
+        OCaml programs. It also provides parsing and printing tools. \
+        As a preprocessor, it allows to: extend the syntax of OCaml, \
+        redefine the whole syntax of the language. As a pretty printer, \
+        it allows to: display OCaml programs in an elegant way, convert \
+        from one syntax to another, check the results of syntax \
+        extensions. Camlp5 also provides some parsing and pretty \
+        printing tools: extensible grammars, extensible printers, \
+        stream parsers and lexers pretty print module.  It works as a \
+        shell command and can also be used in the OCaml toplevel.
+
+homepage            https://camlp5.github.io/
+
+checksums           rmd160  5409a0cd30a30e366d3b9f131ee73ef179955498 \
+                    sha256  1a8dd7bcbee4ac37920606894a810ccc2275e7ea968c6b90ddac5bd70172ee38 \
+                    size    849029
+
+depends_build       port:ocaml
+
+extract.suffix      .tgz
+
+configure.pre_args  --prefix "${prefix}"
+configure.args      --mandir "${prefix}/share/man"
+
+build.target        world.opt
+use_parallel_build  no
+
+# ocaml is not universal
+universal_variant   no
+
+post-destroot {
+    # Install META file not installed by the Makefile
+    xinstall -m 755 -d ${destroot}${prefix}/lib/ocaml/site-lib/${name}
+    xinstall -m 644 ${worksrcpath}/etc/META \
+        ${destroot}${prefix}/lib/ocaml/site-lib/${name}
+}

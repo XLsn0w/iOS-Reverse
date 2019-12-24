@@ -1,0 +1,47 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+set _name           OWSLib
+set _n              [string index ${_name} 0]
+
+name                py-owslib
+version             0.17.0
+categories-append   gis science net
+platforms           darwin
+supported_archs     noarch
+license             BSD
+maintainers         {petr @petrrr} openmaintainer
+
+description         OGC Web Service utility library
+long_description    \
+    OWSLib is a Python package for client programming with Open Geospatial \
+    Consortium (OGC) web service (hence OWS) interface standards, and their \
+    related content models. OWSLib provides a common API for accessing \
+    service metadata and wrappers for numerous OGC Web Service interfaces.
+
+homepage            https://pypi.python.org/pypi/${_name}
+master_sites        pypi:${_n}/${_name}/
+distname            ${_name}-${version}
+
+checksums           rmd160  e68942361218c6a4924c93c83965d7f9fb16f32f \
+                    sha256  ac43839c238ae427d6112709c489decb12218f02d5032ca729e5de7557b5a2df \
+                    size    149952
+
+python.versions     27 34 35 36 37 38
+
+if {${name} ne ${subport}} {
+    depends_build-append    port:py${python.version}-setuptools
+
+    depends_lib-append      port:py${python.version}-dateutil \
+                            port:py${python.version}-pyproj \
+                            port:py${python.version}-tz \
+                            port:py${python.version}-requests
+
+    livecheck.type  none
+} else {
+    livecheck.type  regex
+    livecheck.url   https://pypi.python.org/pypi/${_name}/json
+    livecheck.regex "\"${_name}-(\[.\\d\]+)\\${extract.suffix}\""
+}

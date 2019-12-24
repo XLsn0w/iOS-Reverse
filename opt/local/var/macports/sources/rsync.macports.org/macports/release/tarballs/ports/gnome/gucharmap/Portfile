@@ -1,0 +1,71 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           gobject_introspection 1.0
+
+name                gucharmap
+version             12.0.1
+set branch          [join [lrange [split ${version} .] 0 1] .]
+description         gucharmap is a featureful unicode character map.
+long_description    ${description}
+maintainers         {devans @dbevans} openmaintainer
+categories          gnome
+license             {GPL-3+ GFDL}
+platforms           darwin
+homepage            https://wiki.gnome.org/Apps/Gucharmap
+master_sites        gnome:sources/${name}/${branch}/
+
+use_xz              yes
+
+checksums           rmd160  7ec443c81c9193d24436fac3f9fc0460931680b7 \
+                    sha256  39de8aad9d7f0af33c29db1a89f645e76dad2fce00d1a0f7c8a689252a2c2155 \
+                    size    1678524
+
+depends_build       port:pkgconfig \
+                    port:intltool \
+                    port:appstream-glib \
+                    port:itstool \
+                    port:yelp-tools \
+                    port:gtk-doc \
+                    port:autoconf \
+                    port:automake \
+                    port:libtool \
+                    port:coreutils \
+                    port:unzip \
+                    port:wget
+
+depends_lib         port:desktop-file-utils \
+                    port:gtk3 \
+                    port:freetype \
+                    port:vala
+
+depends_run         port:adwaita-icon-theme \
+                    port:yelp
+
+use_parallel_build no
+
+patchfiles          patch-configure.ac.diff
+
+# reconfigure using upstream autogen.sh for intltool 0.51 compatibility
+
+gobject_introspection yes
+
+configure.env-append \
+                    SHA512SUM=${prefix}/bin/gsha512sum
+
+configure.cmd       ./autogen.sh
+
+configure.args      --with-gtk=3.0 \
+                    --with-unicode-data=download \
+                    --enable-vala=yes \
+                    --disable-Bsymbolic \
+                    --disable-schemas-compile \
+                    --disable-maintainer-mode \
+                    --disable-silent-rules
+
+post-activate   {
+    system "${prefix}/bin/update-desktop-database ${prefix}/share/applications"
+    system "${prefix}/bin/glib-compile-schemas ${prefix}/share/glib-2.0/schemas"
+}
+
+livecheck.type      gnome

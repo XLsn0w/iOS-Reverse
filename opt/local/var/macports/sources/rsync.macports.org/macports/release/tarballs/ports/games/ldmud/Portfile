@@ -1,0 +1,42 @@
+PortSystem 1.0
+PortGroup github 1.0
+
+github.setup    ldmud ldmud 3.6.0
+revision        1
+categories      games
+maintainers     {toby @tobypeterson}
+description     modern LPMud gamedriver
+long_description \
+    LDMud started as a project to clean up and modernize Amylaar's LPMud \
+    gamedriver. Primary goals are full documentation, a commented source body \
+    and out-of-the-box support for the major mudlibs, of which the commented \
+    source body has been pretty much completed. During the course of work a \
+    lot of bug fixes and improvements found their way into the driver - much \
+    more than originally expected, and definitely enough to make LDMud a \
+    driver in its own right.
+homepage        http://www.ldmud.eu/
+platforms       darwin
+
+checksums       rmd160 0724adc940d020bc1fd937cf961f14acdd1074dd \
+                sha256 c5adae65da6c2f0d53939961615d48381d6ef8d9a28814f3c9c7de3991afa5c5 \
+                size   2754680
+
+patchfiles      patch-src__Makefile.in
+
+depends_build   port:bison
+depends_lib     port:libiconv port:pcre port:openssl
+
+use_autoreconf  yes
+autoreconf.dir  ${worksrcpath}/src
+autoreconf.cmd  ./autogen.sh
+
+configure.dir   ${worksrcpath}/src
+configure.args  --libdir=${prefix}/var/ldmud \
+                --with-optimize=no \
+                --enable-use-tls=ssl
+configure.env   EXTRA_CFLAGS=${configure.cflags}
+
+use_parallel_build  no
+build.dir       ${worksrcpath}/src
+
+destroot.target install-driver

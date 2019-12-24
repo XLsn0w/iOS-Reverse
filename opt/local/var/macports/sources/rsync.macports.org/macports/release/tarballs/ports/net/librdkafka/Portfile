@@ -1,0 +1,22 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+version             1.1.0
+github.setup        edenhill librdkafka ${version} v
+categories          net
+platforms           darwin
+license             BSD-2-clause (Fold License)
+maintainers         {@alexeyt820 gmail.com:alexey.trenikhin+macports} openmaintainer
+description         The Apache Kafka C/C++ library
+long_description    Full Apache Kafka protocol support, including producer and consumer
+homepage            https://github.com/edenhill/librdkafka
+
+checksums           sha256  b0d16205b21e37280f3110db235988a1656f010c8dbc6700d86577fa435bd96c \
+                    rmd160  69f3eb84d52c4a5dd5dabb061d219c1022a24461 \
+                    size    2511625
+
+configure.args      --enable-ssl --enable-sasl
+
+test.run            no

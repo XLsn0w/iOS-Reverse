@@ -1,0 +1,42 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem      1.0
+
+name            xorg-libXt
+version         1.2.0
+revision        0
+categories      x11 devel
+license         X11
+maintainers     {jeremyhu @jeremyhu} openmaintainer
+description     X.org libXt
+homepage        https://www.x.org
+platforms       darwin macosx
+long_description X Toolkit Intrinsics, an abstract widget library upon \
+    which other toolkits are based. Xt is the basis for many toolkits, \
+    including the Athena widgets, Xaw, and LessTif, a Motif \
+    implementation.
+master_sites    xorg:individual/lib/
+
+distname    libXt-${version}
+
+checksums       rmd160  61c8fc2cea501d84c33d7f3d5401c516fd0f7fd9 \
+                sha256  b31df531dabed9f4611fc8980bc51d7782967e2aff44c4105251a1acb5a77831 \
+                size    810521
+
+use_bzip2   yes
+use_parallel_build      yes
+
+depends_build   port:pkgconfig \
+                port:xorg-util-macros
+
+depends_lib     port:xorg-libsm \
+                port:xorg-libX11
+
+configure.env-append RAWCPP=${configure.cpp}
+
+use_autoreconf  yes
+autoreconf.args -fvi
+
+livecheck.type  regex
+livecheck.url   https://xorg.freedesktop.org/archive/individual/lib/?C=M&O=D
+livecheck.regex libXt-(\\d+(?:\\.\\d+)*)

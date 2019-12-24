@@ -1,0 +1,59 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           compiler_blacklist_versions 1.0
+PortGroup           meson 1.0
+
+name                zathura
+version             0.4.4
+revision            0
+categories          office
+platforms           darwin
+license             zlib
+maintainers         {gmail.com:starkhalo @harciga} \
+                    openmaintainer
+description         Zathura is a highly customizable and functional document viewer.
+long_description \
+    Zathura is a highly customizable and functional document viewer. It     \
+    provides a minimalistic and space saving interface as well as an easy   \
+    usage that mainly focuses on keyboard interaction. Zathura uses a plug- \
+    in based system for supported document types. Zathura makes it possible \
+    to completely view and navigate through different documents without a   \
+    mouse. It supports bi-directional SyncTeX, as well as quickmarks, book- \
+    marks and automatic document reloading. Almost everything in Zathura is \
+    customizable.
+
+homepage            https://git.pwmt.org/pwmt/zathura
+
+master_sites        ${homepage}/-/archive/${version}/
+
+checksums           rmd160  50dbda19ca101f680c3935befbde631217143a3b \
+                    sha256  ebc98478fd8ec412b8f87c6b75067cf52d89d200731c1848ec3a2700f2a3b36c \
+                    size    194105
+
+depends_build-append \
+                    port:pkgconfig \
+                    port:intltool
+
+depends_lib         port:desktop-file-utils \
+                    path:lib/pkgconfig/glib-2.0.pc:glib2 \
+                    port:gtk3 \
+                    port:sqlite3 \
+                    port:libmagic \
+                    path:lib/libgirara-gtk3.dylib:girara
+
+# blacklist compilers that don't support -std=c11
+compiler.blacklist  *gcc* {clang < 300}
+
+post-activate {
+    system "${prefix}/bin/update-desktop-database ${prefix}/share/applications"
+}
+
+notes "
+For handling additional file types, consider installing the various
+zathura-plugin-* ports (port search zathura-plugin).
+"
+
+livecheck.type      regex
+livecheck.url       ${homepage}/tags
+livecheck.regex     [quotemeta ${name}]-(\\d\\.\\d\\.\\d)[quotemeta ${extract.suffix}]

@@ -1,0 +1,20 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem 1.0
+PortGroup               github 1.0
+
+github.setup            unittest-cpp unittest-cpp 1.6.1 v
+categories              devel
+license                 MIT
+platforms               darwin
+maintainers             nomaintainer
+description             lightweight unit testing framework for C++
+long_description        UnitTest++ is a lightweight unit testing framework for C++. \
+                        It was designed to do test-driven development on a wide variety \
+                        of platforms. Simplicity, portability, speed, and small footprint \
+                        are all very important aspects of UnitTest++.
+
+github.tarball_from     releases
+
+checksums               rmd160  cbd4071442622eec6b9246fba84c351290f854d8 \
+                        sha256  5b00a217f90fe262d91d09405ef5a8b5d28063da2f701cc58af48d560c4792af

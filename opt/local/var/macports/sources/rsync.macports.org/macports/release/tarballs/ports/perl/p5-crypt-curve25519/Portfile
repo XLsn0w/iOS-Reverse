@@ -1,0 +1,16 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Crypt-Curve25519 0.06
+license             {Artistic-1 GPL}
+maintainers         {devans @dbevans} openmaintainer
+description         Crypt::Curve25519 - Generate shared secret using elliptic-curve Diffie-Hellman function
+long_description    ${description}
+
+platforms           darwin
+
+checksums           rmd160  5c4ec052c338d798d41d1e12e76ca1c482896cf6 \
+                    sha256  9f48703db4eeca296ea82c2d66e4a139f2270b8dfb0bedfc4ff94454bb7b20c7

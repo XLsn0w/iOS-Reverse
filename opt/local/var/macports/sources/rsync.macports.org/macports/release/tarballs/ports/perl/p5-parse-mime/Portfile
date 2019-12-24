@@ -1,0 +1,19 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Parse-MIME 1.005
+license             {Artistic-1 GPL}
+maintainers         {devans @dbevans} openmaintainer
+description         Parse::MIME - Parse mime-types, match against media ranges
+long_description    ${description}
+
+platforms           darwin
+
+checksums           rmd160  7a343fa30b7440cf9a088f40162a0d2fbd9fc6d1 \
+                    sha256  3452eacd93420648d291f2e99808049f2d7fbbc9135db4d5bf1948cdd2a59cab \
+                    size    13263
+
+supported_archs     noarch

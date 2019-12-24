@@ -1,0 +1,45 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                soundtouch
+version             2.0.0
+categories          audio multimedia
+license             LGPL-2.1+
+platforms           darwin freebsd
+maintainers         nomaintainer
+
+description         Audio processing application and library for changing \
+                    the Tempo, Pitch and Playback Rates of audio streams or \
+                    files.
+
+long_description    SoundTouch is an open-source audio processing library \
+                    for changing the Tempo, Pitch and Playback Rates of \
+                    audio streams or files. It includes the SoundStretch \
+                    command line tool, which allows you to change the tempo, \
+                    pitch and speed of WAV files.
+
+homepage            http://www.surina.net/soundtouch/
+master_sites        ${homepage}
+
+checksums           rmd160  de9e1b3abc2c48722e229a8bb6d68c840d8099b0 \
+                    sha256  d224f7d1421b5f8e74a74c85741345bd9802618a40ae30ce5b427a5705c89d25 \
+                    size    455148
+
+worksrcdir          ${name}
+
+patchfiles          patch-configure.ac.diff \
+                    patch-source-SoundTouch-Makefile.am.diff
+
+use_autoreconf      yes
+autoreconf.args     -fvi
+
+configure.args      --disable-silent-rules \
+                    --disable-static \
+                    --enable-shared
+
+destroot.args-append pkgdocdir=${prefix}/share/doc/${name}
+
+livecheck.type  regex
+livecheck.url   ${homepage}sourcecode.html
+livecheck.regex "${name}-(\\d+(?:\\.\\d+)*)${extract.suffix}"

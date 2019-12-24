@@ -1,0 +1,14 @@
+--- data/CMakeLists.txt.orig	2017-02-06 16:18:02.000000000 -0600
++++ data/CMakeLists.txt	2018-10-13 04:41:20.000000000 -0500
+@@ -110,9 +110,8 @@
+     COMMENT
+       "Building ${DICT}.ocd"
+     COMMAND
+-      ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:libopencc>" "$<TARGET_FILE_DIR:${OPENCC_DICT_BIN}>"
+-    COMMAND
+-      ${OPENCC_DICT_BIN}
++      DYLD_LIBRARY_PATH=../src
++      "$<TARGET_FILE:${OPENCC_DICT_BIN}>"
+         --input ${DICT_${DICT}_INPUT}
+         --output ${DICT}.ocd
+         --from text

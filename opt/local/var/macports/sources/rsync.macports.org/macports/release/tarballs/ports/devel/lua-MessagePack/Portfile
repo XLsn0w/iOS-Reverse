@@ -1,0 +1,30 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem 1.0
+PortGroup github 1.0
+
+github.setup        fperrad lua-MessagePack 0.5.0
+categories          devel lua
+platforms           darwin
+maintainers         nomaintainer
+license             MIT
+
+description         MessagePack for Lua
+long_description    A Lua implementation of MessagePack, a binary-based efficient data interchange format.
+
+checksums           rmd160  45b040eebd8575481d0cadc4490097d1db1c97fa \
+                    sha256  0f447a3bcbce594d357716daa9e7810922d7f08534d01231ebbb71bc835771c9
+
+depends_build       port:pkgconfig
+depends_lib         port:lua
+
+use_configure       no
+
+destroot {
+    set luaver 5.3
+    xinstall -m 755 -d ${destroot}${prefix}/share/lua/${luaver}
+    xinstall -m 644 ${worksrcpath}/src${luaver}/MessagePack.lua ${destroot}${prefix}/share/lua/${luaver}/
+
+    xinstall -m 755 -d ${destroot}${prefix}/share/doc/${name}
+    xinstall -m 644 ${worksrcpath}/README.md ${worksrcpath}/COPYRIGHT ${destroot}${prefix}/share/doc/${name}/
+}

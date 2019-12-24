@@ -1,0 +1,34 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Future 0.41 ../../authors/id/P/PE/PEVANS
+
+platforms           darwin
+maintainers         {@chrstphrchvz gmx.us:chrischavez} openmaintainer
+license             {Artistic-1 GPL}
+
+supported_archs     noarch
+
+description         Future - represent an operation awaiting completion
+
+long_description    ${description}
+
+checksums           rmd160  18de5d20edb65da4ca0bcfb1bb1157d727619b08 \
+                    sha256  f8f769943d33392d6311e56fa0a1e86619ad560c2fc300362125e8ed8172ba3f \
+                    size    91675
+
+if {${perl5.major} != ""} {
+    depends_build-append \
+                    port:p${perl5.major}-test-fatal \
+                    port:p${perl5.major}-test-identity \
+                    port:p${perl5.major}-test-refcount
+
+    depends_lib-append \
+                    port:p${perl5.major}-test-simple \
+                    port:p${perl5.major}-time-hires
+
+    perl5.use_module_build
+}

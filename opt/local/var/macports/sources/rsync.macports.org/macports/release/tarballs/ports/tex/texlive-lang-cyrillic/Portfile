@@ -1,0 +1,46 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           texlive 1.0
+
+name                texlive-lang-cyrillic
+version             50792
+revision            0
+
+categories          tex
+maintainers         {dports @drkp}
+license             Copyleft Permissive
+description         TeX Live: Cyrillic
+long_description    Support for Cyrillic scripts (Bulgarian, Russian, Serbian, Ukrainian), even if Latin alphabets may also be used.
+
+checksums           texlive-lang-cyrillic-50792-run.tar.xz \
+                    rmd160  434e92899fbe88170803464a05b16488e5ab4a33 \
+                    sha256  a3ffaf8af02fc926b74f790b55364dd3bce6e6011994013275bfdfbc84258f5f \
+                    texlive-lang-cyrillic-50792-doc.tar.xz \
+                    rmd160  36bcb58ac460f9718035f5202de258915a8f699f \
+                    sha256  dc81fbbce766e7b1457fa664bb0bcb7415dcb716d951217d3eff4ad68bf6311c \
+                    texlive-lang-cyrillic-50792-src.tar.xz \
+                    rmd160  0a2b9106b57b2460ee12a26c04115584609ca7e8 \
+                    sha256  85932f0587f10e4bdd8f03b1d418402f756567e413b8d68a52bb231c5abb0f58
+
+depends_lib         port:texlive-basic port:texlive-latex
+
+texlive.languages      \
+    {belarusian loadhyph-be.tex 2 2 {} {hyph-be.pat.txt} {} {} } \
+    {bulgarian loadhyph-bg.tex 2 2 {} {hyph-bg.pat.txt} {} {} } \
+    {churchslavonic loadhyph-cu.tex 1 2 {} {hyph-cu.pat.txt} {hyph-cu.hyp.txt} {} } \
+    {mongolian loadhyph-mn-cyrl.tex 2 2 {} {hyph-mn-cyrl.pat.txt} {} {} } \
+    {mongolianlmc loadhyph-mn-cyrl-x-lmc.tex 2 2 {} {} {} {disabled:only for 8bit montex with lmc encoding} } \
+    {russian loadhyph-ru.tex 2 2 {} {hyph-ru.pat.txt} {hyph-ru.hyp.txt} {} } \
+    {serbian loadhyph-sr-latn.tex 2 2 {} {hyph-sh-latn.pat.txt,hyph-sh-cyrl.pat.txt} {hyph-sh-latn.hyp.txt,hyph-sh-cyrl.hyp.txt} {} } \
+    {serbianc loadhyph-sr-cyrl.tex 2 2 {} {hyph-sh-latn.pat.txt,hyph-sh-cyrl.pat.txt} {hyph-sh-latn.hyp.txt,hyph-sh-cyrl.hyp.txt} {} } \
+    {ukrainian loadhyph-uk.tex 2 2 {} {hyph-uk.pat.txt} {} {} }
+
+texlive.maps      \
+    {Map cmcyr.map} \
+    {MixedMap mongolian.map}
+
+texlive.binaries    rubibtex rumakeindex
+
+
+texlive.texmfport

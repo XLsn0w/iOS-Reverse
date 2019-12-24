@@ -1,0 +1,33 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+PortGroup           github 1.0
+
+github.setup        gtimelog gtimelog 0.11
+
+categories          x11 python
+license             GPL-2
+maintainers         nomaintainer
+description         A Gtk+ time tracking application.
+long_description    GTimeLog is a small Gtk+ app that I use to keep track of my time.\
+                    Its main goal is to be as unintrusive as possible.
+
+platforms           darwin
+supported_archs     noarch
+
+checksums           rmd160  0e1d328df0b5a8eef25e1946f64c0d6119e1f6e8 \
+                    sha256  9e72c5182a866aaa50555e194eb9db83c92c34f6784bfadd5d48401c5e445b42 \
+                    size    285325
+
+test.run            yes
+
+python.default_version  27
+
+depends_build-append \
+                    port:py${python.version}-setuptools
+
+depends_lib-append  port:gtk3 \
+                    port:py${python.version}-gobject3
+
+depends_run         port:adwaita-icon-theme

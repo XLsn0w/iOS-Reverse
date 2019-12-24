@@ -1,0 +1,43 @@
+PortSystem          1.0
+
+name                c3270
+version             3.3.15ga9
+revision            2
+set branch          [join [lrange [split ${version} .] 0 1] .]
+categories          comms
+platforms           darwin
+license             BSD
+maintainers         nomaintainer
+
+description         A console-based IBM3270 terminal emulator.
+long_description    A console-based emulator for the IBM3270 terminal. \
+                    It is capable of emulating both the IBM3279 (color) \
+                    and IBM3278 (monochrome) terminals. \
+                    \
+                    This port is a good alternative to the x3270 port \
+                    for those users who do not with to install the X11 \
+                    dependencies of that package.
+
+homepage            http://x3270.bgp.nu/index.html
+master_sites        sourceforge:project/x3270/x3270/${version}
+
+depends_lib         path:lib/libssl.dylib:openssl  \
+                    port:readline \
+                    port:libiconv
+
+distfiles           suite3270-${version}-src.tgz
+dist_subdir         x3270
+checksums           md5     e8106ab4240d996bd2cea53df14634ae \
+                    sha1    e911b66fc73048b8d99bbc1c27a88b27d6fdd1b6 \
+                    rmd160  64dafc97841c773b5236c2aeebca62882203d089 \
+                    sha256  e22f40360170acf70b6de521173c633072582315b4879aef276fb8c97102e848
+
+worksrcdir          ${name}-${branch}
+configure.args      --disable-apl \
+                    --disable-dbcs \
+                    --disable-script \
+                    --enable-history \
+                    --bindir=${prefix}/bin \
+                    --mandir=${prefix}/share/man
+
+universal_variant   no

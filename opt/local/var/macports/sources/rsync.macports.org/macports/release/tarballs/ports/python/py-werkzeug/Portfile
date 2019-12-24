@@ -1,0 +1,54 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-werkzeug
+version             0.16.0
+revision            0
+categories-append   www
+platforms           darwin
+license             BSD
+supported_archs     noarch
+
+python.versions     27 34 35 36 37 38
+
+maintainers         {stromnov @stromnov} openmaintainer
+
+description         The Swiss Army knife of Python web development
+
+long_description    Werkzeug is a one of the most advanced WSGI utility \
+                    modules. It includes a powerful debugger, full featured \
+                    request and response objects, HTTP utilities to handle \
+                    entity tags, cache control headers, HTTP dates, cookie \
+                    handling, file uploads, a powerful URL routing system \
+                    and a bunch of community contributed addon modules.
+
+homepage            http://werkzeug.pocoo.org/
+master_sites        pypi:W/Werkzeug
+
+distname            Werkzeug-${version}
+
+checksums           rmd160  f6201a8dd0110666e4e51cabd38855323b5ee7c7 \
+                    sha256  7280924747b5733b246fe23972186c6b348f9ae29724135a6dfc1e53cea433e7 \
+                    size    925717
+
+if {${name} ne ${subport}} {
+    depends_lib-append  port:py${python.version}-setuptools
+
+    post-destroot {
+        set docdir ${destroot}${prefix}/share/doc/${subport}
+        xinstall -m 755 -d ${docdir}/examples
+        foreach f [glob -directory ${worksrcpath}/docs *] {
+            copy $f ${docdir}/[file tail $f]
+        }
+        foreach f [glob -directory ${worksrcpath}/examples *] {
+            copy $f ${docdir}/examples/[file tail $f]
+        }
+        delete ${docdir}/Makefile
+    }
+
+    livecheck.type      none
+} else {
+    livecheck.name      Werkzeug
+}

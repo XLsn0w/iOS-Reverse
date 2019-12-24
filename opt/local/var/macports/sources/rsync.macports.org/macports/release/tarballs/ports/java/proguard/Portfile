@@ -1,0 +1,46 @@
+PortSystem 1.0
+
+name            proguard
+version         5.3.2
+categories      java
+platforms       darwin
+license         GPL-2
+maintainers     nomaintainer
+
+description     Java bytecode shrinker, optimizer, and obfuscator.
+long_description \
+    ProGuard is a free Java class file shrinker, optimizer, \
+    obfuscator, and preverifier.  It detects and removes unused \
+    classes, fields, methods, and attributes.  It optimizes bytecode \
+    and removes unused instructions.  It renames the remaining \
+    classes, fields, and methods using short meaningless names. \
+    Finally, it preverifies the processed code for Java 6 or for Java \
+    Micro Edition.
+
+homepage        http://proguard.sourceforge.net/
+
+master_sites    sourceforge
+distname        ${name}${version}
+checksums           rmd160  5e4dea659fa4376ce9029f51063b3f3542957786 \
+                    sha256  b7e4e63bd7e232d2b00a962f39da04e504502f0853b69161948de24caf401364
+
+depends_lib     bin:java:kaffe
+
+use_configure   no
+
+build {}
+
+destroot {
+    set javadir ${destroot}${prefix}/share/java
+    set docdir ${destroot}${prefix}/share/doc/${name}
+
+    xinstall -d -m 755 ${javadir}
+    xinstall -d -m 755 ${docdir}
+
+    foreach f [glob -directory ${worksrcpath}/lib *.jar] {
+        file copy ${f} ${javadir}/
+    }
+    foreach f {README docs examples} {
+        file copy ${worksrcpath}/${f} ${docdir}/
+    }
+}

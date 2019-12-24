@@ -1,0 +1,44 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-macfsevents
+version             0.8.1
+revision            0
+platforms           darwin
+license             BSD
+
+python.versions     27 34 35 36
+
+maintainers         {stromnov @stromnov} openmaintainer
+
+description         Thread-based interface to file system observation primitives.
+
+long_description    MacFSEvents is a Python library that provides thread-safe \
+                    directory observation primitives using callbacks. It wraps \
+                    the Mac OS X FSEvents API in a C-extension.
+
+homepage            https://github.com/malthe/macfsevents
+master_sites        pypi:M/MacFSEvents
+
+distname            MacFSEvents-${version}
+
+checksums           rmd160  4173250047586f3a48b2ff3c88347cac087304bf \
+                    sha256  1324b66b356051de662ba87d84f73ada062acd42b047ed1246e60a449f833e10
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                        port:py${python.version}-setuptools
+
+    post-destroot {
+        xinstall -d ${destroot}${python.prefix}/share/doc/${name}
+        xinstall -m 644 -W ${worksrcpath} README.rst CHANGES.rst \
+                    ${destroot}${python.prefix}/share/doc/${name}
+    }
+
+    livecheck.type      none
+} else {
+    livecheck.name      MacFSEvents
+}
+

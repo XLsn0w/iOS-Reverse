@@ -1,0 +1,38 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+PortSystem          1.0
+
+name                dict
+version             1.12.1
+categories          textproc spelling
+maintainers         {lbschenkel @lbschenkel} openmaintainer
+license             GPL-2
+description         Dictionary Server Protocol (RFC2229) client and server
+long_description    The Dictionary Server Protocol (DICT) is a TCP \
+                    transaction based query/response protocol that \
+                    allows a client to access dictionary definitions \
+                    from a set of natural language dictionary databases.
+homepage            http://www.dict.org/
+platforms           darwin
+
+distname            ${name}d-${version}
+master_sites        sourceforge:project/${name}/dictd/${distname}/
+checksums           rmd160  6c8b2ea5a8afa26fde019dea686d52ab5007ea17 \
+                    sha256  a237f6ecdc854ab10de5145ed42eaa2d9b6d51ffdc495f7daee59b05cc363656
+
+depends_build       port:libtool
+depends_lib         port:libmaa port:zlib
+configure.env       LIBTOOL=${prefix}/bin/glibtool
+
+set conf_file       ${prefix}/etc/dict.conf
+
+post-destroot {
+    xinstall -m 0644 ${filespath}/dict.conf ${destroot}${conf_file}.dist
+}
+
+post-activate {
+   if {![file exists ${conf_file}]} {
+      file copy ${conf_file}.dist ${conf_file}
+   }
+}
+
+livecheck.regex     /dictd-(\\d+(?:\\.\\d+)*)${extract.suffix}

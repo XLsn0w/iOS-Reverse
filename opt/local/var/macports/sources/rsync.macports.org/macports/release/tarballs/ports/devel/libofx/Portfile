@@ -1,0 +1,44 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+
+name                    libofx
+version                 0.9.13
+revision                1
+categories              devel
+maintainers             nomaintainer
+description             A parser and an API designed to allow applications \
+                        to very easily support OFX command responses
+long_description        This is the LibOFX library. It is a parser and an API \
+                        designed to allow applications to very easily support \
+                        OFX command responses, usually provided by financial \
+                        institutions for statement downloads. To my knowledge, \
+                        it is the first working OpenSource implementation of \
+                        the OFX (Open Financial eXchange) specification on \
+                        the client side.
+homepage                http://libofx.sourceforge.net/
+platforms               darwin
+license                 GPL-2+
+master_sites            sourceforge
+
+checksums               rmd160  3e27e7d599a19b2322645264c7f476a93b4e6898 \
+                        sha256  57eaf97cddbaf82c24f26b8f5cf8b2fbfd4969c74500a2c9acc9082b83bcc0e4 \
+                        size    1290532
+
+depends_build-append    port:pkgconfig
+depends_lib-append      port:opensp
+
+use_autoreconf          yes
+configure.args          --with-opensp-includes=${prefix}/include/OpenSP \
+                        --with-opensp-libs=${prefix}/lib
+
+patchfiles              patch-libofx-remove-hardcoded-libsdtcxx.diff
+
+platform darwin 8 {
+    patchfiles-append   patch-ofx_preproc.cpp.diff
+}
+
+livecheck.type      regex
+livecheck.url       http://sourceforge.net/projects/libofx/files/libofx/
+livecheck.regex     "libofx-(\\d+\\.\\d+\\.\\d+)\\.tar"
+

@@ -1,0 +1,64 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem      1.0
+
+PortGroup       github 1.0
+github.setup    fribidi fribidi 1.0.7 v
+revision        0
+
+categories      textproc
+license         LGPL-2.1+
+maintainers     nomaintainer
+platforms       darwin
+description     Free Implementation of the Unicode BiDi algorithm
+
+long_description \
+    The FriBidi library implements the algorithm described in the \"Unicode \
+    Standard Annex #9, The Bidirectional Algorithm\", available at \
+    http://www.unicode.org/unicode/reports/tr9/.
+
+homepage        http://fribidi.org/
+
+checksums           rmd160  ef38735bbd2baff7d29202c5c5c4246f754a11da \
+                    sha256  6874cbd66557ec749630ee617fb9925cc2ddfcf663b383efca90bca7ff0e765e \
+                    size    2087767
+
+depends_build   port:pkgconfig
+
+use_autoreconf  yes
+autoreconf.args -fvi
+
+patchfiles      gen.tab_Makefile.am.patch
+post-patch {
+    # git.mk seems to trigger a ./config.status --recheck, which is unnecessary
+    # and additionally fails due to quoting
+    delete ${worksrcpath}/git.mk
+}
+
+# Parallel builds fail because gen.tab/packtab.o is built multiple times:
+# /usr/bin/clang -DHAVE_CONFIG_H -I. -I..  -I../lib -I../lib -I../charset -I/opt/local/include/glib-2.0 -I/opt/local/lib/glib-2.0/include -I/opt/local/include  -pipe -Os -arch x86_64 -Wall -ansi  -MT packtab.o -MD -MP -MF .deps/packtab.Tpo -c -o packtab.o packtab.c
+# /usr/bin/clang -DHAVE_CONFIG_H -I. -I..  -I../lib -I../lib -I../charset -I/opt/local/include/glib-2.0 -I/opt/local/lib/glib-2.0/include -I/opt/local/include  -pipe -Os -arch x86_64 -Wall -ansi  -MT packtab.o -MD -MP -MF .deps/packtab.Tpo -c -o packtab.o packtab.c
+# /usr/bin/clang -DHAVE_CONFIG_H -I. -I..  -I../lib -I../lib -I../charset -I/opt/local/include/glib-2.0 -I/opt/local/lib/glib-2.0/include -I/opt/local/include  -pipe -Os -arch x86_64 -Wall -ansi  -MT packtab.o -MD -MP -MF .deps/packtab.Tpo -c -o packtab.o packtab.c
+# [...]
+# mv -f .deps/packtab.Tpo .deps/packtab.Po
+# mv -f .deps/packtab.Tpo .deps/packtab.Po
+# mv -f .deps/packtab.Tpo .deps/packtab.Po
+# [...]
+# mv: rename .deps/packtab.Tpo to .deps/packtab.Po: No such file or directory
+use_parallel_build no
+
+configure.env   CC_FOR_BUILD=${configure.cc} \
+                CPP_FOR_BUILD=${configure.cpp}
+
+configure.args  --enable-static \
+                --disable-silent-rules
+
+post-destroot {
+    set docdir ${prefix}/share/doc/${name}
+    xinstall -d ${destroot}${docdir}
+    xinstall -m 0644 -W ${worksrcpath} AUTHORS COPYING ChangeLog.old \
+        HISTORY NEWS README THANKS TODO ${destroot}${docdir}
+}
+
+test.run        yes
+test.target     check

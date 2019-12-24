@@ -1,0 +1,138 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem 1.0
+PortGroup  compiler_blacklist_versions 1.0
+
+name			xtide
+version         2.15.1
+platforms		darwin
+maintainers     {dstrubbe @dstrubbe} openmaintainer
+
+description		Tide prediction software, with a large database of locations.
+long_description	XTide is a package that provides tide and current predictions \
+                    in a wide variety of formats. Graphs, text listings, and calendars \
+                    can be generated, or a tide clock can be provided on your desktop. \
+                    For x11, plain command line, and as an http server.
+
+use_bzip2               yes
+homepage                http://www.flaterco.com/xtide/
+master_sites            ftp://ftp.flaterco.com/xtide/
+
+set docdir              ${prefix}/share/doc/${subport}
+set harmonics_dir       ${prefix}/share/${name}/harmonics
+set wvs_dir             ${prefix}/share/${name}/wvs
+set conf_dir            ${prefix}/etc/${name}
+set conf_file           ${conf_dir}/xtide.conf
+
+livecheck.type          regex
+livecheck.url           ${homepage}files.html
+
+if {${name} eq ${subport}} {
+    categories          science x11
+    revision            2
+    license             GPL-3+
+    master_sites-append https://src.fedoraproject.org/repo/pkgs/${name}/${distfiles}/59de866e0684e123419d7a1c97ea23a5/
+
+    checksums           rmd160  a4924c09f452e63da12012781bea7607f9178ec4 \
+                        sha256  e5c4afbb17269fdde296e853f2cb84845ed1c1bb1932f780047ad71d623bc681
+
+    depends_lib         port:libpng \
+                        port:libtcd
+    depends_run         port:${name}-data
+
+    post-extract {
+        # Put config file path within MacPorts filesystem hierarchy, and reflect this in documentation.
+        reinplace -locale C -W ${worksrcpath} "s|/etc/xtide\\.conf|${conf_dir}/xtide\\.conf|g" \
+            libxtide/Global.cc tide.1 xtide.1 xttpd.8
+    }
+
+    # Per the configure script: "if using GCC, version 4.4 or later is required"
+    compiler.blacklist  *gcc-4.2 gcc-4.0 gcc-3.3 {clang < 300}
+
+    configure.args-append   --without-x
+    
+    variant xwindows description {Build xtide executable for use with X-Windows} {
+        depends_lib-append      port:xorg-libXaw
+        configure.args-delete   --without-x
+    }
+
+    default_variants-append +xwindows
+
+    # Set up config file to where xtide-data and xtide-wvs will put files.
+    post-destroot {
+        xinstall -d -m 755 ${destroot}${conf_dir}
+        system "echo '${harmonics_dir}\n${wvs_dir}' >> ${destroot}${conf_file}"
+    }
+
+    notes "You may optionally install the port xtide-wvs to enable plotting of the shorelines on the globe view."
+
+    livecheck.regex     ${name}-(\[0-9.\]+)${extract.suffix}
+}
+
+subport ${name}-wvs {
+    categories          science
+    version             0
+    revision            0
+    license             public-domain
+    supported_archs     noarch
+
+    description         World Vector Shoreline data for XTide.
+
+    long_description    ${description}
+
+    worksrcdir
+    distname            wvs
+
+    checksums           rmd160  0e83b847efc635f18bd96cc5a29149d5af41dc4d \
+                        sha256  4e996ce2e608d612ba78e35cdf50c2c73b01fce06bd5b561a7fe957ea75d6d75
+
+    use_configure       no
+
+    build {}
+
+    destroot {
+        xinstall -d -m 755 ${destroot}${wvs_dir}
+        foreach wvsfile {wvs1.dat wvs12.dat wvs250k.dat wvs3.dat wvs43.dat wvsfull.dat} {
+            xinstall -m 644 -W ${workpath} ${wvsfile} ${destroot}${wvs_dir}
+        }
+    }
+
+    livecheck.type      none
+}
+
+subport ${name}-data {
+    categories          science
+    version             20180101
+    revision            0
+    license             public-domain
+    supported_archs     noarch
+
+    description         Harmonics data for XTide.
+
+    long_description    ${description}
+
+    worksrcdir          harmonics-dwf-${version}
+    distname            ${worksrcdir}-free
+    master_sites-append https://src.fedoraproject.org/repo/pkgs/${name}/${distfiles}/sha512/c252c99b85e2bf87e11f6334339d1919d9e63b797ba25b08189b8d2dfe98a352550d14ffc54c253c09845f2bce02981b8049c95654b14c34a77d687f4aeed27f
+
+    checksums           rmd160  61ac5640c463376517d0d2f20c0be3037ac815ef \
+                        sha256  59566acd8083fed0bde18294d3344331797fed068352a53d6580673cb246b1fc \
+                        size    545679
+
+    use_configure       no
+
+    build {}
+
+    destroot {
+        xinstall -d -m 755 ${destroot}${harmonics_dir} ${destroot}${docdir}
+        xinstall -m 644 -W ${worksrcpath} ${distname}.tcd ${destroot}${harmonics_dir}
+        xinstall -m 644 -W ${worksrcpath} COPYING ChangeLog ${destroot}${docdir}
+    }
+
+    livecheck.regex     harmonics-dwf-(\[0-9\]+)-free${extract.suffix}
+
+    notes "Only public-domain harmonics for the United States are included in this port.\
+Additional harmonics for other countries, licensed for non-commercial use only, can be downloaded from\
+[lindex ${master_sites} 0]harmonics-dwf-20111230-nonfree${extract.suffix}\
+and extracted into ${harmonics_dir} to make them available to ${name}. See http://www.flaterco.com/xtide/faq.html#60."
+}

@@ -1,0 +1,35 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           cmake 1.0
+PortGroup           github 1.0
+
+name                rtl-sdr
+maintainers         {michaelld @michaelld} openmaintainer
+
+github.setup        osmocom rtl-sdr 81833a1cf6288fee93a9157c0f60cafb5ec340b9
+version             20190716-[string range ${github.version} 0 7]
+checksums           rmd160 cf2fce4c254008f20e2e591bcc0e61d0d19cd6e4 \
+                    sha256 a764dd5f9d3afc6a9994521077bca5586738f8b022cea96e497a596c1607b3e9 \
+                    size   134629
+revision            0
+
+categories          science comms
+platforms           darwin
+license             GPL-2
+maintainers         {michaelld @michaelld} openmaintainer
+description         ${name} allows using devices with a RTL2832U chipset as software defined radio (SDR)
+long_description    ${description}
+homepage            http://sdr.osmocom.org/trac/wiki/rtl-sdr
+
+depends_build-append port:pkgconfig port:doxygen
+depends_lib-append   path:lib/libusb-1.0.dylib:libusb
+
+# do VPATH (out of source tree) build
+
+cmake.out_of_source yes
+
+# remove top-level library path, such that internal libraries are used
+# instead of any already-installed ones.
+
+configure.ldflags-delete -L${prefix}/lib

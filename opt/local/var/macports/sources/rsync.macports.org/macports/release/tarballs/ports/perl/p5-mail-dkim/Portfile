@@ -1,0 +1,31 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Mail-DKIM 0.57
+categories-append   mail
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         Signs or verifies mail with DKIM, Domainkey signature
+long_description    ${description}
+
+platforms           darwin
+
+checksums           rmd160  2050e63371931442924bd3bd4d7649f5f355a8fc \
+                    sha256  6b535354408e842eada8f4a118f7c990ee21284145229685e128414d2c87ae3a \
+                    size    166044
+
+if {${perl5.major} != ""} {
+    depends_lib-append \
+                    port:p${perl5.major}-crypt-openssl-rsa \
+                    port:p${perl5.major}-mail-authenticationresults \
+                    port:p${perl5.major}-mailtools \
+                    port:p${perl5.major}-net-dns \
+                    port:p${perl5.major}-net-dns-resolver-mock \
+                    port:p${perl5.major}-test-requiresinternet \
+                    port:p${perl5.major}-yaml-libyaml
+
+    supported_archs noarch
+}

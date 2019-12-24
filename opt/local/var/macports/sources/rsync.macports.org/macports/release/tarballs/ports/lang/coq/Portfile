@@ -1,0 +1,77 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+github.setup        coq coq 8.8.2 V
+revision            1
+platforms           darwin
+categories          lang math
+license             LGPL-2.1
+maintainers         {pmetzger @pmetzger} openmaintainer
+
+description         Proof assistant for higher-order logic
+long_description    Coq is a proof assistant for higher-order logic, \
+                    which allows the development of computer programs \
+                    consistent with their formal specification. It is \
+                    developed using OCaml and Camlp4.
+homepage            https://coq.inria.fr/
+
+depends_lib         port:ocaml \
+                    port:camlp5 \
+                    port:ocaml-num
+
+depends_build       port:ocaml-findlib
+
+checksums           rmd160  fc62e3ec89ca563ea2ea3b50b9dfa469e1d6634f \
+                    sha256  ad68ccee8c95fe5c81e83d6d629cba56ffbd5d55446c7f4bac084bc1d1ec74c0 \
+                    size    5951293
+
+configure.pre_args  -prefix ${prefix}
+configure.args      -emacslib ${prefix}/share/emacs/site-lisp/ \
+                    -mandir ${prefix}/share/man \
+                    -coqdocdir ${prefix}/share/coq/latex \
+                    -browser "'open %s'" \
+                    -coqide no \
+                    -with-doc no
+build.target        world
+
+destroot.target     install
+destroot.destdir    COQINSTALLPREFIX=${destroot}
+
+# ocaml is not universal
+universal_variant   no
+
+notes "
+The style file for LaTeX documentation,\
+coqdoc.sty, is in ${prefix}/share/coq/latex.\
+Add this to your TEXINPUTS if you wish to\
+use it.
+"
+
+variant doc description {Build documentation} {
+    set pyversion           3.6
+    set _pyversion          [string map {. ""} $pyversion]
+    depends_build-append    port:hevea \
+                            port:netpbm \
+                            port:texlive \
+                            port:texlive-latex-extra \
+                            port:py${_pyversion}-sphinx \
+                            port:py${_pyversion}-sphinx_rtd_theme \
+                            port:py${_pyversion}-antlr4-python3-runtime \
+                            port:py${_pyversion}-beautifulsoup4 \
+                            port:py${_pyversion}-sphinxcontrib-bibtex \
+                            port:py${_pyversion}-oset \
+                            port:py${_pyversion}-pexpect
+    configure.args-delete   -with-doc no
+    configure.args-append   -with-doc yes
+    configure.env           PATH=${frameworks_dir}/Python.framework/Versions/${pyversion}/bin:$env(PATH)
+    build.env               {*}${configure.env}
+    #use_parallel_build      no
+}
+
+variant coqide description {Install CoqIDE} {
+    depends_lib-append      port:lablgtk2
+    configure.args-delete   -coqide none
+    configure.args-append   -coqide opt
+}

@@ -1,0 +1,11 @@
+pkgutil completions are for Solaris CSW, let's avoid confusion with pkgutil on OS X
+--- completions/Makefile.am.orig
++++ completions/Makefile.am
+@@ -272,7 +272,6 @@ bashcomp_DATA = 2to3 \
+ 		pkgadd \
+ 		pkgrm \
+ 		pkgtool \
+-		pkgutil \
+ 		plague-client \
+ 		pm-hibernate \
+ 		pm-is-supported \

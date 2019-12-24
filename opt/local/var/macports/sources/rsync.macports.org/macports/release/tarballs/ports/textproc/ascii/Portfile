@@ -1,0 +1,43 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                ascii
+version             3.18
+categories          textproc
+platforms           darwin
+maintainers         {ryandesign @ryandesign} openmaintainer
+license             BSD
+
+description         provides conversion between ASCII character tables
+
+long_description    The ascii utility provides easy conversion between various \
+                    byte representations and the American Standard Code for \
+                    Information Interchange (ASCII) character table
+
+homepage            http://www.catb.org/~esr/ascii/
+master_sites        ${homepage}
+
+checksums           rmd160  80b0bcfa5a89c04ce3ab4cf2bb0c08ee368c28e1 \
+                    sha256  728422d5f4da61a37a17b4364d06708e543297de0a5f70305243236d80df072d
+
+use_configure       no
+
+variant universal {}
+
+build.args          CC=${configure.cc} \
+                    CFLAGS="${configure.cflags} [get_canonical_archflags cc]"
+
+destroot.args       PREFIX=${prefix}
+
+post-destroot {
+    set docdir ${prefix}/share/doc/${subport}
+    xinstall -d ${destroot}${docdir}
+    xinstall -m 644 -W ${worksrcpath} \
+        COPYING \
+        README \
+        ${destroot}${docdir}
+}
+
+livecheck.type      regex
+livecheck.regex     ${name}-(\[0-9.\]+)${extract.suffix}

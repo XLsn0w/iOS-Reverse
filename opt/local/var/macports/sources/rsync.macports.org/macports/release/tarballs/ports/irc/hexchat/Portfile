@@ -1,0 +1,95 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           meson 1.0
+
+name                hexchat
+version             2.14.2
+revision            1
+set branch          [join [lrange [split ${version} .] 0 1] .]
+categories          irc
+maintainers         {raimue @raimue} \
+                    openmaintainer
+description         IRC client based on XChat
+homepage            https://hexchat.github.io/
+platforms           darwin
+license             GPL-2+
+
+long_description \
+    HexChat is a graphical IRC client using GTK that has \
+    many features and can be scripted with Lua, Perl, or Python.
+
+master_sites        https://dl.hexchat.net/hexchat/
+use_xz yes
+
+checksums           rmd160  a41067f7dd9b0eceaf2252aa7a8b8eca7dd228fd \
+                    sha256  7792b9e52560fbd3e10d75bfb5d138a20913a87771d676d296547f1b4ac09618 \
+                    size    1288732
+
+patchfiles          patch-meson-post-install.diff \
+                    patch-build-scripts-python3.diff \
+                    0003-Python-plugin-Call-EndInterpreter-when-deinit-ing-th.patch
+patch.post_args     -p1
+
+post-patch {
+    reinplace "s:@PYTHON3@:${prefix}/bin/python3.7:" \
+        ${worksrcpath}/plugins/perl/generate_header.py \
+        ${worksrcpath}/src/common/make-te.py
+    reinplace "s:@PERL@:${prefix}/bin/perl5.28:" \
+        ${worksrcpath}/plugins/perl/generate_header
+}
+
+depends_build-append \
+                    port:pkgconfig \
+                    port:python37
+
+depends_lib         port:gtk2 \
+                    port:dbus-glib \
+                    port:libproxy \
+                    port:libnotify \
+                    port:libcanberra \
+                    port:gettext
+
+depends_run         port:desktop-file-utils
+
+configure.args \
+    -Dwith-ssl=false \
+    -Dwith-fishlim=false \
+    -Dwith-theme-manager=false \
+    -Dwith-lua=false \
+    -Dwith-perl=false \
+    -Dwith-python=false
+
+default_variants    +ssl +lua +perl +python
+
+variant ssl description "Enable SSL using openssl" {
+    depends_lib-append          path:lib/libssl.dylib:openssl
+    configure.args-replace      -Dwith-ssl=false -Dwith-ssl=true
+    configure.args-append       -Dwith-fishlim=true
+}
+
+variant lua description "Enable Lua scripting, using luajit" {
+    depends_lib-append          port:lua
+    configure.args-replace      -Dwith-lua=false -Dwith-lua=lua
+}
+
+variant perl description "Enable Perl scripting, using perl5.28" {
+    depends_lib-append          port:perl5.28
+    configure.args-replace      -Dwith-perl=false -Dwith-perl=${prefix}/bin/perl5.28
+}
+
+variant python description "Enable Python scripting" requires python37 {}
+variant python37 description "Enable Python scripting, using python37" {
+    depends_lib-append          port:python37
+    configure.args-replace      -Dwith-python=false -Dwith-python=python-3.7
+    configure.pkg_config_path   ${frameworks_dir}/Python.framework/Versions/3.7/lib/pkgconfig/
+}
+
+post-activate {
+    system "${prefix}/bin/gtk-update-icon-cache -f -t ${prefix}/share/icons/hicolor"
+    system "${prefix}/bin/update-desktop-database ${prefix}/share/applications"
+}
+
+livecheck.type  regex
+livecheck.url   https://hexchat.github.io/downloads.html
+livecheck.regex ${name}-(\\d+(\\.\\d+)+)\\.tar

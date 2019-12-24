@@ -1,0 +1,38 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-backports
+version             1.0
+categories-append   devel
+platforms           darwin
+license             PSF
+supported_archs     noarch
+
+# do not add subports for python > 3.4
+python.versions     27 34
+
+maintainers         {stromnov @stromnov} openmaintainer
+
+description         Namespace for backported Python features
+long_description    ${description}
+
+homepage            http://bitbucket.org/brandon/backports
+master_sites        ${homepage}
+
+if {${name} ne ${subport}} {
+    distfiles
+
+    worksrcdir          backports
+
+    extract.mkdir       yes
+
+    post-extract {
+        file copy ${filespath}/setup.py ${worksrcpath}
+        file mkdir ${worksrcpath}/backports
+        file copy ${filespath}/__init__.py ${worksrcpath}/backports
+    }
+}
+
+livecheck.type      none

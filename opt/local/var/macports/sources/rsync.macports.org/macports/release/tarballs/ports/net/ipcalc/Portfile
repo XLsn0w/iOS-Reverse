@@ -1,0 +1,43 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+name                ipcalc
+version             0.41
+revision            4
+categories          net
+license             GPL-2+
+platforms           darwin
+supported_archs     noarch
+maintainers         {@xeron gmail.com:xeron.oskom} openmaintainer
+
+description         calculates various network masks etc. from given ip-address
+long_description    ipcalc takes an IP address and netmask and calculates the \
+                    resulting broadcast, network, Cisco wildcard mask, and host \
+                    range. By giving a second netmask, you can design sub- and \
+                    supernetworks. It is also intended to be a teaching tool and \
+                    presents the results as easy-to-understand binary values.
+
+homepage            http://jodies.de/ipcalc/
+master_sites        http://jodies.de/ipcalc-archive/
+
+checksums           rmd160  aaa21c1804d7498e2604c907a336c20dc9b4511d \
+                    sha256  dda9c571ce3369e5b6b06e92790434b54bec1f2b03f1c9df054c0988aa4e2e8a
+
+perl5.branches      5.28
+
+depends_lib         port:perl${perl5.major}
+
+configure {
+    reinplace "s|/usr/bin/perl -w|${prefix}/bin/perl${perl5.major} -w|g" ${worksrcpath}/ipcalc
+}
+
+build {}
+
+destroot {
+    xinstall -m 755 ${worksrcpath}/ipcalc ${destroot}${prefix}/bin
+    xinstall -m 755 -d ${destroot}${prefix}/share/doc/${name}
+    xinstall -m 644 ${worksrcpath}/changelog \
+        ${destroot}${prefix}/share/doc/${name}
+}

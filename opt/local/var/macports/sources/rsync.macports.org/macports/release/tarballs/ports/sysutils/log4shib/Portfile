@@ -1,0 +1,42 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                log4shib
+version             2.0.0
+categories          sysutils shibboleth devel
+license             LGPL-2.1
+maintainers         {snc @nerdling} {scantor @scantor}
+description         configurable logging for C++, fork of log4cpp
+long_description    Log4shib is library of C++ classes for flexible logging to \
+                    files, syslog, IDSA and other destinations. It is modeled \
+                    after the Log4j Java library, staying as close to their \
+                    API as is reasonable.
+homepage            http://shibboleth.net/
+
+platforms           darwin
+
+master_sites        http://shibboleth.net/downloads/log4shib/${version}/
+use_bzip2           yes
+
+checksums           rmd160  cfac52fac139416a6aad6f73571dd24607acaaed \
+                    sha256  0a6bd34d57844cc8ed7b6fcb9952c1a4dc433c3bc44146a11bd4a0d470efa4e2
+
+configure.args      --disable-doxygen \
+                    --disable-dot \
+                    --disable-html-docs \
+                    --disable-latex-docs
+
+variant universal {
+    depends_lib-append  port:libtool
+}
+
+post-configure {
+    if {[variant_isset universal]} {
+        file copy -force ${prefix}/bin/glibtool ${worksrcpath}/libtool
+    }
+}
+
+livecheck.type      regex
+livecheck.url       http://shibboleth.net/downloads/log4shib/latest/
+livecheck.regex     ${name}-(\\d+\\.\\d+\\.\\d+)

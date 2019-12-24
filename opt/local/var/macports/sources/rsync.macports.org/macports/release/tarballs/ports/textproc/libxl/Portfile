@@ -1,0 +1,67 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                libxl
+version             3.8.5.0
+revision            0
+checksums           rmd160  7a1251b48001b169c35da64fbfd273f505c98ddd \
+                    sha256  a70459a019df61613eb4ce35e129e372a53d343eecd534b1aabc4f6158f2aea7 \
+                    size    14061492
+
+set branch          [join [lrange [split ${version} .] 0 2] .]
+categories          textproc
+platforms           darwin
+maintainers         {ryandesign @ryandesign} openmaintainer
+license             LibXL
+
+description         library for reading and writing Microsoft Excel files
+
+long_description    LibXL is a commercial ${description}.
+
+homepage            http://www.libxl.com/
+master_sites        ${homepage}download/
+dist_subdir         ${name}/${version}
+distfiles           libxl-mac-${branch}${extract.suffix}
+
+worksrcdir          libxl-mac-${version}
+
+use_configure       no
+
+# The pre-compiled library is built for these architectures.
+supported_archs     x86_64
+
+# The pre-compiled library is linked with libstdc++.
+configure.cxx_stdlib libstdc++
+
+set libxl           lib/libxl.dylib
+
+build {
+    system -W ${worksrcpath} "install_name_tool -id ${prefix}/${libxl} ${libxl}"
+}
+
+destroot {
+    xinstall -m 0644 ${worksrcpath}/${libxl} ${destroot}${prefix}/lib
+    # I don't know where the developers intend these to be installed but they
+    # need to be in separate directories because there are files of the same
+    # names with different contents. Having them directly in ${prefix}/include
+    # also seems inadvisable due to the generically-named enum.h and setup.h.
+    # which could conflict with other projects.
+    copy ${worksrcpath}/include_c ${destroot}${prefix}/include/libxl-c
+    copy ${worksrcpath}/include_cpp ${destroot}${prefix}/include/libxl-cpp
+
+    xinstall -d ${destroot}${prefix}/share/doc
+    copy ${worksrcpath}/doc ${destroot}${prefix}/share/doc/${subport}
+    xinstall -m 0644 -W ${worksrcpath} changelog.txt license.txt readme.txt ${destroot}${prefix}/share/doc/${subport}
+    copy ${worksrcpath}/examples ${destroot}${prefix}/share/doc/${subport}/
+}
+
+livecheck.url       ${homepage}download.html
+livecheck.regex     download/libxl-mac-(\[0-9.\]+)${extract.suffix}
+
+notes "
+LibXL is commercial software that requires a license to unlock all features.\
+For more information, see:
+
+${homepage}purchase.html
+"

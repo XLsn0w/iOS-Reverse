@@ -1,0 +1,50 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                devhelp
+version             3.28.1
+license             GPL-2+
+description         Devhelp is an API documentation browser for GTK+ and GNOME.
+long_description    Devhelp is an API documentation browser for GTK+ and GNOME. It works \
+                    natively with gtk-doc (the API reference framework developed for GTK+ \
+                    and used throughout GNOME for API documentation). If you use gtk-doc \
+                    with your project, you can use Devhelp to browse the documentation.
+
+maintainers         {devans @dbevans} openmaintainer
+categories          gnome
+platforms           darwin
+homepage            https://wiki.gnome.org/Apps/Devhelp
+set branch          [join [lrange [split ${version} .] 0 1] .]
+
+default master_sites {gnome:sources/${name}/${branch}/}
+
+use_xz              yes
+
+checksums           rmd160  3e13cce383450f16a26aae5ecd43f6922ec6fa0e \
+                    sha256  da1ce2c66ba54908c2de5ae6b59255f02b13ca3bf98cf6c198c87c2c7fec4821 \
+                    size    642992
+
+depends_build       port:pkgconfig \
+                    port:itstool
+
+depends_lib         port:desktop-file-utils \
+                    port:gtk3 \
+                    path:lib/pkgconfig/webkit2gtk-4.0.pc:webkit2-gtk
+
+depends_run         port:adwaita-icon-theme
+
+# use system python for build, requires python2 >= 2.3
+
+configure.python    /usr/bin/python
+configure.args      --disable-silent-rules \
+                    --disable-schemas-compile \
+                    --enable-compile-warnings=minimum
+
+post-activate {
+    system "${prefix}/bin/gtk-update-icon-cache-3.0 -f -t ${prefix}/share/icons/hicolor"
+    system "${prefix}/bin/update-desktop-database ${prefix}/share/applications"
+    system "${prefix}/bin/glib-compile-schemas ${prefix}/share/glib-2.0/schemas"
+}
+
+livecheck.type      gnome

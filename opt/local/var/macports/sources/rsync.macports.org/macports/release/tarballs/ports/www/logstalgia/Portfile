@@ -1,0 +1,37 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+github.setup        acaudwell Logstalgia 1.1.2 logstalgia-
+name                logstalgia
+categories          www
+platforms           darwin
+maintainers         nomaintainer
+license             GPL-3
+
+description         a website access log visualisation tool
+
+long_description    Logstalgia is a visualization tool that replays or streams \
+                    web server access logs as a retro arcade game simulation.
+
+homepage            http://logstalgia.io/
+github.tarball_from releases
+distname            ${name}-${version}
+
+checksums           rmd160  49a0fb7025178f90f5730c0d625e04a5ccfb2a51 \
+                    sha256  ed3f4081e401f4a509761a7204bdbd7c34f8f1aff9dcb030348885fb3995fca9 \
+                    size    2330691
+
+depends_build       port:boost \
+                    port:glm \
+                    port:pkgconfig
+
+depends_lib         port:freetype \
+                    port:ftgl \
+                    port:glew \
+                    port:jpeg \
+                    port:libpng \
+                    port:libsdl2 \
+                    port:libsdl2_image \
+                    port:pcre

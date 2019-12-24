@@ -1,0 +1,52 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem                                      1.0
+PortGroup           python                      1.0
+PortGroup           github                      1.0
+
+name                py-torchtext
+version             0.4.0
+revision            0
+github.setup        pytorch text ${version}
+
+checksums           rmd160  473c770dd8c865db8277839f5210a8a771580bed \
+                    sha256  8140783d24b98233496a53ac08325fa9655d76289fbb51257f980c733e069900 \
+                    size    1553293
+
+platforms           darwin
+supported_archs     x86_64
+
+license             BSD
+
+maintainers         {jonesc @cjones051073} openmaintainer
+
+description         PyTorch data loaders and abstractions for text and NLP
+long_description    ${description}
+
+homepage            https://github.com/pytorch/text
+
+github.livecheck.regex  {([0-9.]+)}
+
+# Support python versions
+python.versions     27 35 36 37
+
+if {${name} ne ${subport}} {
+
+    depends_build-append \
+        port:py${python.version}-setuptools
+
+    depends_lib-append \
+        port:py${python.version}-nltk
+
+    if {${python.version} > 30} {
+        depends_lib-append \
+            port:py${python.version}-spaCy \
+            port:py${python.version}-spaCy-models
+    }
+    
+    build.cmd    "${python.bin} setup.py"
+    destroot.cmd "${python.bin} setup.py install"
+
+    livecheck.type none 
+
+}

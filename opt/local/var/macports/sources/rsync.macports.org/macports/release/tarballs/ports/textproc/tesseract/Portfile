@@ -1,0 +1,196 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+PortGroup           github 1.0
+PortGroup           cxx11 1.1
+
+if {"tesseract" eq ${subport} || "tesseract-training" eq ${subport}} {
+    github.setup    tesseract-ocr tesseract 4.0.0
+} else {
+    github.setup    tesseract-ocr tessdata  4.0.0
+    name            tesseract
+}
+categories          textproc graphics pdf
+platforms           darwin
+license             Apache-2
+
+maintainers         {mark @markemer} openmaintainer
+
+description         Open source OCR engine
+long_description    The Tesseract OCR engine was one of the top  3  engines in \
+                    the 1995 UNLV Accuracy test.  Between 1995 and 2006 it had \
+                    little work done on it,  but it is  probably  one  of  the \
+                    most accurate  open  source  OCR  engines  available.  The \
+                    source code will read a binary, grey or  color  image  and \
+                    output text.  A tiff reader is built  in  that  will  read \
+                    uncompressed TIFF images,  or libtiff can be added to read \
+                    compressed images.
+
+checksums           rmd160  237576f9a616aaa013b7c80562d1c0cd8fd4af87 \
+                    sha256  2135162c4b306d9f13d07747058fd0f3406fea06d601503ced3cf99aad9899b9 \
+                    size    1961991
+
+if {"tesseract" eq ${subport} || "tesseract-training" eq ${subport}} {
+    revision                0
+
+    use_autoreconf          yes
+    autoreconf.cmd          ./autogen.sh
+    autoreconf.args
+
+    depends_build-append    port:pkgconfig \
+                            port:autoconf \
+                            port:automake \
+                            port:libtool \
+                            port:asciidoc
+
+    depends_lib             port:zlib \
+                            port:libpng \
+                            port:leptonica \
+                            port:jpeg
+
+    patchfiles              patch-fix-mtree-violation-by-cmake-files.diff
+
+    github.livecheck.regex  {(\d\.\d+(\.\d+)?(?!-rc))}
+} else {
+    revision                0
+
+    supported_archs         noarch
+
+    checksums               rmd160  037e33f19787c2f08544bcde213eb202f73d9546 \
+                            sha256  1c36d1e521e6420ea9c8bf13d8a45f67d54fdcf6a132fa72370ae85464118b96 \
+                            size    669255785
+
+    use_configure           no
+
+    build {}
+
+    depends_run             port:tesseract
+    livecheck.type          none
+}
+
+subport tesseract-training {
+    build.target           training
+    destroot.target        training-install
+}
+
+if {"tesseract" eq ${subport}} {
+    notes "
+For
+"
+}
+
+set langs {
+    afr         Afrikaans
+    amh         Amharic
+    ara         Arabic
+    asm         Assamese
+    aze         Azerbaijani
+    aze_cyrl    Azerbaijani-cyrillic
+    bel         Belarusian
+    ben         Bengali
+    bod         Tibetan
+    bos         Bosnian
+    bul         Bulgarian
+    cat         Catalan
+    ceb         Cebuano
+    ces         Czech
+    chi_sim     Chinese-simple
+    chi_tra     Chinese-traditional
+    chr         Cherokee
+    cym         Welsh
+    dan         Danish
+    deu         German
+    dzo         Dzongkha
+    ell         Modern
+    eng         English
+    enm         Middle
+    epo         Esperanto
+    est         Estonian
+    eus         Basque
+    fas         Persian
+    fin         Finnish
+    fra         French
+    frm         Middle
+    gle         Irish
+    glg         Galician
+    grc         Ancient
+    guj         Gujarati
+    hat         Haitian
+    heb         Hebrew
+    hin         Hindi
+    hrv         Croatian
+    hun         Hungarian
+    iku         Inuktitut
+    ind         Indonesian
+    isl         Icelandic
+    ita         Italian
+    jav         Javanese
+    jpn         Japanese
+    kan         Kannada
+    kat         Georgian
+    kaz         Kazakh
+    khm         Central
+    kir         Kirghiz
+    kor         Korean
+    kur         Kurdish
+    lao         Lao
+    lat         Latin
+    lav         Latvian
+    lit         Lithuanian
+    mal         Malayalam
+    mar         Marathi
+    mkd         Macedonian
+    mlt         Maltese
+    msa         Malay
+    mya         Burmese
+    nep         Nepali
+    nld         Dutch
+    nor         Norwegian
+    ori         Odiya
+    osd         OSD
+    pan         Panjabi
+    pol         Polish
+    por         Portuguese
+    pus         Pushto
+    ron         Romanian
+    rus         Russian
+    san         Sanskrit
+    sin         Sinhala
+    slk         Slovak
+    slv         Slovenian
+    spa         Spanish
+    sqi         Albanian
+    srp         Serbian
+    srp_latn    Serbian-latin
+    swa         Swahili
+    swe         Swedish
+    syr         Syriac
+    tam         Tamil
+    tel         Telugu
+    tgk         Tajik
+    tgl         Tagalog
+    tha         Thai
+    tir         Tigrinya
+    tur         Turkish
+    uig         Uighur
+    ukr         Ukrainian
+    urd         Urdu
+    uzb         Uzbek
+    uzb_cyrl    Uzbek-cyrillic
+    vie         Vietnamese
+    yid         Yiddish
+}
+
+foreach {lang_code lang_name} ${langs} {
+    subport ${name}-[strsed ${lang_code} {g/_/-/}] "
+        description         ${lang_name} language data for the Tesseract OCR engine
+
+        long_description    ${lang_name} language data for the Tesseract OCR engine
+
+        destroot {
+            xinstall -d -m 0755 ${destroot}${prefix}/share/tessdata/
+            xinstall    -m 0644 ${worksrcpath}/${lang_code}.traineddata ${destroot}${prefix}/share/tessdata/
+        }
+    "
+}

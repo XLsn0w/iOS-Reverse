@@ -1,0 +1,56 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+PortGroup           select 1.0
+
+set base_name       csvkit
+name                py-$base_name
+version             1.0.3
+python.versions     27 35 36 37
+categories-append   textproc
+platforms           darwin
+maintainers         {gmail.com:esafak @esafak} openmaintainer
+license             MIT
+supported_archs     noarch
+
+description         A suite of utilities for converting to and working with CSV, the king of tabular file formats
+long_description    csvkit is a suite of utilities for converting to and working with CSV, \
+                    the king of tabular file formats. csvkit is to tabular data what the \
+                    standard Unix text processing suite (grep, sed, cut, sort) is to text. \
+                    As such, csvkit adheres to the Unix philosophy.
+
+homepage            https://pypi.python.org/pypi/$base_name
+master_sites        pypi:c/$base_name
+
+checksums           rmd160  83cd6c445462f6d4d53520970044623f715ce91d \
+                    sha256  a6c859c1321d4697dc41252877249091681297f093e08d9c1e1828a6d52c260c \
+                    size    3780150
+
+distname            $base_name-${version}
+
+if {${name} ne ${subport}} {
+    livecheck.type      none
+
+    depends_build-append \
+                        port:py${python.version}-setuptools \
+                        port:py${python.version}-coverage \
+                        port:py${python.version}-sphinx \
+                        port:py${python.version}-sphinx_rtd_theme \
+                        port:py${python.version}-nose \
+                        port:py${python.version}-tox
+
+    depends_lib-append  port:${base_name}_select \
+                        port:py${python.version}-agate \
+                        port:py${python.version}-agate-excel \
+                        port:py${python.version}-agate-dbf \
+                        port:py${python.version}-agate-sql \
+                        port:py${python.version}-six
+
+    select.group        $base_name
+    select.file         ${filespath}/py${python.version}-$base_name
+} else {
+    livecheck.type      regex
+    livecheck.url       ${homepage}
+    livecheck.regex     $base_name (\\d+(\\.\\d+)+)
+}

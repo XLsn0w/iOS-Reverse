@@ -1,0 +1,38 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           cmake 1.1
+
+name                uncrustify
+version             0.69.0
+categories          devel
+platforms           darwin
+maintainers         nomaintainer
+license             GPL-2
+
+description         Source code beautifier
+
+long_description    Banish crusty code with the Uncrustify \
+                    C/C++/C#/D/Java/Pawn source code beautifier. It indents, \
+                    adds newlines, aligns, etc, and is highly configurable.
+
+homepage            http://uncrustify.sourceforge.net/
+master_sites        sourceforge:project/uncrustify/uncrustify/uncrustify-${version}
+
+checksums           rmd160  8c5161b6a8e971ea8be575906185399a53316542 \
+                    sha256  f64ecdbd5ce8b3e3d037186f7cce595b3e73cbd2863b7067ad7a219c34ae1fb8 \
+                    size    1601218
+
+extract.mkdir       yes
+
+compiler.cxx_standard   2011
+
+post-destroot {
+    set docdir ${prefix}/share/doc/${name}
+    xinstall -d ${destroot}${docdir}
+    copy ${worksrcpath}/documentation ${destroot}${docdir}
+}
+
+livecheck.type      regex
+livecheck.url       https://sourceforge.net/projects/uncrustify/files/uncrustify/
+livecheck.regex     "${name}-(\\d+(?:\\.\\d+)*)"

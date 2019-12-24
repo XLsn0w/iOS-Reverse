@@ -1,0 +1,63 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem       1.0
+
+name             xorg-xorgproto
+epoch            1
+version          2019.2
+categories       x11 devel
+license          X11
+maintainers      {jeremyhu @jeremyhu} {jonesc @cjones051073} openmaintainer
+description      X.org xorgproto
+homepage         https://www.x.org
+platforms        darwin
+supported_archs  noarch
+long_description X.Org combined prototype headers
+master_sites     xorg:individual/proto/
+
+distname         xorgproto-${version}
+
+checksums        rmd160  f29bf0b62d163ac97096201bc4d74559c441d0dd \
+                 sha256  46ecd0156c561d41e8aa87ce79340910cdf38373b759e737fcbba5df508e7b8e \
+                 size    847374
+
+use_bzip2        yes
+
+configure.args \
+	--enable-legacy \
+	--without-xmlto \
+	--without-fop \
+	--disable-specs
+
+post-destroot {
+    # This is provided by xorg-libX11 as of 1.6.9 - it's legacy in
+    # xorgproto now but we enable legacy for other reasons.
+    delete ${destroot}${prefix}/include/X11/extensions/XKBgeom.h
+}
+
+# Depending on ghostscript for the PDF documentation creates a dependency
+# loop, so you may want to install first without the docs variant
+variant docs description "Install extra documentation" {
+	depends_build-append \
+		port:fop \
+		port:xmlto \
+		port:xorg-sgml-doctools
+
+	configure.args-delete \
+		--without-xmlto \
+		--without-fop \
+		--disable-specs
+
+	configure.args-append \
+		--with-xmlto \
+		--with-fop \
+		--enable-specs
+
+	configure.env-append \
+		XMLTO=${prefix}/bin/xmlto \
+		FOP=${prefix}/bin/fop
+}
+
+livecheck.type   regex
+livecheck.url    https://xorg.freedesktop.org/archive/individual/proto/?C=M&O=D
+livecheck.regex  xorgproto-(\\d+(?:\\.\\d+)*)

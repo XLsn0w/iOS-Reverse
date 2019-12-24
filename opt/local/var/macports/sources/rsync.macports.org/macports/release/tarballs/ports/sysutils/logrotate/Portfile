@@ -1,0 +1,120 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+github.setup        logrotate logrotate 3.15.0
+revision            1
+
+github.tarball_from releases
+use_xz              yes
+checksums           rmd160  8a2a190a1e4240575d038f5400d08d1550a7fcbf \
+                    sha256  313612c4776a305393454c874ef590d8acf84c9ffa648717731dfe902284ff8f \
+                    size    158284
+categories          sysutils
+platforms           darwin
+license             GPL-2
+maintainers         {ctreleaven @ctreleaven} openmaintainer
+
+description         Rotates, compresses, and mails system logs
+
+long_description    The logrotate utility is designed to simplify the administration of logs \
+                    on a system which generates a lot of log files. Logrotate provides \
+                    automatic rotation, compression (gzip by default), removal and mailing \
+                    of log files. Logrotate can be set to handle a log file daily, weekly, \
+                    monthly or when the log file exceeds a certain size.
+
+depends_lib         port:popt
+
+depends_run         port:gettext \
+                    port:gzip
+
+set compress        ${prefix}/bin/gzip
+set compress_ext    .gz
+set uncompress      ${prefix}/bin/gunzip
+
+post-extract {
+    touch ${worksrcpath}/.depend
+    copy ${filespath}/logrotate.conf.example \
+        ${worksrcpath}/
+    copy ${filespath}/org.macports.logrotate.plist.example \
+        ${worksrcpath}/
+}
+
+patchfiles          patch-logrotate.c.diff
+
+post-patch {
+    reinplace "s|@PREFIX@|${prefix}|g" \
+        ${worksrcpath}/examples/logrotate.conf
+    reinplace "s|@PREFIX@|${prefix}|g" \
+        ${worksrcpath}/logrotate.conf.example
+    reinplace "s|@PREFIX@|${prefix}|g" \
+        ${worksrcpath}/org.macports.logrotate.plist.example
+}
+
+use_autoreconf      yes
+autoreconf.args-append \
+                    --force
+configure.args-append \
+                    --disable-silent-rules\
+                    --with-state-file-path=${prefix}/var/run/logrotate/logrotate.status \
+                    --with-default-mail-command=/bin/mail \
+                    --with-compress-command=${compress} \
+                    --with-uncompress-command=${uncompress} \
+                    --with-compress-extension=${compress_ext} 
+
+universal_variant   no
+
+destroot.keepdirs   ${destroot}${prefix}/etc/logrotate.d \
+                    ${destroot}${prefix}/var/run/logrotate
+post-destroot {
+    xinstall -d ${destroot}${prefix}/share/${name}
+	xinstall -m 644 -W ${worksrcpath} ChangeLog.md COPYING \
+	    logrotate.conf.example org.macports.logrotate.plist.example \
+		${destroot}${prefix}/share/${name}
+
+    if {[variant_isset startupitem]
+    && ${startupitem.install} != "no"
+    && [getuid] == 0} {
+
+        xinstall -d ${destroot}${prefix}/etc/LaunchDaemons/org.macports.logrotate
+        xinstall -d ${destroot}/Library/LaunchDaemons
+        xinstall -m 644 ${destroot}${prefix}/share/${name}/org.macports.logrotate.plist.example \
+            ${destroot}${prefix}/etc/LaunchDaemons/org.macports.logrotate/org.macports.logrotate.plist
+        ln -sf "${prefix}/etc/LaunchDaemons/org.macports.logrotate/org.macports.logrotate.plist" "${destroot}/Library/LaunchDaemons/org.macports.logrotate.plist"
+    }
+}
+
+post-activate {
+
+    if ![file exists ${prefix}/etc/logrotate.conf] {
+    
+        copy ${prefix}/share/${name}/logrotate.conf.example ${prefix}/etc/logrotate.conf
+    }
+}
+
+variant bzip2 description {Use bzip2 compression by default} {
+    set compress    ${prefix}/bin/bzip2
+    set compress_ext .bz2
+    set uncompress   ${prefix}/bin/bunzip2
+    depends_run-replace \
+                    port:gzip port:bzip2
+}
+
+notes "
+To use logrotate:
+
+  * See 'man logrotate' for configuration options.
+
+  * Enable daily log rotation with this command.
+
+    \$ sudo port load logrotate
+
+  * To create your own startup item with non-default intervals, build logrotate
+    without the startupitem variant (-startupitem), copy the example into place
+    and edit to your liking, then load with launchctl when finished.
+
+    \$ sudo cp ${prefix}/share/${name}/org.macports.logrotate.plist.example /Library/LaunchDaemons/org.macports.logrotate.plist
+
+    \$ sudo launchctl load -w /Library/LaunchDaemons/org.macports.logrotate.plist
+"

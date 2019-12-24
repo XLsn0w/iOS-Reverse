@@ -1,0 +1,121 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                ace
+set name_package    ACE
+version             6.5.2
+revision            1
+distname            ${name_package}-${version}
+categories          devel
+maintainers         {gmail.com:tlockhart1976 @lockhart} openmaintainer
+platforms           darwin
+license             BSD
+description         ACE is an object-oriented framework that implements many core patterns for \
+                    concurrent communication software.
+long_description    The ADAPTIVE Communication Environment (ACE) is a freely available, \
+                    open-source object-oriented (OO) framework that implements many core \
+                    patterns for concurrent communication software. ACE provides a rich set \
+                    of reusable C++ wrapper facades and framework components that perform \
+                    common communication software tasks across a range of OS platforms. The \
+                    communication software tasks provided by ACE include event \
+                    demultiplexing and event handler dispatching, signal handling, service \
+                    initialization, interprocess communication, shared memory management, \
+                    message routing, dynamic (re)configuration of distributed services, \
+                    concurrent execution and synchronization.
+
+conflicts           tao
+
+homepage            http://www.dre.vanderbilt.edu/~schmidt/ACE.html
+master_sites        http://download.dre.vanderbilt.edu/previous_versions
+
+universal_variant   yes
+
+use_bzip2           yes
+
+worksrcdir          ACE_wrappers
+
+patchfiles          patch-ace-config.h.diff \
+                    patch-include-makeinclude-platform_macros.GNU.diff \
+                    patch-archflags.diff
+
+checksums           rmd160  20c75a6e764d4896f946e35350c1b579c6537c07 \
+                    sha256  f0393d6df25ee92e0cbc6539c68ccf122caae0ffd5ae9a786163403bb2306cc5 \
+                    size    8074873
+
+set os.name "highsierra"
+array set os.names {
+     7  panther
+     8  tiger
+     9  leopard
+    10  snowleopard
+    11  lion
+    12  mountainlion
+    13  mavericks
+    14  yosemite
+    15  elcapitan
+    16  sierra
+    17  highsierra
+    18  mojave
+}
+foreach {key value} [array get os.names]  {
+    if {${key} == ${os.major}} {
+        set os.name ${value}
+    }
+}
+
+# omit examples and test programs to cut build time by 60%
+# set subdirs         { . }
+set subdirs         { ace ACEXML ASNMP Kokyu apps netsvcs }
+
+post-patch {
+    reinplace "s|@MACOSX@|${os.name}|g" \
+        ${worksrcpath}/ace/config.h \
+        ${worksrcpath}/include/makeinclude/platform_macros.GNU
+    reinplace "s|@@CFLAGS@@|[get_canonical_archflags cc]|g" \
+        ${worksrcpath}/include/makeinclude/platform_macosx_common.GNU
+    reinplace "s|@@LDFLAGS@@|[get_canonical_archflags ld] -stdlib=${configure.cxx_stdlib}|g" \
+        ${worksrcpath}/include/makeinclude/platform_macosx_common.GNU
+    reinplace "s|@@CXXFLAGS@@|[get_canonical_archflags cc] -stdlib=${configure.cxx_stdlib}|g" \
+        ${worksrcpath}/include/makeinclude/platform_macosx_common.GNU
+}
+
+depends_lib-append  path:bin/perl:perl5
+
+variant ssl description {Enable SSL} {
+    depends_lib-append path:lib/libssl.dylib:openssl
+
+    post-patch {
+        reinplace "s|ssl=0|ssl=1|g" \
+            ${worksrcpath}/include/makeinclude/platform_macros.GNU
+    }
+}
+
+use_configure       no
+
+use_parallel_build  no
+
+build.env           DYLD_LIBRARY_PATH=${worksrcpath}/lib \
+                    ACE_ROOT=${worksrcpath}
+build.args          CC=${configure.cc} \
+                    CXX=${configure.cxx} \
+                    CPP=${configure.cpp} \
+                    INSTALL_PREFIX=${prefix}
+build {
+    foreach {subdir} $subdirs {
+        build.dir ${worksrcpath}/${subdir}
+        command_exec build
+    }
+}
+
+destroot.env        {*}${build.env}
+destroot.args       {*}${build.args}
+destroot {
+    foreach {subdir} $subdirs {
+        destroot.dir ${worksrcpath}/${subdir}
+        command_exec destroot
+    }
+}
+
+livecheck.url       ${master_sites}
+livecheck.regex     ${name_package}-(\\d+\[0-9a-z.\]*)${extract.suffix}

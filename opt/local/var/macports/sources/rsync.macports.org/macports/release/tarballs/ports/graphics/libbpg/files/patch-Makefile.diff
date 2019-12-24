@@ -1,0 +1,34 @@
+--- Makefile.orig	2016-05-15 04:06:19.000000000 -0500
++++ Makefile	2016-09-26 00:19:13.000000000 -0500
+@@ -5,9 +5,9 @@
+ # Enable compilation of Javascript decoder with Emscripten
+ #USE_EMCC=y
+ # Enable x265 for the encoder
+-USE_X265=y
++#USE_X265=y
+ # Enable the JCTVC code (best quality but slow) for the encoder
+-#USE_JCTVC=y
++USE_JCTVC=y
+ # Compile bpgview (SDL and SDL_image libraries needed)
+ USE_BPGVIEW=y
+ # Enable it to use bit depths > 12 (need more tests to validate encoder)
+@@ -181,7 +181,7 @@
+ 
+ BPGDEC_LIBS:=-lpng $(LIBS)
+ BPGENC_LIBS+=-lpng -ljpeg $(LIBS)
+-BPGVIEW_LIBS:=-lSDL_image -lSDL $(LIBS)
++BPGVIEW_LIBS:=$(shell pkg-config SDL_image --libs) $(LIBS)
+ 
+ endif #!CONFIG_WIN32
+ 
+@@ -213,8 +213,8 @@
+ 	size bpgdec libbpg.o libavcodec/*.o libavutil/*.o | sort -n
+ 	gzip < bpgdec | wc
+ 
+-install: bpgenc bpgdec
+-	install -s -m 755 $^ $(prefix)/bin
++install: bpgenc bpgdec bpgview
++	install -s -m 755 $^ $(DESTDIR)$(prefix)/bin
+ 
+ CLEAN_DIRS=doc html libavcodec libavutil \
+      jctvc jctvc/TLibEncoder jctvc/TLibVideoIO jctvc/TLibCommon jctvc/libmd5

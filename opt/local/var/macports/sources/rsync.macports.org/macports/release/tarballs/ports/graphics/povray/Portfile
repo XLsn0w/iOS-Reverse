@@ -1,0 +1,118 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           muniversal 1.0
+
+# From vfe/unix/syspovconfig.h: "With `boost/tr1/*.hpp` unavailable, we're
+# currently blindly relying on the compiler to be compliant with C++11."
+compiler.cxx_standard   2011
+configure.cxxflags-append -std=c++11
+
+github.setup        POV-Ray povray 3.7.0.8 v
+revision            0
+checksums           rmd160  5d3a261f07187bd799ebc946a25c4e9725674209 \
+                    sha256  e86427f83b9bc356e6694bd053eb23b310aa0f942ac9215860c86f0035865ce2 \
+                    size    52885333
+
+set branch          [join [lrange [split ${version} .] 0 1] .]
+categories          graphics
+platforms           darwin
+license             AGPL-3
+maintainers         nomaintainer
+
+description         Persistence Of Vision RAYtracer
+
+long_description    POVRAY is a 'free' and popular Ray Tracer available for \
+                    many platforms (including UNIX). This is a port of the \
+                    UNIX version, not the graphical Mac OS X version.
+
+homepage            http://www.povray.org/
+
+depends_build       port:autoconf \
+                    port:automake \
+                    port:pkgconfig
+
+depends_lib         port:boost \
+                    port:jpeg \
+                    port:libpng \
+                    port:libsdl \
+                    port:openexr \
+                    port:tiff \
+                    port:xorg-libsm \
+                    port:xpm \
+                    port:zlib
+
+pre-configure {
+    # There is no pre-generated configure script included in the download.
+    # https://github.com/POV-Ray/povray/issues/1
+    system -W ${worksrcpath}/unix "./prebuild.sh"
+}
+
+configure.env       "COMPILED_BY=MacPorts <https://www.macports.org/>"
+configure.libs      -lboost_system-mt -lboost_thread-mt
+configure.args      --with-boost=${prefix} \
+                    --with-boost-thread \
+                    --with-libjpeg=${prefix}/lib \
+                    --with-libpng=${prefix}/lib \
+                    --with-libsdl=${prefix}/lib \
+                    --with-libtiff=${prefix}/lib \
+                    --with-openexr=${prefix}/lib \
+                    --with-zlib=${prefix}/lib
+
+set conf_files      {povray.conf povray.ini}
+
+post-destroot {
+    foreach f ${conf_files} {
+        move ${destroot}${prefix}/etc/povray/${branch}/${f} \
+             ${destroot}${prefix}/etc/povray/${branch}/${f}.sample
+    }
+}
+
+post-activate {
+    foreach f ${conf_files} {
+        if {![file exists ${prefix}/etc/povray/${branch}/${f}]} {
+            copy ${prefix}/etc/povray/${branch}/${f}.sample \
+                 ${prefix}/etc/povray/${branch}/${f}
+        }
+    }
+}
+
+test.run            yes
+test.target         check
+
+# Unable to cross compile, so we need to be able to run the built code
+if {${os.arch} eq "i386" && ${os.major} >= 11} {
+    supported_archs i386 x86_64
+    set universal_archs_supported {i386 x86_64}
+} elseif {${os.arch} eq "i386" && ${configure.build_arch} eq "x86_64"} {
+    supported_archs i386 x86_64 ppc
+    set universal_archs_supported {i386 x86_64 ppc}
+} elseif {${os.arch} eq "i386"} {
+    supported_archs i386 ppc
+    set universal_archs_supported {i386 ppc}
+} elseif {${configure.build_arch} eq "ppc64"} {
+    supported_archs ppc ppc64
+    set universal_archs_supported {ppc ppc64}
+} else {
+    supported_archs ${configure.build_arch}
+    set universal_archs_supported ${configure.build_arch}
+}
+
+platform darwin {
+    patchfiles-append   patch-lseek64.diff \
+                        patch-vfe-uint.diff
+
+    set merger_host(x86_64) x86_64-apple-${os.platform}${os.major}
+    set merger_host(i386) i686-apple-${os.platform}${os.major}
+    set merger_host(ppc64) powerpc64-apple-${os.platform}${os.major}
+    set merger_host(ppc) powerpc-apple-${os.platform}${os.major}
+    foreach arch ${configure.universal_archs} {
+        set merger_configure_args(${arch}) --build=$merger_host(${arch})
+    }
+    if {![variant_isset universal] && [info exists merger_configure_args(${configure.build_arch})]} {
+        configure.args-append --host=$merger_host(${configure.build_arch}) $merger_configure_args(${configure.build_arch})
+    }
+}
+
+github.livecheck.regex  {([0-9.]+)}

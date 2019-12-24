@@ -1,0 +1,28 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         LWP-Protocol-https 6.07 ../by-authors/id/O/OA/OALDERS/
+platforms           darwin
+maintainers         nomaintainer
+license             {Artistic-1 GPL}
+supported_archs     noarch
+
+description         LWP::Protocol::https - SSL support for libwww-perl
+long_description    The LWP::Protocol::https module used to be bundled with p5-libwww-perl, \
+                    but it was unbundled in v6.02 so that dependencies could be declared \
+                    properly.  Ports that need https support can just declare their \
+                    dependency on ${name} and will no longer need to know what \
+                    underlying modules to install.
+
+checksums           rmd160  6b515401aa1bcf6148cb0dc6992898eb8629fd6c \
+                    sha256  522cc946cf84a1776304a5737a54b8822ec9e79b264d0ba0722a70473dbfb9e7
+
+if {${perl5.major} != ""} {
+    depends_lib-append \
+                    port:p${perl5.major}-io-socket-ssl \
+                    port:p${perl5.major}-mozilla-ca \
+                    port:p${perl5.major}-net-http
+}

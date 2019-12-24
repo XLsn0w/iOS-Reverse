@@ -1,0 +1,19 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Convert-Binary-C 0.78
+platforms           darwin
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+
+description         Perl extension for Binary Data Conversion using C Types
+
+long_description    ${description}
+
+checksums           rmd160  8c8c972d19a605ca3262afb4160ff5da0287ae3b \
+                    sha256  24008c3f89117005d308bb2fd2317db6d086a265be6e98855109bbc12a52f2ea
+
+use_parallel_build  no

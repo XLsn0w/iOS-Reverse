@@ -1,0 +1,47 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           active_variants 1.1
+
+name                putty
+version             0.70
+categories          security net
+platforms           darwin
+maintainers         nomaintainer
+license             MIT
+
+description         a free implementation of Telnet and SSH, along with an \
+                    xterm terminal emulator
+
+long_description    PuTTY is ${description}
+
+homepage            http://www.chiark.greenend.org.uk/~sgtatham/putty/
+master_sites        ftp://ftp.chiark.greenend.org.uk/users/sgtatham/putty-${version}/ \
+                    http://the.earth.li/~sgtatham/putty/${version}/
+
+checksums           rmd160  9357dfca867dc91be09c735b62025f9c614ab46d \
+                    sha256  bb8aa49d6e96c5a8e18a057f3150a1695ed99a24eef699e783651d1f24e7b0be
+
+worksrcdir          ${worksrcdir}/unix
+
+depends_build       port:pkgconfig
+
+# unix configure calls the configure in top folder
+patch.post_args     -d ${worksrcpath}/../
+patchfiles          patch-configure.diff
+
+configure.args-append     --without-gtk
+configure.cppflags-delete -I${prefix}/include
+configure.cppflags-append -isystem${prefix}/include
+
+variant gui description {Build the GUI tools (including putty itself)} {
+    depends_lib-append    port:gtk2
+    configure.args-replace --without-gtk --with-gtk=2
+    require_active_variants gtk2 x11
+}
+
+default_variants +gui
+
+livecheck.type      regex
+livecheck.url       ${homepage}download.html
+livecheck.regex     ${name}-(\[0-9.\]+)${extract.suffix}

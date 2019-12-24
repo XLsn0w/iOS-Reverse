@@ -1,0 +1,44 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                showkey
+version             1.8
+categories          sysutils
+platforms           darwin
+maintainers         {khindenburg @kurthindenburg} openmaintainer
+license             MIT
+
+description         echo raw keystrokes back at you in a printable form
+
+long_description    This program puts your terminal in raw mode, eats \
+                    keystrokes, and prints them back it you in a recognizable \
+                    printed form (using <>-surrounded ASCII mnemonics for \
+                    non-printables). \
+                    This may be useful, for example, if you're not certain \
+                    what your keyboard keys are sending.
+
+homepage            http://catb.org/esr/showkey/
+master_sites        ${homepage}
+
+checksums           rmd160  16579d27e5652314536c0d091f70d26605ce4f76 \
+                    sha256  31b6b064976a34d7d8e7a254db0397ba2dc50f1bb6e283038b17c48a358d50d3
+
+patchfiles          patch-Makefile.diff
+
+use_configure       no
+
+variant universal {}
+if {[variant_isset universal]} {
+    set archflags ${configure.universal_cflags}
+} else {
+    set archflags ${configure.cc_archflags}
+}
+
+build.target
+build.args          CC="${configure.cc} ${archflags}"
+
+destroot.args       PREFIX=${prefix}
+
+livecheck.type      regex
+livecheck.regex     "${name}-(\[\\d.\]+)${extract.suffix}"

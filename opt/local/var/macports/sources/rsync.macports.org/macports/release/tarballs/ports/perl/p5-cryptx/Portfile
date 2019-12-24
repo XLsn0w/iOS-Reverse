@@ -1,0 +1,18 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         CryptX 0.064 ../../authors/id/M/MI/MIK
+revision            0
+
+platforms           darwin
+maintainers         {ionic @Ionic} openmaintainer
+license             {Artistic-1 GPL}
+description         Crypto toolkit (self-contained no external libraries needed)
+long_description    ${description}
+
+checksums           rmd160  b766e244f16bc010a85740c580d6581a1b58ba6b \
+                    sha256  176ef4d2eac80731b360db04289431f0b96acc2568a1fec856abed4a51779a47 \
+                    size    1619390

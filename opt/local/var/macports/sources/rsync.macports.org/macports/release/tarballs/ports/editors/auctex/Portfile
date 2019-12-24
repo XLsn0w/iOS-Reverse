@@ -1,0 +1,51 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                auctex
+version             12.1
+categories          editors print
+maintainers         nomaintainer
+license             GPL-3+
+description         A major emacs mode for editing TeX files.
+long_description    AUCTeX is an extensible package for writing\
+                    and formatting TeX files in GNU Emacs and XEmacs.\
+                    It supports many different TeX macro packages,\
+                    including AMS-TeX, LaTeX, Texinfo, ConTeXt, and docTeX.
+
+platforms           darwin
+supported_archs     noarch
+homepage            https://www.gnu.org/software/auctex/
+master_sites        gnu
+
+checksums           rmd160  fc7252f27a1bd70d8b63b6322a5c9e258ef2ee46 \
+                    sha256  c95cca4d70a9783617f7b5035c5e2c77438fa35d2505555d40190ac2652a5db4 \
+                    size    1476296
+
+depends_build-append    port:texlive-latex
+
+# We want emacs from MacPorts since this will install stuff in emacs'
+# site-lisp and we want it to go into ${prefix}'s site-lisp.
+depends_lib         path:bin/emacs:emacs
+depends_run         bin:tex:texlive
+
+configure.args      --with-lispdir=${prefix}/share/emacs/site-lisp \
+                    --with-auto-dir=${prefix}/share/emacs/site-lisp/auctex/auto
+
+pre-destroot {
+    xinstall -d ${destroot}${prefix}/share/emacs/site-lisp/site-start.d
+}
+
+variant emacs_app description "If your Emacs is emacs-app" {
+    depends_lib-append     port:emacs-app
+    depends_lib-delete     port:emacs
+    configure.args-append  --with-emacs=${applications_dir}/Emacs.app/Contents/MacOS/Emacs
+}
+
+variant mactex description "If your TeX distribution is MacTeX" {
+    # Note: This also needs /usr/texbin in binpath in macports.conf
+    configure.args-append  --with-texmf-dir=/usr/local/texlive/texmf-local
+}
+
+notes "To use this, put the following into your ~/.emacs:\n\
+    (require 'tex-site)"

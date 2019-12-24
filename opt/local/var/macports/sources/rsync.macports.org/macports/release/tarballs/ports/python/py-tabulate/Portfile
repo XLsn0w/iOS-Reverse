@@ -1,0 +1,34 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim: fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-tabulate
+version             0.8.5
+revision            0
+categories-append   devel
+platforms           darwin
+license             MIT
+supported_archs     noarch
+
+python.versions     27 34 35 36 37
+
+maintainers         {stromnov @stromnov} openmaintainer
+
+description         Pretty-print tabular data
+long_description    ${description}
+
+homepage            https://bitbucket.org/astanin/python-tabulate
+master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
+
+distname            ${python.rootname}-${version}
+
+checksums           rmd160  a8f86bf5742c2592344be68cca56be5f9985f9b7 \
+                    sha256  d0097023658d4dea848d6ae73af84532d1e86617ac0925d1adf1dd903985dac3 \
+                    size    45867
+
+if {${name} ne ${subport}} {
+    depends_lib-append  port:py${python.version}-setuptools
+
+    livecheck.type      none
+}

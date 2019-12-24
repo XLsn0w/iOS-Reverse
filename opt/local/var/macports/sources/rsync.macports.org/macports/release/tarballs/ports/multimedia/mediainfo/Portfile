@@ -1,0 +1,57 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+# normally update mediainfolib port at the same time
+github.setup        MediaArea MediaInfo 19.09 v
+checksums           rmd160  90f70cc854207f8bd910d5c895c239cf06c71c05 \
+                    sha256  ded3070d2ceef8e464f2fdf747cf5a119a9c264842292c78ac58d459dd05e019 \
+                    size    3049244
+
+name                mediainfo
+categories          multimedia
+platforms           darwin
+maintainers         {ctreleaven @ctreleaven}
+license             BSD
+
+description         Identifies audio and video codecs in a media file. CLI
+
+long_description    MediaInfo supplies technical and tag information about a \
+                    video or audio file via command line utility
+
+homepage            https://mediaarea.net
+depends_build       port:pkgconfig
+depends_lib         port:zenlib port:zlib port:mediainfolib
+
+if {${name} eq ${subport}} {
+    worksrcdir     ${worksrcdir}/Project/GNU/CLI
+} else {
+    worksrcdir     ${worksrcdir}/Project/GNU/GUI
+}
+
+use_autoreconf      yes
+autoreconf.args-append  --force --install
+
+# make pkg-config act like on Linux, no '-I/opt/local/include' in cflags
+configure.env-append    PKG_CONFIG_SYSTEM_INCLUDE_PATH=${prefix}/include
+
+subport MediaInfo-gui {
+    PortGroup           app 1.0
+    PortGroup           wxWidgets 1.0
+    wxWidgets.use       wxWidgets-3.2
+    revision            0
+
+    description         Identifies audio and video codecs in a media file. GUI
+    long_description    MediaInfo supplies technical and tag information about a \
+                        video or audio file via graphical utility
+
+    depends_lib-append  port:${wxWidgets.port}
+
+    configure.args      --with-wx-config=${wxWidgets.wxconfig} \
+                        --with-wx-prefix=${wxWidgets.prefix}
+
+    app.executable      mediainfo-gui
+    app.name            MediaInfo
+    app.icon            ../../../Source/GUI/Cocoa/mediainfo.icns
+}

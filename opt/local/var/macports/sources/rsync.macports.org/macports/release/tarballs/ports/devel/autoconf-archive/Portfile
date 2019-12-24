@@ -1,0 +1,31 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                autoconf-archive
+version             2019.01.06
+revision            0
+categories          devel
+platforms           darwin
+license             Permissive
+maintainers         nomaintainer
+
+supported_archs     noarch
+installs_libs       no
+
+description         A collection of more than 450 macros for GNU Autoconf
+long_description    The GNU Autoconf Archive is a collection of more \
+                    than 450 macros for GNU Autoconf that have been \
+                    contributed as free software by friendly supporters \
+                    of the cause from all over the Internet. Every \
+                    single one of those macros can be re-used without \
+                    imposing any restrictions whatsoever on the \
+                    licensing of the generated configure script.
+
+homepage            https://www.gnu.org/software/autoconf-archive/
+master_sites        gnu
+use_xz              yes
+
+checksums           rmd160  1b4e35536f47ed61b21e542af2ae892ce8feeb95 \
+                    sha256  17195c833098da79de5778ee90948f4c5d90ed1a0cf8391b4ab348e2ec511e3f \
+                    size    651320

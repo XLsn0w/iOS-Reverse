@@ -1,0 +1,72 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                geeqie
+version             1.4
+revision            0
+checksums           rmd160  1e3ffccba08edc2739051f1252ca653f008de35b \
+                    sha256  5c583a165573ec37874c278f9dc57e73df356b30e09a9ccac3179dd5d97e3e32 \
+                    size    35881152
+
+categories          graphics x11
+platforms           darwin
+maintainers         nomaintainer
+license             GPL-2+
+
+description         Geeqie Image Viewer
+
+long_description    Geeqie is a lightweight Gtk+-based image viewer for \
+                    UNIX-like operating systems which was forked from GQView.
+
+homepage            http://www.geeqie.org/
+master_sites        ${homepage}
+use_xz              yes
+
+depends_build       port:pkgconfig \
+                    port:intltool \
+                    port:autoconf \
+                    port:automake \
+                    port:libtool
+
+depends_lib         port:clutter-gtk \
+                    port:desktop-file-utils \
+                    port:gtk3 \
+                    port:exiv2 \
+                    port:lcms \
+                    port:libchamplain \
+                    port:jpeg \
+                    port:tiff
+
+depends_run         port:adwaita-icon-theme
+
+patchfiles-append   no-Werror.patch
+patchfiles-append   disable-gen_changelog.sh.patch
+
+# These patches are taken from the upstream repository and we should be able
+# to remove them when the next version is released.
+patchfiles-append   578.patch 588.patch 605.patch 654.patch 675.patch
+
+# No configure script included
+configure.cmd       ./autogen.sh
+
+configure.args      --disable-lirc \
+                    --disable-lua \
+                    --disable-debug-log \
+                    --disable-doxygen-doc \
+                    --disable-doxygen-dot \
+                    --disable-doxygen-man \
+                    --disable-doxygen-rtf \
+                    --disable-doxygen-xml \
+                    --disable-doxygen-chm \
+                    --disable-doxygen-chi \
+                    --disable-doxygen-html \
+                    --disable-doxygen-ps \
+                    --disable-doxygen-pdf \
+                    --disable-silent-rules \
+                    --enable-gtk3 \
+                    --enable-map
+
+post-activate {
+    system "${prefix}/bin/update-desktop-database ${prefix}/share/applications"
+}

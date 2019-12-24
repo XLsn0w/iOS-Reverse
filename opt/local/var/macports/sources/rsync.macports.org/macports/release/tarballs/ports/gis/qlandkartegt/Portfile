@@ -1,0 +1,40 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem       1.0
+PortGroup        cmake 1.0
+PortGroup        github 1.0
+PortGroup        qt4 1.0
+
+name             qlandkartegt
+categories       gis
+platforms        darwin
+maintainers      {puffin.lb.shuttle.de:michael.klein @mklein-de}
+license          GPL-3
+github.setup     mklein-de ${name} 1.8.1-macports-20190301
+
+description      Use your Garmin GPS with Linux/Mac OS X
+long_description QLandkarte GT is the ultimate outdoor aficionado's tool. It \
+                 supports GPS maps in GeoTiff format as well as Garmin's img \
+                 vector map format.  Additional it is the PC side front end to \
+                 QLandkarte M, a moving map application for mobile devices.
+
+homepage         http://www.qlandkarte.org/
+
+checksums        rmd160  5e9e32f6ab70a48ae356d8aba2af9e6a7ae4123b \
+                 sha256  3a57060237ded2755a5217b6a57c9e5c4fa8781132ce59319a5c5372a509bf60 \
+                 size    6687659
+
+depends_lib      port:gdal \
+                 port:gpsd \
+                 port:libdmtx \
+                 port:libexif \
+                 port:proj4 \
+                 port:qt4-mac \
+                 port:qt4-mac-sqlite3-plugin \
+                 bin:gpsbabel:gpsbabel
+
+cmake.out_of_source yes
+
+destroot {
+    copy "${destroot.dir}/bin/QLandkarte GT.app" ${destroot}${applications_dir}
+}

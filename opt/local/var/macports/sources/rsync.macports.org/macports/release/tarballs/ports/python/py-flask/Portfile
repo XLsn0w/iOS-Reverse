@@ -1,0 +1,45 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-flask
+version             1.1.1
+revision            0
+checksums           rmd160  57fba1ffb543a3693877b23a5b4c68e3209df645 \
+                    sha256  13f9f196f330c7c2c5d7a5cf91af894110ca0215ac051b5844701f2bfd934d52 \
+                    size    625458
+
+python.versions     27 35 36 37
+platforms           darwin
+maintainers         {ryandesign @ryandesign} openmaintainer
+license             BSD
+supported_archs     noarch
+
+description         microframework for Python based on Werkzeug and Jinja2
+
+long_description    Flask is a ${description}, intended for small-scale applications
+
+homepage            https://palletsprojects.com/p/flask/
+master_sites        pypi:F/Flask/
+default distname    {Flask-${version}}
+
+if {${name} ne ${subport}} {
+    depends_build-append    port:py${python.version}-setuptools
+
+    depends_lib-append      port:py${python.version}-jinja2 \
+                            port:py${python.version}-werkzeug \
+                            port:py${python.version}-itsdangerous \
+                            port:py${python.version}-click
+
+    livecheck.type      none
+} else {
+    livecheck.type      regex
+    livecheck.url       https://pypi.python.org/pypi/Flask/json
+    livecheck.regex     {Flask-(\d+(?:\.\d+)*)\.[tz]}
+}
+
+subport py34-${python.rootname} {
+    replaced_by py35-${python.rootname}
+    PortGroup obsolete 1.0
+}

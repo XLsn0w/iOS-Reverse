@@ -1,0 +1,25 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Net-HTTP 6.19
+platforms           darwin
+maintainers         nomaintainer
+license             {Artistic-1 GPL}
+supported_archs     noarch
+
+description         Low-level HTTP connection (client)
+
+long_description    ${description}
+
+checksums           rmd160  1cae26832e28c086f11c8d5020ffab30045f42a1 \
+                    sha256  52b76ec13959522cae64d965f15da3d99dcb445eddd85d2ce4e4f4df385b2fc4 \
+                    size    36937
+
+if {${perl5.major} != ""} {
+    depends_lib-append \
+                    port:p${perl5.major}-io-socket-ssl \
+                    port:p${perl5.major}-uri
+}

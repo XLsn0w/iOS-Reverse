@@ -1,0 +1,51 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+github.setup        aquynh capstone 4.0.1
+revision            0
+categories          devel
+platforms           darwin
+maintainers         {gmail.com:aquynh @aquynh}
+license             BSD
+
+description         Capstone disassembly engine
+
+long_description    Capstone is a multi-arch, multi-platform disassembly framework with advanced features
+
+homepage            http://www.capstone-engine.org/
+
+checksums           rmd160  4ee6eb4f9b4401dc9cbe22312deb46882d3e53a9 \
+                    sha256  a4494c13bf8f63f4cde19c038a822c760f7e43fb929caeb18db68358c2f8331b \
+                    size    3434190
+
+patch.pre_args      -p1
+patchfiles          patch-Makefile.diff
+
+use_configure       no
+
+universal_variant   yes
+
+if {[vercmp [macports_version] 2.5.99] >= 0} {
+build.env           CC=${configure.cc} \
+                    CFLAGS=${configure.cflags} \
+                    LDFLAGS=${configure.ldflags} \
+                    PREFIX=${prefix} \
+                    V=1
+} else {
+build.env           CC=${configure.cc} \
+                    CFLAGS="${configure.cflags}" \
+                    LDFLAGS="${configure.ldflags}" \
+                    PREFIX=${prefix} \
+                    V=1
+}
+
+pre-build {
+    build.args-append \
+                    LIBARCHS="[get_canonical_archs]"
+}
+
+destroot.env        {*}${build.env}
+
+github.livecheck.regex  {([0-9.]+)}

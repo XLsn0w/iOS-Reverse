@@ -1,0 +1,22 @@
+PortSystem 1.0
+PortGroup  cmake 1.1
+PortGroup  github 1.0
+
+categories          science
+maintainers         {mmoll @mamoll} openmaintainer
+description         A Flexible Collision Library
+long_description    $description
+github.setup        flexible-collision-library fcl 0.5.0
+revision            1
+platforms           darwin
+license             BSD
+depends_build-append port:pkgconfig
+depends_lib-append  port:libccd
+checksums           md5     11caa6a32a9b754213be082afe1017a5 \
+                    sha1    23f85ebdf249afb40d168abc04dc70214131a32b \
+                    rmd160  27492ba26947ec7abe4d168fec9943ff89968926
+
+compiler.cxx_standard   2011
+# only tests require boost
+configure.args-append -DFCL_BUILD_TESTS=OFF
+configure.cxxflags-append -std=c++11

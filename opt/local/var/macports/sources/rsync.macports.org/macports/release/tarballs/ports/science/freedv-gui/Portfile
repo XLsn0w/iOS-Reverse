@@ -1,0 +1,58 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           cmake 1.1
+PortGroup           cxx11 1.1
+PortGroup           github 1.0
+PortGroup           wxWidgets 1.0
+
+categories          science comms
+platforms           darwin macosx
+license             LGPL-2.1
+maintainers         {@ra1nb0w irh.it:rainbow} openmaintainer
+description         GUI Application for FreeDV – an open source digital \
+    voice protocol that integrates the modems, codecs, and FEC
+long_description    ${description}
+
+github.setup        drowe67 freedv-gui 5272add1d75bbaec3a6bac05cec3beb6e1b86614
+version             20191019-[string range ${github.version} 0 7]
+checksums           rmd160  85633df9407269006829447fdaf618b173d791bd \
+                    sha256  4cd9d704f3b5006f247913b1c65acc7ac67a577de0f13c44fd1ba3611ce1d5ab \
+                    size    5795343
+revision            0
+
+depends_build-append \
+    port:pkgconfig
+
+wxWidgets.use \
+    wxWidgets-3.2
+
+depends_lib-append \
+    port:${wxWidgets.port} \
+    port:portaudio \
+    port:hamlib \
+    port:libsndfile \
+    port:libsamplerate \
+    port:libao \
+    port:codec2 \
+    port:lpcnetfreedv \
+    port:speexDSP
+
+configure.args-append \
+    -DUSE_INTERNAL_CODEC2=FALSE \
+    -DWXCONFIG=${wxWidgets.wxconfig} \
+    -DWXRC=${wxWidgets.wxrc}
+
+# avoid dmg and fix Info.plist
+patchfiles-append \
+    patch-src_cmakelists.txt.diff \
+    patch-info.plist.diff
+
+variant bundle description {Enable the optional macOS bundle of FreeDV} {
+    post-destroot {
+        xinstall -d -m 0755 ${destroot}${applications_dir}
+        copy ${cmake.build_dir}/src/FreeDV.app ${destroot}${applications_dir}
+    }
+}
+
+default_variants-append +bundle

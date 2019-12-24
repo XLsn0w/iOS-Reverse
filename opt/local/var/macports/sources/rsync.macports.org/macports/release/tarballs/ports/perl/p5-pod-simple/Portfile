@@ -1,0 +1,30 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Pod-Simple 3.40
+maintainers         nomaintainer
+license             {Artistic-1 GPL}
+description         A framework for parsing Pod
+long_description    Pod::Simple is a Perl library for parsing text in the \
+                    Pod ("plain old documentation") markup language that is \
+                    typically used for writing documentation for Perl and \
+                    for Perl modules. Pod formatters can use Pod::Simple to \
+                    parse Pod documents and render them into plain text, HTML, \
+                    or any number of other formats.
+
+checksums           rmd160  afea3e55247ce6cb321467c974a24d603aa6b2a8 \
+                    sha256  063a8cb9d8abd84fd64c3e9581addf96a6b0f77a2048a1846c3a6b14269a040d \
+                    size    304730
+
+platforms           darwin
+
+if {${perl5.major} != ""} {
+    depends_lib-append \
+                    port:p${perl5.major}-encode \
+                    port:p${perl5.major}-pod-escapes
+
+    supported_archs noarch
+}

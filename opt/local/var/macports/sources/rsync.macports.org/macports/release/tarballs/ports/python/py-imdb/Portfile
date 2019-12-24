@@ -1,0 +1,51 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-imdb
+version             6.6
+revision            0
+license             GPL-2+
+maintainers         nomaintainer
+description         python module providing access to the IMDb movie database
+long_description    py-imdb is a Python package useful to retrieve and manage \
+                    the data of the IMDb movie database.
+
+platforms           darwin
+
+homepage            https://imdbpy.sourceforge.io/
+master_sites        sourceforge:imdbpy
+distname            IMDbPY-${version}
+
+checksums           rmd160  350f8d87413ac47bf9e23d75cd011567c2ef4420 \
+                    sha256  6a4f9072ffce18fab00aa8c032a3dbe05604a99adc6cc76ff3a3964ce375c0f3 \
+                    size    300203
+
+python.versions     27 37
+
+if {${name} ne ${subport}} {
+    depends_lib-append \
+                    port:py${python.version}-lxml \
+                    port:py${python.version}-setuptools \
+                    port:py${python.version}-sqlalchemy
+
+    post-destroot {
+        set docdir ${prefix}/share/doc/${subport}
+        xinstall -d ${destroot}${docdir}
+        xinstall -m 0644 -W ${worksrcpath}/docs GPL.txt LICENSE.txt \
+            Changelog.rst imdbpy.cfg ${destroot}${docdir}
+
+        move ${destroot}${docdir}/imdbpy.cfg \
+            ${destroot}${docdir}/imdbpy.cfg.sample-${python.branch}
+    }
+
+    post-activate {
+        if {![file exists ${prefix}/etc/imdbpy.cfg]} {
+            copy ${prefix}/share/doc/${subport}/imdbpy.cfg.sample-${python.branch} \
+                ${prefix}/etc/imdbpy.cfg
+        }
+    }
+
+    livecheck.type  none
+}

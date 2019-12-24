@@ -1,0 +1,49 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-cheetah
+
+version             3.2.4
+checksums           rmd160 59e0a4c033b8018f61a917074e2b62b781c76e43 \
+                    sha256 caabb9c22961a3413ac85cd1e5525ec9ca80daeba6555f4f60802b6c256e252b \
+                    size   294969
+revision            0
+
+categories-append   www
+platforms           darwin
+license             MIT
+maintainers         {emcrisostomo @emcrisostomo} {michaelld @michaelld} openmaintainer
+
+description         Cheetah is a Python-powered template engine and \
+                    code generator
+long_description    Cheetah is a Python-powered template engine and \
+                    code generator. It can be used as a standalone \
+                    utility or it can be combined with other tools. \
+                    Cheetah has many potential uses, but web \
+                    developers looking for a viable alternative to \
+                    ASP, JSP, PHP and PSP are expected to be its \
+                    principle user group.
+homepage            http://www.cheetahtemplate.org/
+
+master_sites        pypi:C/Cheetah3/
+distname            Cheetah3-${version}
+
+python.versions     27 34 35 36 37
+
+if {${name} ne ${subport}} {
+    depends_build-append    port:py${python.version}-setuptools
+
+    post-destroot {
+        xinstall -m 644 -W ${worksrcpath} \
+            ANNOUNCE.rst \
+            BUGS \
+            README.rst \
+            TODO \
+            ${destroot}${prefix}/share/doc/${subport}
+    }
+
+}
+
+livecheck.name cheetah3

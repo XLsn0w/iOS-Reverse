@@ -1,0 +1,11 @@
+--- Makefile.orig	2016-12-20 00:05:06.000000000 +0900
++++ Makefile	2017-11-18 08:20:31.000000000 +0900
+@@ -15,8 +15,6 @@
+ RELEASE := $(shell bin/get_version.sh --release)
+ FULL    := $(shell bin/get_version.sh --full)
+ 
+-PREFIX  := /usr/local
+-
+ CFG_DIR := $(PREFIX)/etc
+ BIN_DIR := $(PREFIX)/bin
+ MAN_DIR := $(PREFIX)/share/man

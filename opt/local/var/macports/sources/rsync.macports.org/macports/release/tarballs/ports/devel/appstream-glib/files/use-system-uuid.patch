@@ -1,0 +1,12 @@
+--- meson.build.orig	2019-09-30 11:02:16.000000000 -0700
++++ meson.build	2019-10-03 17:27:50.000000000 -0700
+@@ -66,7 +66,8 @@
+   giowindows = dependency('gio-windows-2.0', version : glib_ver)
+ else
+   giounix = dependency('gio-unix-2.0', version : glib_ver)
+-  uuid = dependency('uuid')
++  uuid_inc = include_directories('__SDK_PATH__/usr/include/uuid')
++  uuid = declare_dependency(include_directories : uuid_inc)
+ endif
+ libarchive = dependency('libarchive')
+ soup = dependency('libsoup-2.4', version : '>= 2.51.92')

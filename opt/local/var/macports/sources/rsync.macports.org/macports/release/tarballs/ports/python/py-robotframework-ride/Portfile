@@ -1,0 +1,49 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           python 1.0
+PortGroup           wxWidgets 1.0
+
+github.setup        robotframework RIDE 1.7.3.1 v
+name                py-robotframework-ride
+
+license             Apache-2
+
+categories-append   devel
+maintainers         nomaintainer
+description         Robot Framework test case editor
+long_description    ${description}
+
+platforms           darwin
+# support for python 2 will be dropped, but we don't yet have wxPython 4 available
+python.versions     27
+
+checksums           rmd160  69e75ae79cd32aa76109181d28a3606ad00228ae \
+                    sha256  1a652edf4012bb21d8aad750c60bcbdc4cc84afeda524363fb872e536e1e2b1a \
+                    size    951470
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                    port:py${python.version}-setuptools
+    depends_run-append \
+                    port:py${python.version}-robotframework \
+                    port:py${python.version}-wxpython-3.0
+
+## more effort is needed to enable testing
+#
+#   depends_test-append \
+#                   port:py${python.version}-invoke \
+#                   port:py${python.version}-mockito \
+#                   port:py${python.version}-nose \
+#                   port:py${python.version}-rellu
+#
+#   test.run        yes
+#   test.cmd        invoke-${python.branch}
+
+    patchfiles      patch-setup.py.diff
+
+    livecheck.type  none
+} else {
+    livecheck.regex {archive/v([0-9.]+)\.tar\.gz}
+}

@@ -1,0 +1,31 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-openid
+version             2.2.5
+revision            0
+categories-append   net
+license             Apache-2
+maintainers         nomaintainer
+platforms           darwin freebsd
+supported_archs     noarch
+description         Python OpenID Library
+long_description    ${description}
+
+distname            python-openid-${version}
+
+homepage            https://github.com/openid/python-openid
+master_sites        pypi:p/python-openid
+checksums           rmd160  b52319a04269cb4d7363ad04a3df48ec18e62d44 \
+                    sha256  92c51c3ecec846cbec4aeff11f9ff47303d4a63f93b0e6ac0ec02a091fed70ef \
+                    size    301619
+
+python.versions     27
+
+if {${subport} ne ${name}} {
+    livecheck.type  none
+} else {
+    livecheck.name      python-openid
+}

@@ -1,0 +1,48 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           cmake 1.1
+PortGroup           cxx11 1.1
+
+name                lpcnetfreedv
+platforms           darwin macosx
+categories          audio
+license             BSD
+maintainers         {@ra1nb0w irh.it:rainbow} openmaintainer
+
+description         Experimental Neural Net speech coding for FreeDV
+long_description    Experimental version of LPCNet being developed \
+    for over the air Digital Voice experiments with FreeDV.
+
+github.setup        drowe67 LPCNet 1443da9221a041b4569e5d66f78f65a081320b05
+version             20191011-[string range ${github.version} 0 7]
+checksums           rmd160  a1de0f8c615a180ead03f0e0cee765cc921bf9bb \
+                    sha256  347febf6f8ac110fedee16036dc729bceb05d3500ffc05650720d753308b75c7 \
+                    size    33010957
+revision            0
+
+depends_lib-append \
+    port:codec2
+
+# disable AVX and AVX2 for compatibility
+configure.args-append \
+    -DDISABLE_CPU_OPTIMIZATION=ON
+
+pre-configure {
+    # enable optimization (SSSE3) on all Intel hardwares
+    if {${build_arch} eq "i386" || ${build_arch} eq "x86_64"} {
+        configure.args-append \
+            -DCMAKE_C_FLAGS="-mssse3" \
+            -DCMAKE_CXX_FLAGS="-mssse3"
+    }
+}
+
+# select native cpu flags
+variant native description {Enable auto selection of cpu flags like avx/avx2/neon} {
+    configure.args-delete -DDISABLE_CPU_OPTIMIZATION=ON
+}
+
+notes "To enable lpcnet on codec2 you need to rebuild it manually with\
+the respective variant enabled. Aka, circular dependency.\
+command to rebuild: port -n upgrade --force codec2"

@@ -1,0 +1,19 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         File-Which 1.23
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         Portable implementation of the `which' utility
+long_description    ${description}
+
+platforms           darwin
+
+checksums           rmd160  cbc55882009efbb31b7f6aeae3d7ca7c19ec4a97 \
+                    sha256  b79dc2244b2d97b6f27167fc3b7799ef61a179040f3abd76ce1e0a3b0bc4e078 \
+                    size    23293
+
+supported_archs     noarch

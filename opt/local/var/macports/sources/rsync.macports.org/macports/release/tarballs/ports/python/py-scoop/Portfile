@@ -1,0 +1,42 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-scoop
+version             0.7.1.1
+revision            0
+categories-append   devel
+platforms           darwin
+license             LGPL
+supported_archs     noarch
+
+python.versions     27 35 36
+
+maintainers         {stromnov @stromnov} openmaintainer
+
+description         SCOOP (Scalable COncurrent Operations in Python)
+
+long_description    SCOOP (Scalable COncurrent Operations in Python) \
+                    is a distributed task module allowing concurrent \
+                    parallel programming on various environments, from \
+                    heterogeneous grids to supercomputers.
+
+homepage            http://pyscoop.org/
+master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
+
+distname            ${python.rootname}-${version}
+
+checksums           rmd160  02d35a65f95a50fe0dae85b147b46e7052a68236 \
+                    sha256  d8b6444c7bac901171e3327a97e241dde63f060354e162a65551fd8083ca62b4
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                        port:py${python.version}-setuptools
+    depends_lib-append  port:py${python.version}-greenlet \
+                        port:py${python.version}-zmq
+
+    livecheck.type      none
+} else {
+    livecheck.type      pypi
+}

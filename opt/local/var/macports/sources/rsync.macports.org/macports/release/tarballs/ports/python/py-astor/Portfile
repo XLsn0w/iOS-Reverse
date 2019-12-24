@@ -1,0 +1,36 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-astor
+version             0.8.0
+platforms           darwin
+license             BSD
+maintainers         {emcrisostomo @emcrisostomo} openmaintainer
+
+description         Read/rewrite/write Python ASTs
+long_description    astor is a python library to easily manipulate Python \
+                    source code via ASTs
+
+homepage            https://github.com/berkerpeksag/astor
+master_sites        pypi:a/astor
+distname            astor-${version}
+
+checksums           rmd160  bb50b95579121050544b216e5d25f5061fb7790d \
+                    sha256  37a6eed8b371f1228db08234ed7f6cfdc7817a3ed3824797e20cbb11dc2a7862 \
+                    size    35005
+
+python.versions     27 35 36 37
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                        port:py${python.version}-setuptools
+
+    livecheck.type      none
+} else {
+    livecheck.type      pypi
+}
+
+# https://github.com/berkerpeksag/astor/issues/162
+patchfiles-append setuptools-fix.patch

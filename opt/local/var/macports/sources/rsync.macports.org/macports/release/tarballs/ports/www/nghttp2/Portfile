@@ -1,0 +1,98 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           compiler_blacklist_versions 1.0
+PortGroup           cxx11 1.1
+PortGroup           github 1.0
+PortGroup           legacysupport 1.0
+
+github.setup        tatsuhiro-t nghttp2 1.39.2 v
+revision            2
+categories          www
+platforms           darwin
+maintainers         {mps @Schamschula} openmaintainer
+license             MIT
+
+description         nghttp2 is an implementation of HTTP/2 in C.
+
+long_description    ${description} Included are a HTTP/2 client, server and proxy. The \
+                    package also provides a load test and benchmarking tool for HTTP/2.
+
+github.tarball_from releases
+use_xz              yes
+
+checksums           rmd160  5bda6a53aeaa2d7c194c990346951080a96f0912 \
+                    sha256  a2d216450abd2beaf4e200c168957968e89d602ca4119338b9d7ab059fd4ce8b \
+                    size    1635428
+
+# nghttp2 requires C++14
+compiler.blacklist-append {clang < 602}
+
+depends_build       port:pkgconfig
+
+depends_lib         port:c-ares \
+                    port:jansson \
+                    port:libev \
+                    port:libevent \
+                    port:libxml2 \
+                    path:lib/libssl.dylib:openssl \
+                    port:zlib
+
+# See: https://trac.macports.org/ticket/57960
+patchfiles-append   patch-configure-nopython.diff \
+                    patch-src-shrpx_client_handler.cc.diff \
+                    src-shrpx_config.diff
+
+use_autoreconf      yes
+
+configure.args      --disable-silent-rules \
+                    --disable-threads \
+                    --enable-app \
+                    ac_cv_prog_AWK=/usr/bin/awk
+
+configure.env       JANSSON_CFLAGS=-I${prefix}/include \
+                    LIBEVENT_OPENSSL_CFLAGS=-I${prefix}/include/event2 \
+                    OPENSSL_CFLAGS=-I${prefix}/include/openssl
+
+configure.env-append \
+                    "JANSSON_LIBS=-L${prefix}/lib -ljansson" \
+                    "LIBEVENT_OPENSSL_LIBS=-L${prefix}/lib -levent -levent_openssl" \
+                    "OPENSSL_LIBS=-L${prefix}/lib -lcrypto -lssl"
+
+if {[variant_isset python27]} { set PythonVersion   2.7 }
+if {[variant_isset python36]} { set PythonVersion   3.6 }
+if {[variant_isset python37]} { set PythonVersion   3.7 }
+if {[variant_isset python38]} { set PythonVersion   3.8 }
+
+if {[variant_isset python27] || [variant_isset python36] || [variant_isset python37] || [variant_isset python38]} {
+    set PythonBranch    [join [lrange [split ${PythonVersion} .] 0 1] ""]
+
+    depends_lib-append \
+                    port:py${PythonBranch}-cython \
+                    port:py${PythonBranch}-setuptools \
+                    port:python${PythonBranch}
+
+    configure.env-append \
+                    CYTHON=${prefix}/bin/cython-${PythonVersion} \
+                    PYTHON=${prefix}/bin/python${PythonVersion}
+
+    destroot.env    PYTHONPATH=${destroot}${prefix}/lib/python${PythonVersion}/site-packages/
+
+    pre-destroot {
+        xinstall -d ${destroot}${prefix}/lib/python${PythonVersion}/site-packages/
+    }
+} else {
+    configure.args-append \
+                    --disable-python-bindings \
+                    --without-cython
+}
+
+variant python27 conflicts python36 python37 python38 description {Build using Python 2.7} {
+    configure.env-append   "PYTHON_EXTRA_LDFLAGS=-u _PyMac_Error ${frameworks_dir}/Python.framework/Versions/${PythonVersion}/Python"
+}
+
+variant python36 conflicts python27 python37 python38 description {Build using Python 3.6} {}
+
+variant python37 conflicts python27 python36 python38 description {Build using Python 3.7} {}
+
+variant python38 conflicts python27 python36 python37 description {Build using Python 3.8} {}

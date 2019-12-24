@@ -1,0 +1,30 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           php 1.1
+
+name                php-timezonedb
+categories          php devel
+platforms           darwin
+maintainers         {ryandesign @ryandesign} openmaintainer
+license             PHP-3.01
+
+php.branches        5.3 5.4 5.5 5.6 7.0 7.1 7.2 7.3
+php.pecl            yes
+
+description         A PECL Timezone Database.
+
+long_description    Timezone Database to be used with PHP's date and time \
+                    functions.
+
+if {[vercmp ${php.branch} 5.2] >= 0} {
+    version         2019.2
+    revision        0
+    checksums       rmd160  c4de8ffee1435df259915b7be2d3c6a50a515808 \
+                    sha256  80921bf6a8235925320773a24f23f2b5cdef5948d0e4f468c67384b351f243cc \
+                    size    413162
+}
+
+configure.args-append --enable-timezonedb
+
+use_parallel_build  yes

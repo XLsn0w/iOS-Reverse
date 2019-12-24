@@ -1,0 +1,53 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           compiler_blacklist_versions 1.0
+
+name                gnome-calculator
+version             3.26.0
+revision            1
+license             GPL-3
+set branch          [join [lrange [split ${version} .] 0 1] .]
+description         Calculator with financial and scientific modes.
+long_description    Calculator is an application that solves mathematical equations \
+                    and is suitable as a default application in a Desktop environment.
+maintainers         {devans @dbevans} openmaintainer
+categories          gnome
+platforms           darwin
+homepage            https://wiki.gnome.org/Apps/Calculator
+master_sites        gnome:sources/${name}/${branch}/
+
+use_xz              yes
+
+checksums           rmd160  2b031a7701e02a5a1e80b0cd4335e0f5b888958a \
+                    sha256  62215b37fcd73a6bbb106ebd0f25051c81ff0cf6ad84fd4a3ea176bceb5863c7
+
+depends_build       port:pkgconfig \
+                    port:appstream-glib \
+                    port:itstool
+
+depends_lib         port:desktop-file-utils \
+                    port:gdk-pixbuf2 \
+                    port:gtk3 \
+                    port:gtksourceview3 \
+                    port:libmpc \
+                    port:libsoup \
+                    port:libxml2 \
+                    port:mpfr \
+                    port:vala
+
+depends_run         port:adwaita-icon-theme \
+                    port:yelp
+
+# blacklist compilers that do not support C11 (redefinition of typedef ‘GtkSourceTag’ at gtksourceview/gtksourcetag.h:35)
+compiler.blacklist  *gcc-3.* *gcc-4.* {clang < 300}
+
+configure.args      --disable-schemas-compile \
+                    --disable-silent-rules
+
+post-activate {
+   system "${prefix}/bin/update-desktop-database ${prefix}/share/applications"
+   system "${prefix}/bin/glib-compile-schemas ${prefix}/share/glib-2.0/schemas"
+}
+
+livecheck.type      gnome

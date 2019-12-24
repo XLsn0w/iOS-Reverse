@@ -1,0 +1,40 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+PortGroup           github 1.0
+
+github.setup        powerline powerline 2.7
+revision            1
+name                py-powerline
+
+categories-append   devel
+platforms           darwin
+supported_archs     noarch
+license             MIT
+maintainers         nomaintainer
+
+description         Powerline is a statusline plugin for vim, and provides \
+                    statuslines and prompts for several other applications, \
+                    including zsh, bash, tmux, IPython, Awesome and Qtile.
+long_description    ${description}
+
+checksums           rmd160  7846f40c392065475e4795bd54fa74b5d173546d \
+                    sha256  8fa53544661f8e67a398c291bd9c7067d853bbb4c5e9476e5a9b39df92879e69 \
+                    size    361303
+
+python.versions     27 35 36 37 38
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                    port:py${python.version}-setuptools
+
+    post-destroot {
+        set docdir ${prefix}/share/doc/${subport}
+        xinstall -d ${destroot}${docdir}
+        xinstall -m 0644 -W ${worksrcpath} CONTRIBUTING.rst LICENSE \
+           README.rst  ${destroot}${docdir}
+    }
+
+    livecheck.type  none
+}

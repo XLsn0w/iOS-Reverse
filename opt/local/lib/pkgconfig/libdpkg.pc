@@ -1,0 +1,11 @@
+prefix=/opt/local
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: libdpkg
+Description: Debian package management system library
+Version: 1.19.4
+Libs: -L${libdir} -ldpkg
+Libs.private:  -lz -llzma -lbz2
+Cflags: -I${includedir}

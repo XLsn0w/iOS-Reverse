@@ -1,0 +1,23 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Lingua-Translit 0.28
+
+platforms           darwin
+maintainers         nomaintainer
+license             {Artistic-1 GPL}
+
+supported_archs     noarch
+
+description         convert text from one writing system to another
+
+long_description    Lingua::Translit can be used to convert text from one \
+                    writing system to another, based on national or \
+                    international transliteration tables.  Where possible a reverse \
+                    transliteration is supported.
+
+checksums           rmd160  eeea175766ffd4e71816ac5c2300c2b7506d2770 \
+                    sha256  113f91d8fc2c630437153a49fb7a52b023af8f6278ed96c070b1f60824b8eae1

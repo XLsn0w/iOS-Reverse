@@ -1,0 +1,78 @@
+PortSystem 1.0
+PortGroup  clang_dependency 1.0
+
+name            ncurses
+version         6.1
+categories      devel
+platforms       darwin freebsd
+license         MIT
+maintainers     {jmr @jmroot} openmaintainer
+description     emulation of curses in System V Release 4.0
+long_description \
+    The Ncurses (new curses) library is a free software emulation of    \
+    curses in System V Release 4.0, and more. It uses Terminfo format,  \
+    supports pads and color and multiple highlights and forms           \
+    characters and function-key mapping, and has all the other          \
+    SYSV-curses enhancements over BSD Curses.
+
+homepage        https://invisible-island.net/ncurses/
+master_sites    gnu https://invisible-mirror.net/archives/ncurses/
+checksums       rmd160 938235f3922f9c6ef0f1081d643ecb2da1347a17 \
+                sha256 aa057eeeb4a14d470101eff4597d5833dcef5965331be3528c08d99cebaa0d17
+
+# hex.diff from https://opensource.apple.com/source/ncurses/ncurses-44/patches.applied/
+patchfiles      hex.diff
+
+set myprefix $prefix
+
+# This port is used by clang-3.4 to bootstrap libcxx
+subport ${name}-bootstrap {
+    set myprefix ${prefix}/libexec/libcxx-bootstrap
+    configure.pre_args      --prefix=${myprefix}
+    configure.cxx_stdlib    libstdc++
+    compiler.whitelist      clang llvm-gcc-4.2 gcc-4.2 apple-gcc-4.2
+}
+# Also needed by later clangs.
+if {${os.platform} eq "darwin" && ${os.major} < 11 && ${cxx_stdlib} eq "libc++"} {
+    clang_dependency.extra_versions 3.7
+}
+
+configure.cppflags
+configure.ldflags
+configure.args  --enable-widec \
+                --disable-lib-suffixes \
+                --enable-overwrite \
+                --with-shared \
+                --with-cxx-shared \
+                --without-debug  \
+                --without-ada \
+                --with-manpage-format=normal \
+                --enable-pc-files \
+                --with-pkg-config-libdir="${myprefix}/lib/pkgconfig" \
+                --disable-mixed-case
+
+if {[string match *clang* ${configure.cxx}]} {
+    configure.env-append    CXXLIBS=-stdlib=${configure.cxx_stdlib}
+}
+
+if {[variant_isset universal]} {
+    # check that this doesn't start breaking anything with new versions
+    post-configure {
+        reinplace s/1UL/1U/g "${worksrcpath}/include/curses.head"
+        system -W ${worksrcpath} "ed - include/curses.head < ${filespath}/include_curses.head.ed"
+    }
+}
+
+post-destroot {
+    set major [lindex [split $version .] 0]
+    foreach f {form menu ncurses ncurses++ panel} {
+        ln -s lib${f}.${major}.dylib ${destroot}${myprefix}/lib/lib${f}w.dylib
+        ln -s lib${f}.${major}.dylib ${destroot}${myprefix}/lib/lib${f}w.${major}.dylib
+        ln -s lib${f}.a ${destroot}${myprefix}/lib/lib${f}w.a
+        ln -s ${f}.pc ${destroot}${myprefix}/lib/pkgconfig/${f}w.pc
+    }
+    ln -s libncurses.${major}.dylib ${destroot}${myprefix}/lib/libtermcap.dylib
+    ln -s ncurses6-config ${destroot}${myprefix}/bin/ncursesw6-config
+}
+
+livecheck.regex ${name}-(\[\\d.-\]+)${extract.suffix}

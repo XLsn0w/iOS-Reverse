@@ -1,0 +1,25 @@
+--- Makefile.in.orig	2016-12-11 00:11:57.000000000 -0500
++++ Makefile.in	2017-03-06 09:43:05.000000000 -0500
+@@ -101,8 +101,8 @@
+ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
+  configure.lineno config.status.lineno
+ mkinstalldirs = $(install_sh) -d
+-CONFIG_CLEAN_FILES = maxima-local xmaxima-local maxima.spec maxima.iss \
+-	doc/man/ru/maxima.1 interfaces/xmaxima/Tkmaxima/Header.tcl
++CONFIG_CLEAN_FILES = maxima-local maxima.spec maxima.iss \
++	doc/man/ru/maxima.1
+ CONFIG_CLEAN_VPATH_FILES =
+ AM_V_P = $(am__v_P_@AM_V@)
+ am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
+--- interfaces/Makefile.in.orig	2016-12-11 00:11:58.000000000 -0500
++++ interfaces/Makefile.in	2017-03-06 09:46:26.000000000 -0500
+@@ -322,8 +322,7 @@
+ win32 = @win32@
+ win64 = @win64@
+ win64_installer = @win64_installer@
+-SUBDIRS = emacs xmaxima
+-EXTRA_DIST = bin/xmaxima.iss Readme.txt
++SUBDIRS = emacs
+ all: all-recursive
+ 
+ .SUFFIXES:

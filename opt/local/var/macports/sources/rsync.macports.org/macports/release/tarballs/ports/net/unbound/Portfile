@@ -1,0 +1,81 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           compiler_blacklist_versions 1.0
+
+name                unbound
+version             1.9.4
+categories          net
+license             BSD
+maintainers         {snc @nerdling} openmaintainer
+
+description         Validating, recursive, and caching DNS resolver.
+
+homepage            https://nlnetlabs.nl/projects/unbound/
+platforms           darwin
+depends_build       port:flex
+depends_lib         path:lib/libssl.dylib:openssl port:expat
+
+set unbounduser     unbound
+set unboundgroup    unbound
+
+long_description    Unbound is a validating, recursive, and caching DNS \
+                    server software product from NLnet Labs, VeriSign Inc.,\
+                    Nominet, and Kirei. It is distributed free of charge \
+                    in open source form under the BSD license.\
+                    Unbound is designed as a set of modular components \
+                    that incorporate modern features, such as enhanced \
+                    security (DNSSEC) validation, Internet Protocol \
+                    Version 6 (IPv6), and a client resolver library API \
+                    as an integral part of the architecture.
+
+master_sites        http://unbound.net/downloads/
+
+checksums           rmd160  b566322d636513c89940b8ab18b787d739586ff6 \
+                    sha256  3d3e25fb224025f0e732c7970e5676f53fd1764c16d6a01be073a13e42954bb0 \
+                    size    5686242
+
+configure.args-append   --with-pidfile=${prefix}/var/run/${name}/${name}.pid \
+                        --with-ssl=${prefix} \
+                        --with-rootkey-file=${prefix}/etc/${name}/root.key \
+                        --with-libexpat=${prefix}
+
+if {${os.major} == 10} {
+    compiler.blacklist  *llvm-gcc-4.2 *gcc-4.0 gcc-3.3 clang
+}
+
+variant libevent description {Build with libevent (slower, but allows use of large outgoing port ranges)} {
+    depends_lib-append      port:libevent
+    configure.args-append   --with-libevent=${prefix}
+}
+
+test.run            yes
+
+add_users ${unbounduser} group=${unboundgroup} home=/dev/null realname=Unbound\ Resolver
+post-destroot {
+    xinstall -o ${unbounduser} -g ${unboundgroup} -m 755 -d ${destroot}${prefix}/var/run/${name}
+    move ${destroot}${prefix}/etc/${name}/${name}.conf ${destroot}${prefix}/etc/${name}/${name}.conf-dist
+    reinplace -W ${destroot}${prefix}/etc/${name} "s/# auto-trust-anchor-file:/auto-trust-anchor-file:/g" ${name}.conf-dist
+    touch ${destroot}${prefix}/var/run/${name}/${name}.pid
+    file attributes ${destroot}${prefix}/var/run/${name}/${name}.pid -owner ${unbounduser} -group ${unboundgroup}
+    file attributes ${destroot}${prefix}/etc/${name} -group ${unboundgroup} -permissions 0775
+}
+
+post-activate {
+    system "${prefix}/sbin/unbound-anchor -a \"${prefix}/etc/${name}/root.key\" || :"
+    file attributes ${prefix}/etc/${name}/root.key -owner ${unbounduser} -group ${unboundgroup}
+}
+
+# Make it run on boot
+# Redirect stderr on launchd-started items because launchd redirects stderr to a black hole
+# Let macports (daemondo) manage the availability of process and pidfile as unbound fails to start at the first attempt
+# because unbound is unable to get port 53. Unbound starts successfully at second attempt.
+startupitem.create	yes
+startupitem.name	unbound
+startupitem.logfile	/Library/Logs/unbound-startupitem.log
+startupitem.logevents	yes
+startupitem.start	"(${prefix}/sbin/unbound-anchor -a ${prefix}/etc/${name}/root.key 2>&1) || : && (chown ${unbounduser}:${unboundgroup} ${prefix}/etc/${name}/root.key 2>&1) && (${prefix}/sbin/unbound 2>&1)"
+startupitem.stop	"(/bin/kill \$(cat ${prefix}/var/run/${name}/unbound.pid) 2>&1)"
+startupitem.pidfile	clean ${prefix}/var/run/${name}/${name}.pid
+
+notes-append        "An example configuration is provided at ${prefix}/etc/${name}/${name}.conf-dist."

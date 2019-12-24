@@ -1,0 +1,18 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Time-Piece 1.33
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+
+description         Object-oriented time objects
+long_description    ${description}
+
+checksums           rmd160  cb678b5e8ee337fd60967cf3f22f0d57d8bdb9bb \
+                    sha256  c7e128bcee285b1e666ea9824c0491e219d482242897e386ca18de268bbee930 \
+                    size    36097
+
+platforms           darwin

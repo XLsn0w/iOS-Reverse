@@ -1,0 +1,37 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                yelp-tools
+version             3.32.2
+license             GPL-2+
+set branch          [join [lrange [split ${version} .] 0 1] .]
+description         Tools to help create Yelp documentation.
+long_description    yelp-tools is a collection of scripts and build utilities to help create, \
+                    manage, and publish documentation for Yelp and the web.
+maintainers         {devans @dbevans} openmaintainer
+categories          gnome
+platforms           darwin
+homepage            https://wiki.gnome.org/Apps/Yelp/Tools
+master_sites        gnome:sources/${name}/${branch}/
+
+use_xz              yes
+
+checksums           rmd160  dc757b2af92016351951e085bb573b06670ccd68 \
+                    sha256  183856b5ed0b0bb2c05dd1204af023946ed436943e35e789afb0295e5e71e8f9 \
+                    size    211668
+
+supported_archs     noarch
+
+depends_build       port:pkgconfig \
+                    port:itstool \
+                    port:libxslt \
+                    port:libxml2
+
+depends_lib         port:yelp-xsl
+
+installs_libs       no
+
+patchfiles          use-bin-sh.patch
+
+livecheck.type      gnome

@@ -1,0 +1,79 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                djview
+version             4.10.6
+revision            1
+categories          aqua graphics www
+license             GPL-2+ MIT
+maintainers         {nicos @NicosPavlov} openmaintainer
+platforms           darwin
+
+description         DjVu files viewer.
+long_description    DjVu can advantageously replace PDF, PS, TIFF,JPEG, and GIF for \
+                    distributing scanned documents, digital documents, or high-resolution \
+                    pictures. DjVu content downloads faster, displays and renders faster, \
+                    looks nicer on a screen and consume less client resources than competing \
+                    formats.
+
+homepage            http://djvu.sourceforge.net/djview4.html
+
+master_sites        sourceforge:project/djvu/DjView/4.10/
+
+patchfiles          patch-powerpc.diff \
+                    patch-makefile-qmake-workaround.diff 
+
+checksums           rmd160  9c8a5d878a594e4f87d3c1a392674148076061ee \
+                    sha256  8446f3cd692238421a342f12baa365528445637bffb96899f319fe762fda7c21
+
+depends_lib-append \
+    port:djvulibre
+
+universal_variant yes
+
+if {$subport eq $name} {
+    PortGroup           qt4 1.0
+    conflicts           djview-qt5
+} else {
+    PortGroup           qt5 1.0
+    conflicts           ${name}
+}
+
+subport djview-qt5 {
+    #Location of qmake
+    configure.env-append QMAKE=${prefix}/libexec/qt5/bin/qmake \
+                         QMAKESPEC=macx-clang
+
+    if {${os.major} >= 13} {
+        #On 10.9 onwards, we need to update the minimum deployment target
+        pre-configure {
+            reinplace "s|QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.6|QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.9|g" \
+                ${worksrcpath}/src/djview.pro
+        }
+        #Changing the deployment target requires autoreconf
+        use_autoreconf       yes
+    }
+}
+
+configure.ldflags
+configure.args \
+    --disable-nsdejavu \
+    --disable-desktopfiles
+
+build.args-append   V=1
+
+# allow ccache, if specified by the user
+pre-build {
+    if {[tbool configure.ccache]} {
+        build.post_args "CCACHE=ccache"
+    }
+}
+
+destroot {
+    copy ${worksrcpath}/src/djview.app ${destroot}${applications_dir}
+}
+
+livecheck.regex     /${name}-(\[0-9.\]+)${extract.suffix}
+livecheck.name      djvu
+livecheck.distname  DjView

@@ -1,0 +1,46 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-django-extensions
+version             2.1.6
+revision            0
+categories-append   www
+platforms           darwin
+supported_archs     noarch
+license             MIT
+maintainers         nomaintainer
+
+description         Global custom management extensions for the Django Framework.
+long_description    ${description}
+homepage            https://github.com/django-extensions/django-extensions
+
+master_sites        pypi:d/django-extensions/
+distname            django-extensions-${version}
+checksums           rmd160  2a007c9da9b6104c2188bbd6e38727472bd53c5c \
+                    sha256  307766e5e6c1caffe76c5d99239d8115d14ae3f7cab2cd991fcffd763dad904b \
+                    size    486207
+
+python.versions     27 37
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                    port:py${python.version}-setuptools
+
+    depends_lib-append \
+                    port:py${python.version}-six
+
+    if {${python.version} eq 27} {
+        depends_lib-append \
+                    port:py${python.version}-typing
+    }
+
+    post-destroot {
+        xinstall -m 0755 -d ${destroot}${prefix}/share/doc/${subport}
+        xinstall -m 0644 -W ${worksrcpath} LICENSE README.rst \
+             ${destroot}${prefix}/share/doc/${subport}
+    }
+
+    livecheck.type  none
+}

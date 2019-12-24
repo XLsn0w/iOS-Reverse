@@ -1,0 +1,29 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                abcMIDI
+version             2019.10.13
+categories          audio
+platforms           darwin
+maintainers         nomaintainer
+license             GPL-2+
+
+description         Abc to midi and vice versa converter
+long_description    ABC is a text-based music notation language. Abc2midi is a program that \
+                    converts an abc music notation file to a MIDI file.
+
+homepage            https://ifdo.ca/~seymour/runabc/top.html
+master_sites        https://ifdo.ca/~seymour/runabc/
+
+checksums           rmd160  14e2e710e5bf74055ae6ae0d95e21cf48f1f512c \
+                    sha256  f62781d5c15e160d0f9cc69707ca882b31bf8c4098ba1b572571875148988eca \
+                    size    566795
+
+worksrcdir          abcmidi
+
+use_zip             yes
+
+livecheck.type      regex
+livecheck.url       ${homepage}
+livecheck.regex     abcMIDI-(20\[0-9\]+\\.\[0-9\]+\\.\[0-9\]+)

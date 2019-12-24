@@ -1,0 +1,41 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-py2app
+version             0.19
+revision            0
+categories-append   devel
+license             {MIT PSF}
+maintainers         {jmr @jmroot} openmaintainer
+description         converts python scripts into executable Mac OS X apps
+long_description \
+    A distutils extension which converts python scripts into executable \
+    Mac OS X applications, able to run without requiring an existing python \
+    installation.  This is a replacement for bundlebuilder.
+
+platforms           darwin
+
+homepage            https://wiki.python.org/moin/MacPython/py2app
+master_sites        pypi:p/py2app/
+distname            py2app-${version}
+
+checksums           rmd160 fa1f2a2fbebff4a71615b3decec29695862c9b99 \
+                    sha256 f3b9f4deb466998304fedea739bfa7bc553a1887656f7ee6accb2899e9e45b52
+
+python.versions     27 33 34 35 36 37 38
+
+if {$subport ne $name} {
+    depends_lib     port:py${python.version}-macholib
+
+    post-destroot {
+        xinstall -m 755 -d ${destroot}${prefix}/share/doc/${subport} \
+        ${destroot}${prefix}/share/examples/${subport}
+        xinstall -m 644 -W ${worksrcpath} LICENSE.txt README.rst \
+        ${destroot}${prefix}/share/doc/${subport}
+        file copy {*}[glob ${worksrcpath}/examples/*] \
+        ${destroot}${prefix}/share/examples/${subport}
+    }
+    livecheck.type  none
+}

@@ -1,0 +1,50 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+name                swaks
+version             20181104.0
+license             GPL-2
+maintainers         nomaintainer
+categories          perl
+platforms           darwin
+homepage            https://www.jetmore.org/john/code/swaks/
+master_sites        $homepage/files
+description         Swiss Army Knife for SMTP
+long_description    Swaks is a featureful, flexible, scriptable, transaction-oriented SMTP test tool.
+
+checksums           rmd160  d34801db737510e6f00408c36ac670c06156e59f \
+                    sha256  023f7f8818ebcd638618327809cf1939c5ffcaf6c3d2572ef56179d68f683e58 \
+                    size    113809
+
+perl5.branches      5.28
+
+supported_archs     noarch
+
+post-patch {
+    reinplace "s|/usr/bin/perl|${perl5.bin}|g" ${worksrcpath}/swaks
+}
+
+use_configure       no
+build {}
+destroot {
+    xinstall -d -m 755 ${destroot}${prefix}/share/doc
+    xinstall -m 755 -W ${worksrcpath} swaks          ${destroot}${prefix}/bin
+    copy               ${worksrcpath}/doc            ${destroot}${prefix}/share/doc/${name}
+    xinstall -m 644 -W ${worksrcpath} LICENSE.txt README.txt ${destroot}${prefix}/share/doc/${name}
+}
+
+# port p5-ntlm provides Authen::NTLM
+# IPC::Open2 IO::Socket and Time::Local are perl core modules
+
+depends_run-append  port:p${perl5.major}-authen-sasl \
+                    port:p${perl5.major}-digest-md5 \
+                    port:p${perl5.major}-digest-sha \
+                    port:p${perl5.major}-io-socket-inet6 \
+                    port:p${perl5.major}-mime-base64 \
+                    port:p${perl5.major}-net-dns \
+                    port:p${perl5.major}-net-ssleay \
+                    port:p${perl5.major}-ntlm \
+                    port:p${perl5.major}-sys-hostname-long \
+                    port:p${perl5.major}-time-hires

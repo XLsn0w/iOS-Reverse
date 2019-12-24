@@ -1,0 +1,34 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         MooseX-Types-LoadableClass 0.015
+
+platforms           darwin
+maintainers         nomaintainer
+license             {Artistic-1 GPL}
+
+description         ClassName type constraint with coercion to load the class
+long_description    ${description}
+
+checksums           rmd160  157fc4535b4fe5a8eddb6de8d809dd1424fa1214 \
+                    sha256  e037d3778253dcf92946435715bada0e6449c0a2808fa3ff32a965064d5a3bf4
+
+if {${perl5.major} != ""} {
+    depends_build-append \
+                    port:p${perl5.major}-class-load \
+                    port:p${perl5.major}-module-build-tiny \
+                    port:p${perl5.major}-moose \
+                    port:p${perl5.major}-test-fatal \
+                    port:p${perl5.major}-namespace-clean
+
+    depends_lib-append \
+                    port:p${perl5.major}-module-runtime \
+                    port:p${perl5.major}-moosex-types \
+                    port:p${perl5.major}-namespace-autoclean
+
+    supported_archs noarch
+    perl5.use_module_build
+}

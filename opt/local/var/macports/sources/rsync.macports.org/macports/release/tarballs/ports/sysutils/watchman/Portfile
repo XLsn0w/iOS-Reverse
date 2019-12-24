@@ -1,0 +1,39 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+github.setup        facebook watchman 4.9.0 v
+revision            1
+
+categories          sysutils
+platforms           darwin
+maintainers         nomaintainer
+license             Apache-2
+
+description         watches files and takes action when they change
+long_description    ${description}
+
+use_autoreconf      yes
+autoreconf.env      "AUTOMAKE=automake --foreign"
+
+depends_build-append    port:pkgconfig
+depends_lib-append  port:pcre
+
+patch.pre_args      -p1
+patchfiles-append   patch-container-of-uses.diff
+
+compiler.cxx_standard   2011
+
+configure.args      --disable-silent-rules \
+                    --with-pcre \
+                    --without-python
+
+checksums           rmd160  3a50239fd977952bf8c8e3d5886d38377c85a53f \
+                    sha256  d529c2e9dfe1db32826717aed80553a99ba31aeb82cee88f93e31a984b372489 \
+                    size    3508060
+                    
+test.run            yes
+test.target         check
+
+github.livecheck.regex  {([^"rb-]+)}

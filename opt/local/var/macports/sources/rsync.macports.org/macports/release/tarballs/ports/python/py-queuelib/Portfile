@@ -1,0 +1,43 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+PortGroup               python 1.0
+
+name                    py-queuelib
+version                 1.5.0
+maintainers             {khindenburg @kurthindenburg} openmaintainer
+platforms               darwin
+
+description             Queuelib is a collection of persistent (disk-based) \
+                        queues for Python. Queuelib goals are speed and \
+                        simplicity. It was originally part of the `Scrapy \
+                        framework`_ and stripped out on its own library.
+long_description        ${description}
+license                 BSD
+homepage                https://pypi.python.org/pypi/queuelib
+
+distname                queuelib-${version}
+master_sites            pypi:q/queuelib/
+
+checksums               rmd160  e367483b19572daf098910c3ce97afdf1a5b0ca6 \
+                        sha256  42b413295551bdc24ed9376c1a2cd7d0b1b0fa4746b77b27ca2b797a276a1a17 \
+                        size    9234
+
+python.versions 27 34 35 36 37
+python.default_version 27
+
+if {${name} ne ${subport}} {
+    depends_build-append    port:py${python.version}-setuptools
+
+    depends_test        port:py${python.version}-pytest \
+                        port:py${python.version}-nose
+
+    livecheck.type      none
+
+    test.run            yes
+    test.cmd            nosetests-${python.branch}
+    test.env            PYTHONPATH=${worksrcpath}/build/lib
+    test.target
+} else {
+    livecheck.type      pypi
+}

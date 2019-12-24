@@ -1,0 +1,47 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+PortGroup github        1.0
+PortGroup xcode         1.0
+
+github.setup            sierkb portsnotifier 934e77a9b4b5f54c7e940981c8c65d08f4b7c631
+version                 0.1.2.20090520
+name                    macports-notifier
+categories              sysutils aqua macports
+license                 BSD
+maintainers             nomaintainer
+
+description             A menubar notifier for MacPorts.
+
+long_description        MacPorts Notifier is a menubar notifier for MacPorts. \
+                        It works like the Gmail notifier, updating the port \
+                        tree automatically and notifying the user if any \
+                        ports are outdated.
+
+homepage                http://portsnotifier.sourceforge.net/
+
+checksums               rmd160  603fb4102c11f25401ac47c949d26261eefc4f37 \
+                        sha256  28c689f536618ac97758c679ae4372ccbcb180cd2c1b553875ca84bf6fa2f8de
+
+worksrcdir              portsnotifier-934e77a9b4b5f54c7e940981c8c65d08f4b7c631
+
+patchfiles              patch-general.png.diff
+
+post-patch {
+    reinplace -q -W ${worksrcpath} "s|/opt/local|${prefix}|g" \
+            PNDefines.h \
+            net.sourceforge.portsnotifier.plist \
+            PNPortWrapper.m \
+            PortsHelper.c
+
+    reinplace -q -W ${worksrcpath} "s|/var/log/portsnotifier.log|${prefix}/var/log/portsnotifier.log|g" \
+            net.sourceforge.portsnotifier.plist \
+            PortsHelper.c
+}
+
+xcode.target            PortsNotifier
+xcode.configuration     Release
+
+post-destroot {
+    move ${destroot}${applications_dir}/macports-sync-agent ${destroot}${prefix}/bin
+}

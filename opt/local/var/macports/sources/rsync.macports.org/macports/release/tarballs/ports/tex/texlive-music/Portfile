@@ -1,0 +1,34 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           texlive 1.0
+
+name                texlive-music
+version             50602
+revision            0
+
+categories          tex
+maintainers         {dports @drkp}
+license             Copyleft Permissive
+description         TeX Live: Music packages
+long_description    Music-related fonts and packages.
+
+checksums           texlive-music-50602-run.tar.xz \
+                    rmd160  b76deaab778529a8c83d9bacd13b7e3a364fe186 \
+                    sha256  bb375bd1c9b528b39c413949df3840ea458713206cd95ac0d7b46fbaabbca3bd \
+                    texlive-music-50602-doc.tar.xz \
+                    rmd160  a6f53af83e75ec65893f9183d15f7d1257849f0f \
+                    sha256  1d8aeca40eaece64b4e34337ae47c574fe96420ab80f358f0ebcf05efe63ed8a \
+                    texlive-music-50602-src.tar.xz \
+                    rmd160  e558ad5eea66cc0d74370070b5d94eae9f0c9d3d \
+                    sha256  67782378c5b8876e39c97214cc1083bf9b8e891f9a5587ae9852aa10b3edac6a
+
+depends_lib         port:texlive-latex
+
+texlive.maps      \
+    {MixedMap musix.map}
+
+texlive.binaries    autosp gregorio lily-glyph-commands lily-image-commands lily-rebuild-pdfs m-tx msxlint musixflx musixtex pmxab pmxchords prepmx scor2prt tex2aspc
+
+
+texlive.texmfport

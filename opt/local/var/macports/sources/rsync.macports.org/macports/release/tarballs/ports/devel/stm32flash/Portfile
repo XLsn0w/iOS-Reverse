@@ -1,0 +1,36 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                stm32flash
+version             0.5
+categories          devel
+maintainers         openmaintainer {gmail.com:ranauei @ranauei}
+platforms           darwin
+license             GPL-2
+description         Flash program for the STM32 bootloader
+long_description    Open source flash program for the STM32 ARM processors \
+                    using the ST serial bootloader over UART or I2C
+homepage            http://sourceforge.net/p/stm32flash/wiki/Home/
+master_sites        sourceforge
+
+checksums           rmd160  6642a57e8f6d56feb209c59ddc13912b3a47a81f \
+                    sha256  97aa9422ef02e82f7da9039329e21a437decf972cb3919ad817f70ac9a49e306
+
+worksrcdir          ${name}
+
+use_configure       no
+
+variant universal {}
+
+destroot.args PREFIX=${prefix}
+
+post-patch {
+     reinplace "s|\$\(AR\) rc|\$\(AR\) rcs|g" ${worksrcpath}/parsers/Makefile
+}
+build.env-append    "CFLAGS=${configure.cflags} [get_canonical_archflags cc]" \
+                    "LDFLAGS=${configure.ldflags} [get_canonical_archflags ld]"
+
+build.args-append   CC=${configure.cc}
+build.env-append    MAKE=${build.cmd} \
+                    INSTALL=${configure.install}

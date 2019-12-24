@@ -1,0 +1,46 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+name                libmypaint
+categories          graphics
+maintainers         {ryandesign @ryandesign} {devans @dbevans} openmaintainer
+platforms           darwin
+
+conflicts           MyPaint MyPaint-devel
+github.setup        mypaint libmypaint 1.4.0 v
+revision            1
+checksums           rmd160  ecb2b9a6b9c43c3749d7b7ddb6135c1826a55fec \
+                    sha256  59d13b14c6aca0497095f29ee7228ca2499a923ba8e1dd718a2f2ecb45a9cbff \
+                    size    441596
+
+license             Permissive
+description         The MyPaint Brush Library
+
+long_description    libmypaint, a.k.a. \"brushlib\", is a library for making brushstrokes \
+                    which is used by MyPaint and other projects.
+
+github.tarball_from releases
+use_xz              yes
+
+depends_build       port:pkgconfig \
+                    port:intltool
+
+depends_lib         path:lib/pkgconfig/glib-2.0.pc:glib2 \
+                    port:json-c
+
+# reconfigure with our intltool.m4 using upstream autogen.sh
+post-extract {
+    xinstall ${filespath}/autogen.sh ${worksrcpath}
+}
+use_autoreconf      yes
+autoreconf.cmd      ./autogen.sh
+depends_build-append \
+                    port:autoconf \
+                    port:automake \
+                    port:libtool
+
+configure.args      --with-glib
+
+github.livecheck.regex  {(\d+(?:\.\d+)+)}

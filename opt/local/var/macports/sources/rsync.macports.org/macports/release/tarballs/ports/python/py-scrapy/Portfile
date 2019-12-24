@@ -1,0 +1,62 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+PortGroup               python 1.0
+
+name                    py-scrapy
+version                 1.7.3
+# epoch needed due to previous downgrading version
+epoch                   1
+maintainers             {khindenburg @kurthindenburg} openmaintainer
+platforms               darwin
+
+description             Scrapy is a high level scraping and web crawling \
+                        framework for writing spiders to crawl and parse web \
+                        pages for all kinds of purposes, from information \
+                        retrieval to monitoring or testing web sites.
+long_description        ${description}
+license                 BSD
+homepage                https://pypi.python.org/pypi/Scrapy
+
+distname                Scrapy-${version}
+master_sites            https://files.pythonhosted.org/packages/source/S/Scrapy/
+
+checksums               rmd160  ebe54257cfa20c6bc28995ecf6926a9b5c029ed8 \
+                        sha256  fe5a40177960e97d42d1c752a73edb40f76a85a24076dec8535cffa499eb08c8 \
+                        size    951640
+
+python.versions 27 35 36 37
+python.default_version 37
+
+if {${name} ne ${subport}} {
+    depends_build-append    port:py${python.version}-setuptools
+    depends_lib-append      port:py${python.version}-lxml \
+                            port:py${python.version}-twisted \
+                            port:py${python.version}-w3lib \
+                            port:py${python.version}-cssselect \
+                            port:py${python.version}-openssl \
+                            port:py${python.version}-parsel \
+                            port:py${python.version}-queuelib \
+                            port:py${python.version}-service_identity \
+                            port:py${python.version}-dispatcher \
+                            port:py${python.version}-twisted
+
+    # Note some tests fail due to missing dependencies
+    depends_test-append \
+        port:py${python.version}-pytest \
+        port:py${python.version}-botocore \
+        port:py${python.version}-jmespath \
+        port:py${python.version}-leveldb \
+        port:py${python.version}-testfixtures
+
+    set pyver [join [split ${python.version} {}] {.}]
+    test.run            yes
+    test.cmd            py.test-${pyver}
+    test.target
+    test.env            PYTHONPATH=${worksrcpath}/build/lib
+
+    livecheck.type          none
+} else {
+    livecheck.type          pypi
+    livecheck.regex         Scrapy-(\[0-9.\]+)${extract.suffix}
+}

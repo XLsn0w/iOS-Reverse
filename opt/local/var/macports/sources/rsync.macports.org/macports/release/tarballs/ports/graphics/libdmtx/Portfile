@@ -1,0 +1,27 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+github.setup        dmtx libdmtx 0.7.5 v
+categories          graphics
+platforms           darwin
+maintainers         nomaintainer
+license             BSD
+
+description         Data Matrix library
+
+long_description    libdmtx is open source software for reading and writing \
+                    Data Matrix barcodes. Data Matrix barcodes are \
+                    two-dimensional symbols that hold a dense pattern of data \
+                    with built-in error correction. The Data Matrix symbology \
+                    (sometimes casually referred to as DataMatrix) was \
+                    invented and released into the public domain by RVSI \
+                    Acuity CiMatrix. Wikipedia has a good article on the \
+                    symbology and its characteristics.
+
+use_autoreconf      yes
+
+checksums           rmd160  72c51b80b131b7fefe8e7c3d30d3d440722e509e \
+                    sha256  b312702be1f4ff658ec02801d7b884201eeee440fa5bdfd488885cb135f6451f \
+                    size    790988

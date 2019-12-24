@@ -1,0 +1,53 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           muniversal 1.0
+PortGroup           compiler_blacklist_versions 1.0
+
+name                libressl
+version             2.8.3
+categories          security devel
+platforms           darwin
+license             OpenSSL SSLeay
+maintainers         {jeremyhu @jeremyhu}
+
+description         LibreSSL SSL/TLS cryptography library
+long_description    LibreSSL is composed of four parts: \
+                    The openssl(1) utility, which provides tools for managing keys, certificates, etc. \
+                    libcrypto: a library of cryptography fundamentals \
+                    libssl: a TLS library, backwards-compatible with OpenSSL \
+                    libtls: a new TLS library, designed to make it easier to write foolproof applications
+homepage            https://www.libressl.org
+
+conflicts           openssl libressl-devel
+
+master_sites        openbsd:LibreSSL
+checksums           rmd160  38bf33a04573dea9262a099e840e72d130556895 \
+                    sha256  9b640b13047182761a99ce3e4f000be9687566e0828b4a72709e9e6a3ef98477 \
+                    size    3366196
+
+patchfiles \
+    openssldir-cert.pem.patch
+
+configure.args \
+    --disable-silent-rules \
+    --with-openssldir=${prefix}/etc/ssl
+
+post-patch {
+    reinplace "s|@OPENSSLDIR@|${prefix}/etc/ssl|" ${worksrcpath}/include/openssl/opensslconf.h
+}
+
+compiler.blacklist {clang < 100}
+
+# HOST_ASM_MACOSX_X86_64 gets set when building i386 on x86_64
+set merger_configure_args(i386)     --disable-asm
+
+platform darwin {
+    if {${os.major} < 10} {
+        configure.cppflags-append -DIPV6_TCLASS=36
+    }
+}
+
+livecheck.type      regex
+livecheck.url       https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/
+livecheck.regex     "(\\d+\\.\\d+\\.\\d+)"

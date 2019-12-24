@@ -1,0 +1,25 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Test-TrailingSpace 0.0302
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         Test::TrailingSpace - test for trailing space in source files.
+long_description    ${description}
+
+platforms           darwin
+
+checksums           rmd160  548f0abd0b9868d6b2ed967dab5042b323f680b1 \
+                    sha256  c48a6377d84576512b47652798d9d4bb4467adacf0e6afc3df1f880f2c03b612 \
+                    size    11717
+
+if {${perl5.major} != ""} {
+    depends_lib-append \
+                    port:p${perl5.major}-file-find-object-rule
+
+    perl5.use_module_build
+    supported_archs noarch
+}

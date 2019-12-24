@@ -1,0 +1,36 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         GD 2.71
+revision            0
+license             {Artistic-2 GPL}
+maintainers         nomaintainer
+description         Module interface to libgd
+long_description    ${description}
+
+platforms           darwin
+
+checksums           rmd160  8cf166852315841ffbdf44afea5fb7e8c415457c \
+                    sha256  451be4873b2ad7261cc5679698cd9d2e84dbdde4309971869fc7734b569b7ac7 \
+                    size    256845
+
+if {${perl5.major} != ""} {
+    depends_build-append \
+                    port:p${perl5.major}-extutils-pkgconfig \
+                    port:p${perl5.major}-test-fork
+
+    depends_lib-append \
+                    port:p${perl5.major}-list-moreutils \
+                    port:p${perl5.major}-text-csv_xs \
+                    port:fontconfig \
+                    port:freetype \
+                    port:gd2 \
+                    port:jpeg \
+                    port:libiconv \
+                    port:libpng \
+                    port:tiff \
+                    port:webp
+}

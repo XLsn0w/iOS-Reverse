@@ -1,0 +1,34 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-klein
+version             19.6.0
+checksums           rmd160  1394e0c11eaa1b807cadcdcf4b6eb88e454899de \
+                    sha256  e7b76e5f8fbac5bce598ce96ac73a19f4117afb8eba9cde2ff05e772d433cd93 \
+                    size    100867
+
+categories-append   devel
+platforms           darwin
+license             MIT
+maintainers         {ijackson @JacksonIsaac} openmaintainer
+supported_archs     noarch
+
+description         A micro-framework for developing production-ready web services with Python
+long_description    ${description}
+homepage            https://github.com/twisted/klein
+
+master_sites        pypi:k/${python.rootname}
+distname            ${python.rootname}-${version}
+
+python.versions     36 37
+
+if {${name} ne ${subport}} {
+    depends_lib-append  \
+        port:py${python.version}-idna \
+        port:py${python.version}-setuptools \
+        port:py${python.version}-twisted \
+        port:py${python.version}-werkzeug
+    livecheck.type  none
+}

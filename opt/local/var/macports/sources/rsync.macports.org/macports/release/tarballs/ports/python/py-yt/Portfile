@@ -1,0 +1,41 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+name                py-yt
+version             3.4.0
+maintainers         nomaintainer
+
+categories-append   science
+license             BSD
+description         Astrophysical simulation Analysis and Viz
+long_description    The yt project aims to produce an integrated \
+                    science environment for collaboratively asking and \
+                    answering astrophysical questions. To do so, it \
+                    will encompass the creation of initial conditions, \
+                    the execution of simulations, and the detailed \
+                    exploration and visualization of the resultant \
+                    data. It will also provide a standard framework \
+                    based on physical quantities interoperability \
+                    between codes.
+platforms           darwin
+
+homepage            http://yt-project.org/
+master_sites        pypi:y/yt/
+distname            yt-${version}
+
+checksums           rmd160  34e493fed435b837ca9c1934110c74b11a40d589 \
+                    sha256  de52057d1677473a83961d8a1119a9beae3121ec69a4a5469c65348a75096d4c \
+                    md5     4e3df6a98d6199a942a67a701bffb406
+
+python.versions     27 34 35 36 37
+
+if {${name} ne ${subport}} {
+    depends_run-append  port:py${python.version}-numpy \
+                        port:py${python.version}-matplotlib \
+                        port:py${python.version}-h5py \
+                        port:py${python.version}-ipython \
+                        port:py${python.version}-cython \
+                        port:py${python.version}-sympy
+
+}

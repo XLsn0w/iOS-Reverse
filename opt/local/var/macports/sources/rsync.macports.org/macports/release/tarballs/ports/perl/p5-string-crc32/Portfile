@@ -1,0 +1,17 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         String-CRC32 1.7
+license             public-domain
+maintainers         nomaintainer
+description         Perl interface for cyclic redundency check generation
+long_description    ${description}
+
+checksums           rmd160  523df32127fad05aa725645542ef9ec6279a68f0 \
+                    sha256  8f164e5895c3344b8c4e789f709cadd6f2ab47b4d965040e7fcbf5c7fae22bc8 \
+                    size    7859
+
+platforms           darwin

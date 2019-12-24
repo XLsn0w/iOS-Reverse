@@ -1,0 +1,24 @@
+PortSystem 1.0
+PortGroup github 1.0
+
+github.setup    Juniper libxo 1.0.4
+github.tarball_from releases
+
+categories       devel
+license          BSD
+maintainers      {toby @tobypeterson}
+description      A Library for Generating Text, XML, JSON, and HTML Output
+long_description \
+    The libxo library allows an application to generate text, XML, JSON, and \
+    HTML output using a common set of function calls. The application decides \
+    at run time which output style should be produced.
+platforms        darwin
+
+checksums        rmd160 78aee1502f9ab31a667da9f0370a907772115dca \
+                 sha256 23885980313c42211610a65004f9f319804f2ff8e94b2e83b04f4920bf45f6cb \
+                 size 998145
+
+depends_build    port:libtool
+depends_lib      port:gettext
+
+configure.args   --with-gettext=${prefix}

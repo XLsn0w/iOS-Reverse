@@ -1,0 +1,32 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+github.setup        hishamhm htop 2.2.0
+checksums           rmd160  13d2fc4d5414db6ac5653ef87a6216f4e2090bbf \
+                    sha256  4de06703fb8583216a7c5a7797c9568b382208333676e750db6dac896cb7d4ea \
+                    size    172940
+
+epoch               1
+name                htop
+categories          sysutils
+platforms           darwin
+maintainers         {cal @neverpanic} openmaintainer
+license             GPL-2
+
+description         htop is an interactive text-mode process viewer for Unix \
+                    systems. It aims to be a better 'top'. 
+
+long_description    ${description}
+
+depends_build       port:autoconf \
+                    port:automake \
+                    port:libtool \
+                    port:pkgconfig
+
+depends_lib         port:ncurses
+
+pre-configure {
+    system -W ${worksrcpath} "sh autogen.sh"
+}

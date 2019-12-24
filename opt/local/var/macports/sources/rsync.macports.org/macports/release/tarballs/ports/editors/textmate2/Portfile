@@ -1,0 +1,143 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+PortGroup               compiler_blacklist_versions 1.0
+PortGroup               github 1.0
+
+epoch                   4
+github.setup            textmate textmate 2.0-rc.10 v
+revision                1
+
+maintainers             {cal @neverpanic} openmaintainer
+name                    textmate2
+
+categories              editors aqua
+description             \
+    TextMate brings Apple's approach to operating systems into the world of text editors. By \
+    bridging UNIX underpinnings and GUI, TextMate cherry-picks the best of both worlds to the \
+    benefit of expert scripters and novice users alike.
+long_description        ${description}\
+    TextMate is well-known for its large number of bundles adding support, snippets, completions \
+    and commands for a huge number of file types.
+
+platforms               darwin
+supported_archs         x86_64
+license                 GPL-3+
+use_xcode               yes
+
+fetch.type              git
+post-fetch {
+    system -W ${worksrcpath} "${git.cmd} submodule update --init"
+}
+
+patchfiles              patch-Applications_commit_target.diff \
+                        patch-configure-brew.diff \
+                        patch-configure-versionnumber.diff \
+                        patch-ninja-verbose.diff \
+                        0001-Revert-Build-with-MacOSX10.11-SDK.patch \
+                        0001-Add-missing-link-dependency-to-Preferences.patch \
+                        ae470335a234e336c3d0337f065e26b29751e668.patch \
+                        patch-bin__gen_build-avoid-endless-configure-loop.diff \
+                        patch-Frameworks_plist_src_ascii.rl-work-around-ragel7-bugs.diff
+
+post-patch {
+    reinplace "s/@VERSION@/${version}/" ${worksrcpath}/configure
+    fs-traverse file ${worksrcpath} {
+        if {[file tail ${file}] == "target"} {
+            reinplace -q "/TESTS *=/d" ${file}
+            reinplace -q "/TEST_SOURCES *=/d" ${file}
+        }
+    }
+}
+
+depends_build-append    path:lib/libssl.dylib:openssl \
+                        path:share/curl/curl-ca-bundle.crt:curl-ca-bundle \
+                        port:boost \
+                        port:capnproto \
+                        port:multimarkdown \
+                        port:ninja \
+                        port:proctools \
+                        port:ragel \
+                        port:sparsehash
+
+depends_skip_archcheck  ninja ragel proctools
+
+depends_lib-append      port:curl \
+                        port:libiconv \
+                        port:sqlite3 \
+                        port:zlib
+
+if {${os.platform} ne "darwin" || ${os.major} < 12} {
+    depends_fetch
+    depends_build
+    depends_lib
+    pre-fetch {
+        ui_error "${name} @${version} only works with OS X Mountain Lion v10.8 or later."
+        return -code error "incompatible Mac OS X version"
+    }
+}
+
+if {${os.major} < 17} {
+    # On all systems older than High Sierra, the system ruby is linked against
+    # OpenSSL 0.9.8 and cannot connect to GitHub. Depend on our own ruby
+    # instead.
+    depends_build-append port:ruby25
+    post-patch {
+        reinplace "s|^#!/System/Library/Frameworks/Ruby.framework/Versions/Current/usr/bin/ruby|#!${prefix}/bin/ruby2.5|" ${worksrcpath}/bin/gen_html
+    }
+}
+
+# Needs support for -std=c++14.
+compiler.blacklist      {clang < 602}
+
+# Needs support for Objective-C lightweight generics.
+if {[vercmp ${configure.sdk_version} 10.11] < 0} {
+    configure.sdk_version   10.11
+    if {[catch {set configure.sdkroot} sdkroot] || $sdkroot eq ""} {
+        pre-fetch {
+            ui_error "${name} @${version} requires the OS X 10.11 SDK or later."
+            return -code error "incompatible SDK version"
+        }
+    }
+}
+
+if {![catch {set configure.sdkroot} sdkroot] && $sdkroot ne ""} {
+    # The configure script only passes along CC/CXX, not *FLAGS.
+    configure.cc-append     -isysroot${sdkroot}
+    configure.cxx-append    -isysroot${sdkroot}
+}
+
+# The build system forces the use of libc++. This is ok because the port
+# doesn't provide any C++ libraries nor use any C++ libraries from deps.
+configure.cxx_stdlib    libc++
+
+configure.env-append    boostdir=${prefix}/include/boost \
+                        builddir=${worksrcpath}/build \
+                        capnp_prefix=${prefix} \
+                        libressl_prefix=${prefix} \
+                        sparsedir=${prefix}/include/sparsehash
+
+pre-configure {
+    # the textmate build expects this to be present
+    file mkdir $env(HOME)/Library/Caches/com.macromates.TextMate
+    # patch the code to use $HOME from env rather than from getpwent(3)
+    system -W ${worksrcpath} "patch -p0 <${filespath}/patch-Frameworks__io__src__path.cc-use-home-from-env.diff"
+}
+post-configure {
+    # revert the patch
+    system -W ${worksrcpath} "patch -R -p0 <${filespath}/patch-Frameworks__io__src__path.cc-use-home-from-env.diff"
+}
+
+build.cmd               ninja
+build.args              -v -j${build.jobs}
+build.target            TextMate mate
+
+destroot {
+    copy ${worksrcpath}/build/Applications/TextMate/TextMate.app ${destroot}${applications_dir}
+    xinstall -m 0755 ${worksrcpath}/build/Applications/mate/mate ${destroot}${prefix}/bin
+}
+
+livecheck.type          regex
+livecheck.regex         "^(.\*)\$"
+livecheck.url           https://api.textmate.org/releases/release/version
+livecheck.version       $version

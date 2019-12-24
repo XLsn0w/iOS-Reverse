@@ -1,0 +1,31 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           python 1.0
+
+github.setup        PyGithub PyGithub 1.39 v
+name                py-pygithub
+platforms           darwin
+license             LGPL-3+
+maintainers         {raimue @raimue} \
+                    openmaintainer
+
+description         Python module for Github API v3
+long_description    ${description}
+
+checksums           rmd160  940d8fc92e0fe5ed34933c70b4bc78b31df90ea5 \
+                    sha256  b0fcdd42eff94098c8e546cb573c91b1d58c23e7a62ca59349c4e3789588b043 \
+                    size    2662962
+
+python.versions     27 35 36
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                        port:py${python.version}-setuptools
+
+    livecheck.type      none
+} else {
+    livecheck.url       ${github.homepage}/releases/latest
+    livecheck.regex     {archive/v(1\.[^"]+)\.tar}
+}

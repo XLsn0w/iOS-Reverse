@@ -1,0 +1,48 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-tastypie
+set long_name       django-tastypie
+version             0.14.2
+revision            0
+categories-append   www
+license             BSD
+platforms           darwin
+supported_archs     noarch
+maintainers         nomaintainer
+
+description         flexible & capable API layer for Django
+long_description    ${description}
+
+homepage            https://github.com/django-tastypie/django-tastypie
+master_sites        pypi:d/${long_name}
+distname            ${long_name}-${version}
+
+checksums           rmd160  3ba1d89a48e118f4682fe816a254cf269c8f93fd \
+                    sha256  a3a2413510009649e0eac885ead96891c783ced788fd94231dc2f72b7a1b4c04 \
+                    size    146055
+
+python.versions     27 37
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                    port:py${python.version}-setuptools
+
+    depends_lib-append \
+                    port:py${python.version}-django \
+                    port:py${python.version}-dateutil \
+                    port:py${python.version}-mimeparse
+
+    post-destroot {
+        set docdir ${prefix}/share/doc/${subport}
+        xinstall -d ${destroot}${docdir}
+        xinstall -m 0644 -W ${worksrcpath} AUTHORS LICENSE \
+            README.rst ${destroot}${docdir}
+    }
+
+    livecheck.type  none
+} else {
+    livecheck.name  django-tastypie
+}

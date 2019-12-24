@@ -1,0 +1,49 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-pudb
+version             2019.1
+revision            0
+
+categories-append   devel
+platforms           darwin
+license             MIT
+maintainers         nomaintainer
+
+description         A full-screen, console-based Python debugger
+long_description    PuDB is a full-screen, console-based visual debugger for \
+                    Python. Its goal is to provide all the niceties of \
+                    modern GUI-based debuggers in a more lightweight and \
+                    keyboard-friendly package. PuDB allows you to debug code \
+                    right where you write and test it--in a terminal. If \
+                    you've worked with the excellent (but nowadays ancient) \
+                    DOS-based Turbo Pascal or C tools, PuDB's UI might look \
+                    familiar.
+
+homepage            https://github.com/inducer/pudb
+master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
+distname            ${python.rootname}-${version}
+
+checksums           rmd160  ca78e596273097904a21d8ad3a3ac783d47e1e6f \
+                    sha256  ac30cfc64580958ab7265decb4cabb9141f08781ff072e9a336d5a7942ce35a6 \
+                    size    57664
+
+python.versions     27 35 36 37 38
+
+if {${name} ne ${subport}} {
+    depends_lib-append \
+                    port:py${python.version}-pygments \
+                    port:py${python.version}-setuptools \
+                    port:py${python.version}-urwid
+
+    post-destroot {
+        set docdir ${prefix}/share/doc/${subport}
+        xinstall -d ${destroot}${docdir}
+        xinstall -m 0644 -W ${worksrcpath} README.rst LICENSE \
+            ${destroot}${docdir}
+    }
+
+    livecheck.type  none
+}

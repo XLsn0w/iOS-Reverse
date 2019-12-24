@@ -1,0 +1,40 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim: fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-setuptools_scm
+version             3.3.3
+revision            0
+categories-append   devel
+platforms           darwin
+license             MIT
+supported_archs     noarch
+
+python.versions     27 34 35 36 37 38
+
+maintainers         {stromnov @stromnov} openmaintainer
+
+description         Package to manage versions by scm tags.
+long_description    ${description}
+
+homepage            https://github.com/pypa/setuptools_scm/
+master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
+
+distname            ${python.rootname}-${version}
+
+checksums           rmd160  6d39a82b2a0e93f53a2b904fa96eee98f5095e9a \
+                    sha256  bd25e1fb5e4d603dcf490f1fde40fb4c595b357795674c3e5cb7f6217ab39ea5 \
+                    size    36903
+
+if {${name} ne ${subport}} {
+    depends_lib-append  port:py${python.version}-setuptools
+
+    # https://trac.macports.org/ticket/57199
+    use_configure       yes
+    configure.cmd       ${python.bin}
+    configure.pre_args
+    configure.args      setup.py egg_info
+
+    livecheck.type      none
+}

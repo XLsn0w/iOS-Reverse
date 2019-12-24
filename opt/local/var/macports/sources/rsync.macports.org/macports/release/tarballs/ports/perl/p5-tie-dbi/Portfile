@@ -1,0 +1,29 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Tie-DBI 1.06
+revision            1
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+
+description         Tie::DBI - Tie hashes to DBI relational databases
+
+long_description    This module allows you to tie Perl associative arrays (hashes) \
+                    to SQL databases using the DBI interface. The tied hash is \
+                    associated with a table in a local or networked database. \
+                    One column becomes the hash key. Each row of the table becomes an \
+                    associative array, from which individual fields can be set or retrieved.
+
+checksums           rmd160  1cd36982507017641b1a7d8f78fe1f0c38be4c4f \
+                    sha256  28e726eef081036ae04cadd068feb2dce34fa3cd3b6397991ebddb1a907ca422
+
+platforms           darwin
+
+if {${perl5.major} != ""} {
+    depends_lib-append \
+                    port:p${perl5.major}-dbd-sqlite \
+                    port:p${perl5.major}-dbi
+}

@@ -1,0 +1,71 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                easytag
+version             2.4.3
+set branch          [join [lrange [split ${version} .] 0 1] .]
+categories          audio gnome
+platforms           darwin
+maintainers         {devans @dbevans} openmaintainer
+homepage            https://wiki.gnome.org/Apps/EasyTAG/
+license             GPL-2+
+description         Tool for editing tags of audio files
+
+long_description    EasyTAG is a GTK3 utility for viewing and editing tags \
+                    for MP3, MP2, FLAC, Ogg Vorbis, MusePack, Monkey's \
+                    audio files and MP4/AAC.
+
+master_sites        gnome:sources/${name}/${branch}
+
+checksums           rmd160  fb5684d904efeb8902bf4ec212f75cbba5e77dd1 \
+                    sha256  fc51ee92a705e3c5979dff1655f7496effb68b98f1ada0547e8cbbc033b67dd5
+
+use_xz              yes
+
+depends_build       port:pkgconfig \
+                    port:intltool \
+                    port:itstool \
+                    port:yelp-tools \
+                    port:appstream-glib \
+                    port:autoconf \
+                    port:automake \
+                    port:libtool
+
+depends_lib         port:desktop-file-utils \
+                    port:gtk3 \
+                    port:libvorbis \
+                    port:flac \
+                    port:id3lib \
+                    port:libid3tag \
+                    port:speex \
+                    port:libopus \
+                    port:opusfile \
+                    port:taglib \
+                    port:wavpack
+
+depends_run         port:adwaita-icon-theme
+
+patchfiles          patch-m4-ax_compiler_flags_ldflags.m4.diff
+
+# reconfigure using distributed autogen.sh for intltool 0.51 compatibility
+
+configure.cmd       ./autogen.sh
+
+configure.args      --disable-nautilus-actions \
+                    --enable-compile-warnings=minimum \
+                    --disable-silent-rules \
+                    --disable-schemas-compile
+
+variant nautilus description {Build nautilus context actions} {
+    depends_lib-append      port:nautilus
+    configure.args-delete   --disable-nautilus-actions
+}
+
+post-activate {
+    system "${prefix}/bin/update-desktop-database ${prefix}/share/applications"
+    system "${prefix}/bin/gtk-update-icon-cache-3.0 -f -t ${prefix}/share/icons/hicolor"
+    system "${prefix}/bin/glib-compile-schemas ${prefix}/share/glib-2.0/schemas"
+}
+
+livecheck.type      gnome

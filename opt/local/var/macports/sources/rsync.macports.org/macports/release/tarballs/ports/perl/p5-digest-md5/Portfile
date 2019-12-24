@@ -1,0 +1,21 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Digest-MD5 2.55
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         RSA MD5 implementation for perl
+long_description    The Digest::MD5 module allows you to use the \
+                    RSA Data Security Inc. MD5 Message Digest algorithm \
+                    from within Perl programs.  The algorithm takes as \
+                    input a message of arbitrary length and produces \
+                    as output a 128-bit "fingerprint" or "message digest" \
+                    of the input. MD5 is described in RFC 1321.
+
+platforms           darwin
+
+checksums           rmd160  03bc05a3f0d3506a97e3ce133c767343386573ff \
+                    sha256  03b198a2d14425d951e5e50a885d3818c3162c8fe4c21e18d7798a9a179d0e3c

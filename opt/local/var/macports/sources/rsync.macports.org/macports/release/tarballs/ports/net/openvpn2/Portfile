@@ -1,0 +1,114 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                openvpn2
+version             2.4.6
+revision            1
+distname            openvpn-${version}
+categories          net security
+platforms           darwin
+maintainers         nomaintainer
+license             {GPL-2 OpenSSLException}
+
+description         easy-to-use, robust, and highly configurable VPN
+long_description    \
+    OpenVPN is an easy-to-use, robust, and highly configurable VPN (Virtual \
+    Private Network) daemon which can be used to securely link two or more \
+    private networks using an encrypted tunnel over the internet.
+
+homepage            https://openvpn.net
+master_sites        https://swupdate.openvpn.net/community/releases/
+
+use_xz              yes
+
+checksums           rmd160  9fb17a39b70d96ecc3075a78011496b239e741d6 \
+                    sha256  4f6434fa541cc9e363434ea71a16a62cf2615fb2f16af5b38f43ab5939998c26 \
+                    size    943376
+
+depends_build       port:pkgconfig
+depends_lib         port:lzo2 \
+                    path:lib/libssl.dylib:openssl
+
+configure.args      --program-suffix=2 \
+                    --docdir=${prefix}/share/doc/${name}
+
+post-destroot {
+    set docdir ${destroot}${prefix}/share/doc/${name}
+    set exdir ${destroot}${prefix}/share/examples/${name}
+    xinstall -m 755 -d ${docdir}
+    xinstall -m 755 -d ${exdir}
+    foreach dir "sample/sample-config-files \
+                sample/sample-keys \
+                sample/sample-plugins \
+                sample/sample-scripts"  {
+        file copy ${worksrcpath}/${dir} ${exdir}/
+    }
+    file copy ${worksrcpath}/contrib ${docdir}/
+    xinstall -m 644 -W ${worksrcpath} AUTHORS ${docdir}/
+    reinplace "s|;user nobody|user nobody|;s|;group nobody|group nobody|;" \
+        ${destroot}${prefix}/share/examples/${name}/sample-config-files/server.conf \
+        ${destroot}${prefix}/share/examples/${name}/sample-config-files/client.conf \
+        ${destroot}${prefix}/share/examples/${name}/sample-config-files/static-home.conf \
+        ${destroot}${prefix}/share/examples/${name}/sample-config-files/static-office.conf \
+        ${destroot}${prefix}/share/examples/${name}/sample-config-files/tls-home.conf \
+        ${destroot}${prefix}/share/examples/${name}/sample-config-files/tls-office.conf
+}
+
+post-activate {
+    if {![file exists ${prefix}/etc/${name}]} {
+        xinstall -d ${prefix}/etc/${name}
+    }
+    foreach f { server.conf client.conf } {
+        if {![file exists ${prefix}/etc/${name}/${f}]} {
+                xinstall ${prefix}/share/examples/${name}/sample-config-files/${f} ${prefix}/etc/${name}/
+        }
+    }
+}
+
+variant pkcs11 description "Enable PKCS #11/Cryptoki support" {
+    configure.args-append \
+        --enable-pkcs11
+
+    depends_lib-append \
+        port:pkcs11-helper
+}
+
+variant passwordsave description {Build with --enable-password-save} {
+    configure.args-append --enable-password-save
+}
+
+notes "
+If not existing, a default server.conf has been created in ${prefix}/etc/${name}/
+Startup launch script is set to start with it.
+Please adjust to your need, especially passphrase or certificates
+
+For minimal configuration, you need to follow these steps
+
+A) With a shared secret
+    $ sudo openvpn2 --genkey --secret ${prefix}/etc/openvpn2/static.key
+   Use 'secret static.key' in your config file
+
+B) With self-signed certificates, follow
+   ${homepage}/index.php/open-source/documentation/howto.html#pki
+
+Alternate GUI: https://tunnelblick.net/
+
+Openvpn uses a tun device to create its network interface. It could either be:
+- utun device built into OSX 10.7+
+- tun device from port tuntaposx
+"
+
+if {${os.platform} == "darwin" && ${os.major} <= 9} {
+    post-patch {
+        reinplace "s|security/pam_appl.h|pam/pam_appl.h|g" ${worksrcpath}/src/plugins/auth-pam/auth-pam.c
+    }
+}
+
+startupitem.create      yes
+startupitem.executable  ${prefix}/sbin/openvpn2 --config ${prefix}/etc/${name}/server.conf
+
+livecheck.type      regex
+livecheck.url       ${homepage}/index.php/open-source/downloads.html
+livecheck.regex     "/openvpn-(\\d+(?:\\.\\d+)*).tar.gz\">"
+

@@ -1,0 +1,36 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim: fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-vega
+version             2.6.0
+revision            0
+categories-append   devel graphics
+platforms           darwin
+license             BSD
+supported_archs     noarch
+
+python.versions     27 36 37
+
+maintainers         {stromnov @stromnov} openmaintainer
+
+description         IPython/Jupyter notebook module for Vega and Vega-Lite.
+long_description    ${description}
+
+homepage            http://github.com/vega/ipyvega
+master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
+
+distname            ${python.rootname}-${version}
+
+checksums           rmd160  c92ca77c5e1905b85ad105982fdcfeadad759d9e \
+                    sha256  c66354d6d164cc3d7254bcd129d8d861daf4a9e9cb8738b1724791777f6c29f0 \
+                    size    1112095
+
+if {${name} ne ${subport}} {
+    depends_lib-append  port:py${python.version}-setuptools \
+                        port:py${python.version}-jupyter \
+                        port:py${python.version}-pandas
+
+    livecheck.type      none
+}

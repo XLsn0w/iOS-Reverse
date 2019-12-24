@@ -1,0 +1,21 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Math-GMPf 0.43
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         Math::GMPf - perl interface to the GMP library's floating point (mpf) functions.
+long_description    ${description}
+
+platforms           darwin
+
+checksums           rmd160  ed21c6e50b59fa52285035a477933a66e12c682d \
+                    sha256  dfd84ac17ef49063d6e3ef700ba0bc2b8800342be22f9d4f3786714f90e1a5a6
+
+if {${perl5.major} != ""} {
+    depends_lib-append \
+                    port:gmp
+}

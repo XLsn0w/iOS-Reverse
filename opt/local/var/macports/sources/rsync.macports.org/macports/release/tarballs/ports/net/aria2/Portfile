@@ -1,0 +1,84 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           cxx11 1.1
+
+github.setup        aria2 aria2 1.35.0 release-
+revision            0
+github.tarball_from releases
+categories          net
+platforms           darwin
+maintainers         {mps @Schamschula}
+license             {GPL-2+ OpenSSLException}
+description         download utility with resuming and segmented downloading
+long_description    aria2 is a download utility with resuming and segmented \
+                    downloading. Supported protocols are HTTP/HTTPS/FTP/BitTorrent.
+                    
+use_xz              yes
+
+checksums           rmd160  9264f00160eca215a709ad442fd14316457a2e66 \
+                    sha256  1e2b7fd08d6af228856e51c07173cfcf987528f1ac97e04c5af4a47642617dfd \
+                    size    1534460
+
+depends_build-append    port:pkgconfig
+depends_lib-append      port:gettext \
+                        port:libiconv \
+                        port:libuv \
+                        port:libxml2
+
+# use_* must be defined after depends_*, otherwise the automatic dependencies
+# will be overwritten.
+# Alternatively, depends_*-append could be used.
+#use_autoreconf      yes
+
+configure.cxxflags-append -I${prefix}/include/libxml2
+configure.ldflags-append  -lintl
+configure.args      --with-libiconv-prefix=${prefix} \
+                    --with-libintl-prefix=${prefix} \
+                    --with-libuv \
+                    --with-xml-prefix=${prefix} \
+                    --without-libcares \
+                    --without-sqlite3
+
+if {![variant_isset gnutls]} {
+    # C++14
+    configure.cxxflags-append -std=c++14
+    compiler.blacklist-append {clang < 800.0.38}
+}
+
+variant cares description {Add c-ares support} {
+    configure.args-replace  --without-libcares --with-libcares
+    depends_lib-append      port:c-ares
+}
+
+variant gnutls conflicts openssl description {Use GNU TLS instead of Apple built-in TLS library} {
+    configure.args-append   --without-appletls \
+                            --with-gnutls \
+                            --with-libgnutls-prefix=${prefix}
+    depends_lib-append      port:gnutls
+}
+
+variant openssl conflicts gnutls description {Use OpenSSL instead of Apple built-in TLS library} {
+    configure.args-append   --without-appletls \
+                            --without-gnutls \
+                            --with-openssl \
+                            --with-openssl-prefix=${prefix}
+    depends_lib-append      path:lib/libssl.dylib:openssl
+}
+
+variant sqlite3 description {Add sqlite3 support} {
+    configure.args-replace  --without-sqlite3 --with-sqlite3
+    depends_lib-append      port:sqlite3
+}
+
+# appletls not available on 10.6 or earlier
+if {${os.platform} eq "darwin" && ${os.major} <= 10} {
+        default_variants-append +gnutls
+}
+
+# libuv presently not available on 10.4 or earlier
+if {${os.platform} eq "darwin" && ${os.major} <= 8} {
+        depends_lib-delete      port:libuv
+        configure.args-delete   --with-libuv
+}

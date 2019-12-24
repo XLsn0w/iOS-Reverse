@@ -1,0 +1,99 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           cmake 1.1
+PortGroup           cxx11 1.1
+PortGroup           github 1.0
+
+name                gr-limesdr
+categories          science comms
+platforms           darwin macosx
+license             GPL-3+
+maintainers         {@ra1nb0w irh.it:rainbow} {michaelld @michaelld} openmaintainer
+description         GNU Radio block for LimeSDR-USB/LimeSDR-Mini boards
+long_description    ${description}
+homepage            https://wiki.myriadrf.org/Gr-limesdr_Plugin_for_GNURadio
+
+subport gr-limesdr-devel {}
+if {[string first "-devel" $subport] > 0} {
+
+    github.setup myriadrf gr-limesdr ccceb5c4b37aea58500c45b9bc22958f76ccce52
+    version   20190917-[string range ${github.version} 0 7]
+    checksums rmd160 b60458dc9e44768b2e97832c107958ac461c6a35 \
+              sha256 97c48459ad564a32123530f2f90f0e5d4a9b14690222706643891372d3c28764 \
+              size   3086348
+    revision  1
+
+    name            gr-limesdr-devel
+    long_description ${description}. This port is kept up with the ${name} \
+        GIT 'master' branch, is typically updated weekly to monthly.
+
+    conflicts       gr-limesdr
+
+} else {
+
+    github.setup    myriadrf gr-limesdr 2.0.0 v
+    checksums       rmd160  c8b2b7a745a316bcc7c6b7b0a1121da2bddea05a \
+                    sha256  6f2fcf42dd45ca3893c914752f803dd811e046c21c567286fd1ad35a8d362f05 \
+                    size    3083984
+    revision        3
+
+    conflicts       gr-limesdr-devel
+
+}
+
+depends_build-append \
+    port:swig-python \
+    port:pkgconfig
+
+depends_lib-append \
+    port:boost \
+    path:lib/libgnuradio-runtime.dylib:gnuradio \
+    path:lib/libLimeSuite.dylib:limesuite
+
+# remove top-level library path, such that internal libraries are used
+# instead of any already-installed ones.
+configure.ldflags-delete -L${prefix}/lib
+
+# specify the Python dependencies
+depends_lib-append port:python27
+# specify that Python version to use
+configure.args-append \
+    -DPYTHON_EXECUTABLE=${frameworks_dir}/Python.framework/Versions/2.7/bin/python2.7 \
+    -DPYTHON_INCLUDE_DIR=${frameworks_dir}/Python.framework/Versions/2.7/Headers \
+    -DPYTHON_LIBRARY=${frameworks_dir}/Python.framework/Versions/2.7/Python \
+    -DGR_PYTHON_DIR=${frameworks_dir}/Python.framework/Versions/2.7/lib/python2.7/site-packages
+
+# use C++11
+configure.args-append \
+    -DCMAKE_CXX_STANDARD=11
+
+configure.args-append \
+    -DDOXYGEN_DOT_EXECUTABLE= \
+    -DDOXYGEN_EXECUTABLE= \
+    -DCMAKE_MODULES_DIR=share/cmake
+
+variant docs description "Install ${name} documentation" {
+
+    depends_build-append \
+        port:doxygen \
+        path:bin/dot:graphviz
+
+    configure.args-delete \
+        -DDOXYGEN_DOT_EXECUTABLE= \
+        -DDOXYGEN_EXECUTABLE=
+
+    configure.args-append \
+        -DDOXYGEN_DOT_EXECUTABLE=${prefix}/bin/dot \
+        -DDOXYGEN_EXECUTABLE=${prefix}/bin/doxygen
+
+}
+
+default_variants +docs
+
+post-destroot {
+    # copy GNU Radio examples
+    xinstall -m 755 -d ${destroot}${prefix}/share/gnuradio/examples/limesdr
+    file copy {*}[glob ${worksrcpath}/examples/*] \
+        ${destroot}${prefix}/share/gnuradio/examples/limesdr
+}

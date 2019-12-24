@@ -1,0 +1,24 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         TeX-Encode 2.006
+platforms           darwin
+supported_archs     noarch
+maintainers         {gmail.com:davide.liessi @dliessi} openmaintainer
+license             {Artistic-1 GPL}
+description         Encode/decode Perl utf-8 strings into TeX
+long_description    ${description}
+
+checksums           rmd160  27f9475a71b03460c8b6b2bcd7db4743229345ee \
+                    sha256  b49149ecbddad3a3a08542670520addd5c67ecffcf1ea08c5bcf968a11f8be88 \
+                    size    33897
+
+if {${perl5.major} != ""} {
+    depends_lib-append \
+                    port:p${perl5.major}-encode \
+                    port:p${perl5.major}-html-parser \
+                    port:p${perl5.major}-pod-latex
+}

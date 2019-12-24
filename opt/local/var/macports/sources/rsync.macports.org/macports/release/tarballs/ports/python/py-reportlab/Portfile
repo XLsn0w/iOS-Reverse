@@ -1,0 +1,51 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-reportlab
+version             3.5.31
+revision            0
+categories-append   textproc
+platforms           darwin
+license             BSD
+
+python.versions     27 35 36 37 38
+
+maintainers         {stromnov @stromnov} openmaintainer
+
+description         Engine for creating PDF documents
+
+long_description    The ReportLab Toolkit is a library for programatically \
+                    creating documents in PDF format.
+
+homepage            http://www.reportlab.com/software/opensource/rl-toolkit/
+master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname} \
+                    http://www.reportlab.com/ftp/
+
+distname            ${python.rootname}-${version}
+
+checksums           rmd160  fa6fca81b9dd22ac1a0629607fff1aa75f17f26f \
+                    sha256  3e2d2ea8ac3d63c918a2b40476c2745704d0364abe2b9c844c75992132a5eac7 \
+                    size    2861798
+
+if {${name} ne ${subport}} {
+    depends_build-append    port:py${python.version}-setuptools
+
+    depends_lib-append      port:freetype \
+                            path:${python.pkgd}/PIL:py${python.version}-Pillow \
+                            port:py${python.version}-pip
+
+    post-destroot {
+        set docdir ${prefix}/share/doc/${subport}
+        xinstall -m 644 -W ${worksrcpath} README.txt CHANGES.md LICENSE.txt \
+            ${destroot}${docdir}
+    }
+
+    livecheck.type      none
+}
+
+subport py34-${python.rootname} {
+    replaced_by py35-${python.rootname}
+    PortGroup obsolete 1.0
+}

@@ -1,0 +1,42 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           cmake 1.1
+PortGroup           compiler_blacklist_versions 1.0
+PortGroup           cxx11 1.1
+
+name                clhep
+version             2.4.1.0
+categories          science
+maintainers         {mojca @mojca} openmaintainer
+license             LGPL-3
+
+description         A Class Library for High Energy Physics
+long_description    A Class Library for High Energy Physics
+homepage            http://www.cern.ch/clhep
+platforms           darwin
+extract.suffix      .tgz
+master_sites        http://proj-clhep.web.cern.ch/proj-clhep/DISTRIBUTION/tarFiles/
+#                   http://git.cern.ch/pubweb/CLHEP.git
+
+checksums           rmd160  b0d1c82fa5b35dac9428618764a31efa49feb229 \
+                    sha256  d14736eb5c3d21f86ce831dc1afcf03d423825b35c84deb6f8fd16773528c54d \
+                    size    1537195
+
+worksrcdir          ${version}/CLHEP
+
+# https://its.cern.ch/jira/browse/CLHEP-134
+compiler.blacklist-append {clang < 600} macports-clang-3.3 macports-clang-3.4
+
+post-build {
+    fs-traverse file ${build.dir} {
+        if {[string match {*-config} ${file}]} {
+            reinplace -E {s|-arch [^ ]+||g} ${file}
+        }
+    }
+}
+
+livecheck.type      regex
+# livecheck.url     http://proj-clhep.web.cern.ch/proj-clhep/DISTRIBUTION/
+livecheck.url       http://proj-clhep.web.cern.ch/proj-clhep/clhep23.html
+livecheck.regex     ${name}-(\[0-9.\]+)${extract.suffix}

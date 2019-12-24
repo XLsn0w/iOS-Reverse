@@ -1,0 +1,59 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-prompt_toolkit
+version             2.0.10
+revision            0
+license             BSD
+platforms           darwin
+supported_archs     noarch
+maintainers         {@xeron gmail.com:xeron.oskom} openmaintainer
+description         Library for building powerful interactive command lines in Python
+long_description    ${description}
+
+python.versions     27 34 35 36 37 38
+
+homepage            https://github.com/prompt-toolkit/python-prompt-toolkit
+master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
+
+checksums           rmd160  7fef3cdd4d9c419124244191777ff0767bb6cb8f \
+                    sha256  f15af68f66e664eaa559d4ac8a928111eebd5feda0c11738b5998045224829db \
+                    size    347981
+
+if {${name} ne ${subport}} {
+    if {${python.version} in "27 34"} {
+        version     1.0.18
+        revision    0
+        checksums   rmd160  c0907914130f16c24cd543ef3bbcea655bca8968 \
+                    sha256  dd4fca02c8069497ad931a2d09914c6b0d1b50151ce876bc15bde4c747090126 \
+                    size    242335
+    }
+    distname        ${python.rootname}-${version}
+
+    depends_build-append \
+                    port:py${python.version}-setuptools
+
+    depends_lib-append \
+                    port:py${python.version}-pygments \
+                    port:py${python.version}-six \
+                    port:py${python.version}-wcwidth
+
+    depends_test-append \
+                    port:py${python.version}-pytest
+    test.run        yes
+    test.cmd        py.test-${python.branch}
+    test.target
+    test.env        PYTHONPATH=${worksrcpath}/build/lib
+
+    post-destroot {
+        set docdir ${prefix}/share/doc/${subport}
+        xinstall -d ${destroot}${docdir}
+        xinstall -m 0644 -W ${worksrcpath} LICENSE AUTHORS.rst \
+            README.rst CHANGELOG ${destroot}${docdir}
+        copy ${worksrcpath}/examples ${destroot}${docdir}/examples
+    }
+
+    livecheck.type  none
+}

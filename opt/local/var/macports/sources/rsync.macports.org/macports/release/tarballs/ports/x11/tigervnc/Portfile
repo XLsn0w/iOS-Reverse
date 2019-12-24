@@ -1,0 +1,62 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+PortGroup               cmake 1.0
+PortGroup               conflicts_build 1.0
+PortGroup               github 1.0
+PortGroup               muniversal 1.0
+
+github.setup            TigerVNC tigervnc 1.7.1 v
+conflicts               vnc tightvnc
+categories              x11 vnc
+maintainers             ryandesign openmaintainer
+platforms               darwin
+license                 GPL-2+
+
+description             Advanced VNC implementation.
+
+long_description        TigerVNC is an advanced VNC implementation. \
+                        It is based on the fourth generation of VNC. TigerVNC \
+                        also includes features from the TightVNC and TurboVNC \
+                        projects. This includes accelerated JPEG compression. \
+                        TigerVNC supports the latest X.Org X server.
+
+homepage                http://www.tigervnc.com/
+
+checksums               rmd160  837aac1c72218cc7717cb9f0cfebdab8c5360ec5 \
+                        sha256  fc9c7617c1500b815708912e78455c13d0c68e10a377cf6c83a05ca2cd951245
+
+depends_lib             port:gettext \
+                        port:gnutls \
+                        path:lib/libfltk.dylib:fltk \
+                        port:jpeg \
+                        port:libiconv \
+                        port:zlib
+
+patchfiles              patch-CMakeLists.txt.diff \
+                        patch-release-makemacapp.in.diff
+
+# ivtools' OS/os.h shadows tigervnc's os/os.h on case-insensitive filesystems.
+if {[file exists ${prefix}/include/os/os.h]} {
+    conflicts_build-append ivtools
+}
+
+cmake.out_of_source     yes
+
+build.target            translations dmg
+
+if {[variant_isset universal]} {
+    merger-post-destroot {
+        foreach arch ${universal_archs_to_use} {
+            copy "${build.dir}-${arch}/TigerVNC Viewer.app" ${destroot}-${arch}${applications_dir}
+            delete ${destroot}-${arch}${prefix}/bin/vncviewer
+            ln -s "${applications_dir}/TigerVNC Viewer.app/Contents/MacOS/TigerVNC Viewer" ${destroot}-${arch}${prefix}/bin/vncviewer
+        }
+    }
+} else {
+    post-destroot {
+        copy "${build.dir}/TigerVNC Viewer.app" ${destroot}${applications_dir}
+        delete ${destroot}${prefix}/bin/vncviewer
+        ln -s "${applications_dir}/TigerVNC Viewer.app/Contents/MacOS/TigerVNC Viewer" ${destroot}${prefix}/bin/vncviewer
+    }
+}

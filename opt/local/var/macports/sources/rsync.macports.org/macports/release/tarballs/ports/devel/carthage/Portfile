@@ -1,0 +1,64 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=portfile:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           xcodeversion 1.0
+
+use_xcode           yes
+github.setup        Carthage Carthage 0.34.0
+name                carthage
+categories          devel
+platforms           darwin
+
+universal_variant   no
+license             MIT
+maintainers         {saagarjha.com:saagar @saagarjha} openmaintainer
+
+description         A simple, decentralized dependency manager for Cocoa
+long_description    ${description}
+
+# Fetch from git instead of distfile because it needs submodules
+fetch.type          git
+
+use_configure       no
+# everything is built during the prefix_install target
+build               {}
+
+destroot {
+    if { [vercmp ${xcodeversion} "9.0"] < 0 } {
+        ui_error "Xcode 9.0 or greater is needed to build ${name}; only found version ${xcodeversion}."
+        return -code error "incompatible Xcode version"
+    }
+
+    system -W ${worksrcpath} "${build.cmd} prefix_install PREFIX=${destroot}${prefix} CARTHAGE_TEMPORARY_FOLDER=${destroot} SWIFTPM_DISABLE_SANDBOX_SHOULD_BE_FLAGGED=should_be_flagged"
+}
+
+variant bash_completion {
+    depends_run-append path:etc/bash_completion:bash-completion
+
+    post-destroot {
+        set completions_path ${prefix}/share/bash-completion/completions
+        xinstall -d ${destroot}${completions_path}
+        xinstall -m 644 ${worksrcpath}/Source/Scripts/carthage-bash-completion ${destroot}${completions_path}/${name}
+    }
+}
+
+variant zsh_completion description {Install zsh completion} {
+    depends_run-append path:${prefix}/bin/zsh:zsh
+
+    post-destroot {
+        set site-functions ${destroot}${prefix}/share/zsh/site-functions
+        xinstall -d ${site-functions}
+        xinstall ${worksrcpath}/Source/Scripts/carthage-bash-completion ${site-functions}/_${name}
+    }
+}
+
+variant fish_completion description {Install fish completion} {
+    depends_run-append path:${prefix}/bin/fish:fish
+
+    post-destroot {
+        set completions_path ${prefix}/share/fish/completions
+        xinstall -d ${destroot}${completions_path}
+        xinstall -m 644 ${worksrcpath}/Source/Scripts/carthage-fish-completion ${destroot}${completions_path}/${name}.fish
+    }
+}

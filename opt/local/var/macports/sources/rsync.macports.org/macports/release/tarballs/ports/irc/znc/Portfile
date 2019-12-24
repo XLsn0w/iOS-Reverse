@@ -1,0 +1,63 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                znc
+version             1.7.4
+revision            2
+categories          irc
+platforms           darwin
+maintainers         nomaintainer
+license             Apache-2
+description         An advanced IRC bouncer
+long_description    ZNC is an IRC bounce/proxy with many advanced features \
+                    like detaching, multiple users, multiple clients per \
+                    user, channel/query playback buffers, SSL, IPv6, \
+                    transparent DCC bouncing, C++/Perl/Tcl module support, \
+                    party line, and Web administration.
+
+homepage            https://znc.in/
+master_sites        ${homepage}releases/archive/
+
+checksums           rmd160  c660ce405d95767b7f93c1dc43888332f9449544 \
+                    sha256  b1a32921a8e6d79ee6c5900c8d07293026966db7c05aaac48984231befc49b71 \
+                    size    2084756
+
+universal_variant   no
+
+depends_lib         path:lib/libssl.dylib:openssl port:tcl port:perl5 port:icu
+
+configure.args      --disable-python \
+                    --enable-perl \
+                    --enable-tcl \
+                    --with-tcl=${prefix}/lib \
+                    ac_cv_path_BREW=
+
+compiler.cxx_standard   2011
+if {[string match *clang* ${configure.cxx}]} {
+    configure.ldflags-append -stdlib=${configure.cxx_stdlib}
+}
+
+# Disable silent rules
+build.args-append   V=1
+
+variant python35 description "Enable Python modules, using python35" conflicts python36 {
+    configure.args-replace --disable-python --enable-python
+    depends_build-append port:pkgconfig
+    depends_lib-append port:python35
+    configure.pkg_config_path ${frameworks_dir}/Python.framework/Versions/3.5/lib/pkgconfig/
+}
+
+variant python36 description "Enable Python modules, using python36" conflicts python35 {
+    configure.args-replace --disable-python --enable-python
+    depends_build-append port:pkgconfig
+    depends_lib-append port:python36
+    configure.pkg_config_path ${frameworks_dir}/Python.framework/Versions/3.6/lib/pkgconfig/
+}
+
+# Will fail in trace mode due to this downloads gtest
+test.run            yes
+
+livecheck.type      regex
+livecheck.url       ${homepage}releases/
+livecheck.regex     ${name}-(\[0-9.\]+)${extract.suffix}

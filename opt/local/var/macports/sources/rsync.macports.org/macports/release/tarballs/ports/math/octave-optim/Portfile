@@ -1,0 +1,26 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           octave 1.0
+PortGroup           compilers 1.0
+
+octave.setup        optim 1.6.0
+revision            0
+platforms           darwin
+license             GFDL GPL-3+ BSD public-domain
+maintainers         {mps @Schamschula} openmaintainer
+description         Unconstrained Non-linear Optimization toolkit.
+long_description    ${description}
+
+checksums           rmd160  96b7f9bc3ca183292d282ce5f26a940ebabe07bf \
+                    sha256  f910c8d5992af42c51269d023ce95c34c7b6455542e41171819dbe94fc4350fc \
+                    size    422853
+
+depends_lib-append  port:octave-miscellaneous \
+                    port:octave-struct
+
+# compensate for Octave 5 changes
+patchfiles-append   patch-octave5.diff
+
+compilers.choose    fc f77 f90
+compilers.setup     require_fortran

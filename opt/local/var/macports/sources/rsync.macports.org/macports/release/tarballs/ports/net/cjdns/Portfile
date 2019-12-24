@@ -1,0 +1,34 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+github.setup        cjdelisle cjdns 20.3 cjdns-v
+categories          net
+platforms           darwin
+maintainers         {l2dy @l2dy} openmaintainer
+license             GPL-3
+
+description         Cjdns implements an encrypted IPv6 network.
+
+long_description    Cjdns implements an encrypted IPv6 network using public-key \
+                    cryptography for address allocation and a distributed hash table \
+                    for routing. This provides near-zero-configuration networking, and \
+                    prevents many of the security and scalability issues that plague existing networks.
+
+checksums           rmd160  aa279913f20f16d1eb54c21bc9a8348260764980 \
+                    sha256  a208c458f7a5bb96fd036f46a917b968adfbe1c3c565d5246bb7744ed3b1221c \
+                    size    4110909
+
+depends_build       bin:node:nodejs8
+
+use_configure       no
+
+build.cmd           "./do"
+build.target
+build.env-append    CC=${configure.cc}
+
+destroot {
+        xinstall -m 755 -d ${destroot}${prefix}/bin
+        xinstall -m 755 -s ${worksrcpath}/cjdroute ${destroot}${prefix}/bin
+}

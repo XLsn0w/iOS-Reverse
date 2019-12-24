@@ -1,0 +1,61 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem      1.0
+
+name            xorg-xcb-proto
+version         1.13
+revision        2
+categories      x11 devel
+license         X11
+maintainers     {jeremyhu @jeremyhu} openmaintainer
+description     X.org xcb-proto
+homepage        http://xcb.freedesktop.org
+platforms       darwin macosx
+supported_archs noarch
+long_description XML-XCB protocol descriptions
+master_sites     ${homepage}/dist/
+
+distname        xcb-proto-${version}
+
+checksums       rmd160  d085d1be1844009f08442113a83b7fdffeae8325 \
+                sha256  7b98721e669be80284e9bbfeab02d2d0d54cd11172b72271e47a2fe875e2bde1 \
+                size    151981
+
+use_bzip2       yes
+
+use_autoreconf  yes
+
+depends_run     port:libxml2
+
+# Using depends_build instead of depends_lib for pythonXY even if there is a Python module xcbgen
+# as the xcbgen module is only used to build X bindings like libxcb or xpp [1]. It's intended for
+# neither applications nor end users. In other words, xcbgen is not needed to run applications
+# using XCB.
+#
+# [1] https://github.com/polybar/xpp
+
+variant python35 conflicts python36 python37 description {Use python 3.5} {
+    depends_build-append    port:python35
+    configure.python        ${prefix}/bin/python3.5
+    license_noconflict      python35
+}
+
+variant python36 conflicts python35 python37 description {Use python 3.6} {
+    depends_build-append    port:python36
+    configure.python        ${prefix}/bin/python3.6
+    license_noconflict      python36
+}
+
+variant python37 conflicts python35 python36 description {Use python 3.7} {
+    depends_build-append    port:python37
+    configure.python        ${prefix}/bin/python3.7
+    license_noconflict      python37
+}
+
+if {![variant_isset python35] && ![variant_isset python36]} {
+    default_variants +python37
+}
+
+livecheck.type  regex
+livecheck.url   ${master_sites}?C=M&O=D
+livecheck.regex xcb-proto-(\\d+(?:\\.\\d+)*)

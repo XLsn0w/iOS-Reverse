@@ -1,0 +1,52 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+github.setup        rrthomas recode 3.7.6 v
+revision            0
+checksums           rmd160  f5e475da14cd2a49f61e6e5b17ad4479c78b8c99 \
+                    sha256  46c5828ac6f5fb759ecf98b16a674188d901b84675b0dbbc0afc03c542d3a954 \
+                    size    2210564
+
+categories          textproc
+platforms           darwin
+license             GPL-3+
+maintainers         {ryandesign @ryandesign} openmaintainer
+
+description         charset conversion program
+
+long_description    This recode program has the purpose of converting files \
+                    between various character sets and usages. When exact \
+                    transliterations are not possible, as it is often the \
+                    case, the program may get rid of the offending characters \
+                    or fall back on approximations.
+
+github.tarball_from releases
+
+depends_test        port:py27-cython
+
+depends_lib         port:gettext \
+                    port:libiconv
+
+if {[string match *gcc* ${configure.compiler}]} {
+    patchfiles-append \
+                    pragma.patch
+}
+
+post-destroot {
+    delete ${destroot}${prefix}/lib/charset.alias
+    delete ${destroot}${prefix}/share/info/dir
+
+    set docdir ${prefix}/share/doc/${subport}
+    xinstall -d ${destroot}${docdir}
+    xinstall -m 0644 -W ${worksrcpath} AUTHORS COPYING COPYING-LIB ChangeLog \
+        NEWS README THANKS TODO ${destroot}${docdir}
+}
+
+test.run            yes
+test.target         check
+test.env            CC=${configure.cc} \
+                    DYLD_LIBRARY_PATH=${worksrcpath}/src/.libs \
+                    PATH=${frameworks_dir}/Python.framework/Versions/2.7/bin:$env(PATH)
+test.args           PYTHON=${prefix}/bin/python2.7

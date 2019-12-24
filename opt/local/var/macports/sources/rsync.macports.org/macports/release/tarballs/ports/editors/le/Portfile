@@ -1,0 +1,35 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+
+name                    le
+version                 1.16.5
+categories              editors
+platforms               darwin
+maintainers             nomaintainer
+homepage                http://freecode.com/projects/leeditor
+license                 GPL-3
+
+description             Terminal based text editor
+
+long_description        LE has many block operations with stream and rectangular blocks, \
+                        can edit both unix and dos style files (LF/CRLF), is binary clean, \
+                        has hex mode, can edit text with multi-byte character encoding, \
+                        has full undo/redo, can edit files and mmap-able devices in mmap \
+                        shared mode (only replace), has tunable syntax highlighting, tunable \
+                        color scheme (can use default colors), tunable key map. It is slightly \
+                        similar to Norton Editor, but has more features.
+
+master_sites            http://lav.yar.ru/download/le/ \
+                        http://lav.yar.ru/download/le/old/
+use_xz                  yes
+
+checksums               rmd160  7a4360b0154a8d5b2d8b9f336f4d629e4c5a0fa8 \
+                        sha256  258d586f83e8abd55144dc3f09d9ddaf6ef55e8a90543fdb0932fb77d089dd78
+
+depends_lib             port:ncurses
+
+patchfiles              configure.patch
+post-patch {
+    reinplace "s|__PREFIX__|${prefix}|" ${worksrcpath}/configure
+}

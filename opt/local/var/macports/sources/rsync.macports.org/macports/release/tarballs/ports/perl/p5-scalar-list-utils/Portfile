@@ -1,0 +1,19 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Scalar-List-Utils 1.53
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         Perl subroutines that would be nice to have in the perl core
+long_description    ${description}
+
+homepage            https://metacpan.org/release/${perl5.module}
+
+checksums           rmd160  947608bdd201c27584fb694d907ff4370eb1382f \
+                    sha256  bd4086b066fb3b18a0be2e7d9bc100a99aa0f233ad659492340415c7b2bdae99 \
+                    size    97329
+
+platforms           darwin

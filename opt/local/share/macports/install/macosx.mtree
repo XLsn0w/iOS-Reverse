@@ -1,0 +1,17 @@
+# MacPorts filesystem hierarchy, for internal use only. Changes to this file will not stick across installations.
+#
+
+/set type=dir uname=root gname=wheel mode=0755
+.
+    usr
+    ..
+..
+/set type=dir uname=root gname=admin mode=0755
+.
+    Applications
+    ..
+    Developer
+    ..
+    Library
+    ..
+..

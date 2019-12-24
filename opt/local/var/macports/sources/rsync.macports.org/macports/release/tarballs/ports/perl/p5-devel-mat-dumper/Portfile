@@ -1,0 +1,21 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Devel-MAT-Dumper 0.41
+license             {Artistic-1 GPL}
+maintainers         {devans @dbevans} openmaintainer
+description         Devel::MAT::Dumper - write a heap dump file for later analysis
+long_description    ${description}
+
+platforms           darwin
+
+checksums           rmd160  2bbaf020d1730f6e2bd5ab139b10a60ae5b2476d \
+                    sha256  b60736ccbe5d9b0d0536aac0e74ce4c8a76bd07dfbdedb283bacdfd704044add \
+                    size    30642
+
+if {${perl5.major} != ""} {
+    perl5.use_module_build
+}

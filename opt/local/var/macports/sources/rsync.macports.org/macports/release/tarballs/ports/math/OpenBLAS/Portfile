@@ -1,0 +1,299 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           muniversal 1.0
+PortGroup           compilers 1.0
+PortGroup           xcodeversion 1.0
+PortGroup           compiler_blacklist_versions 1.0
+
+name                OpenBLAS
+categories          math science
+license             BSD
+maintainers         {nicos @NicosPavlov} {michaelld @michaelld} openmaintainer
+description         OpenBLAS is an optimized BLAS library based on GotoBLAS2
+long_description    ${description}
+platforms           darwin
+
+# block compilers that do not support thread-local storage. it would
+# be better to use the cxx11 1.1 PG, but it conflicts with the
+# compilers 1.0 PG & so just block compilers instead.
+compiler.blacklist-append cc {*gcc-3*} {*gcc-4.[0-7]} {clang < 800.0.38}
+platform darwin i386 {
+    compiler.blacklist-append {macports-clang-[3-4].*}
+    compiler.fallback-append macports-clang-5.0 macports-clang-6.0 macports-clang-7.0
+}
+
+#Define target based on version of OS
+#OS 10.5 supports down to Intel Core Solo (Intel) or PowerPC G4
+if {${os.major} == 9} { 
+    if {${os.arch} eq "i386" || [variant_isset universal]} {
+        set blas_arch "YONAH"
+    } else {
+        set blas_arch "PPCG4"
+    }
+}
+#OS 10.6 supports down to Intel Core Solo architecture
+if {${os.major} == 10} { 
+    set blas_arch "YONAH"
+} 
+#OS 10.7-10.11 supports down to iMac 7,1, with Intel Core 2 Duo architecture
+#OS 10.12-13 supports down to iMac 10,1, with Intel Core 2 Duo architecture
+if {${os.major} >= 11 && ${os.major} <= 17} { 
+    set blas_arch "CORE2"
+}
+#OS 10.14 supports down to Mac Pro 5,1 that has Nehalem architecture
+if {${os.major} >= 18} { 
+    set blas_arch "NEHALEM"
+} 
+if {![info exists blas_arch]} {
+    #For older versions, we force native variant as there is no PPCG3 target in OpenBLAS
+    default_variants-append +native
+}
+
+subport OpenBLAS-devel {}
+if {[string first "-devel" $subport] > 0} {
+
+    github.setup    xianyi OpenBLAS 7dc8a76f60180f944a25352883f9799e2c434033
+    version         20191025-[string range ${github.version} 0 7]
+    checksums       rmd160 c785606ffdf6ceaf321f2efc66b95b2a3e727cfe \
+                    sha256 8895332418346230208c8584fcc7f42b1d4dc20c5bd3f3f7ac7fe1fc5c2f97a5 \
+                    size   12028603
+    revision        0
+
+    name            ${github.project}-devel
+    conflicts       OpenBLAS
+
+    patchfiles      patch-libnoarch.devel.diff \
+                    patch-OpenBLAS-i386-Apple.diff \
+                    patch-revert-5f6206fa-c_check-only.diff
+
+    github.livecheck.branch develop
+
+    #Not using precompiled binaries in -devel support
+    default_variants-append +native
+
+} else {
+
+    github.setup    xianyi OpenBLAS 0.3.7 v
+    checksums       rmd160 1e3698279f8d3084bfe9b34f22b33bfa56d8dbbf \
+                    sha256 c8943b3ce749c3f5c1eb5a72982178f5f6e383b54f09525983aa6b0ca2966d49 \
+                    size   11991860
+    revision        0
+
+    conflicts       OpenBLAS-devel
+
+    patchfiles      patch-libnoarch.release.diff \
+                    patch-OpenBLAS-i386-Apple.diff
+
+    if {![variant_isset native]} {
+        notes "
+        This version is built based on a base architecture for convenience, 
+        which may not be optimized for your system. To build a version 
+        customized for your machine, use the +native variant"
+    }
+}
+
+compilers.choose    fc
+compilers.setup     default_fortran
+
+variant lapack description "Add Lapack/CLapack support to the library" { }
+default_variants-append +lapack
+
+variant native description "Force compilation on machine to get fully optimized library" {
+    # Prevent precompiled binaries to let compilation optimise the library for the user processor
+    archive_sites
+}
+
+use_configure       no
+
+# Workaround for test failure :-
+# > ./sblat2 < ./sblat2.dat
+# Program received signal SIGSEGV: Segmentation fault - invalid memory reference.
+# Current information is that this should be fixed in Xcode 11.2
+if { ([vercmp ${os.major} 19] >= 0) && ([vercmp $xcodeversion 11.2] < 0) } {
+    if {[string match clang ${configure.compiler}]} {
+        configure.cc-append -fno-stack-check
+    }
+}
+
+pre-build {
+    if {[variant_isset universal]} {
+        foreach arch ${universal_archs_to_use} {
+            set makeINC [open ${worksrcpath}-${arch}/Makefile.rule "w"]
+            puts $makeINC "VERSION = 1"
+            puts $makeINC "LIBNAMESUFFIX = "
+
+            puts $makeINC "CC = ${configure.cc}"
+            puts $makeINC "FC = ${configure.fc}"
+
+            if {${arch} eq "x86_64" || ${arch} eq "ppc64"} {
+                puts $makeINC "BINARY = 64"
+            } else {
+                puts $makeINC "BINARY = 32"
+            }
+
+            puts $makeINC "COMMON_OPT = -O3"
+            puts $makeINC "COMMON_PROF = -pg"
+
+            if {![variant_isset lapack]} {
+                puts $makeINC "NO_LAPACK = 1"
+            }
+
+            if {![variant_isset native]} { 
+                #We set a minimal target in case native variant is not set
+                if {${build_arch} eq "ppc" || ${build_arch} eq "ppc64"} {
+                    puts $makeINC "TARGET = PPCG4"
+                } else {
+                    puts $makeINC "TARGET = ${blas_arch}"
+                }
+            }
+
+            if {${build_arch} eq "ppc" || ${build_arch} eq "ppc64"} {
+                # on a PPC of some sort; just disable AVX
+                puts $makeINC "NO_AVX = 1"
+                puts $makeINC "NO_AVX2 = 1"
+                puts $makeINC "NO_AVX512 = 1"
+            } else {
+                if {![avx_compiler_isset]} {
+                    puts $makeINC "NO_AVX = 1"
+                }
+                # Disable AVX2 on OSX10.6 and older only.
+                # On newer platforms AVX2 is now supported via
+                # https://github.com/macports/macports-ports/pull/3486
+                if { ${os.major} <= 10 } {
+                    puts $makeINC "NO_AVX2 = 1"
+                }
+                # Deactivating AVX512 instructions which do not build
+                # at this point. Keeping them in -devel subport. See
+                # https://trac.macports.org/ticket/57912
+                if {[string first "-devel" $subport] < 1} {
+                    puts $makeINC "NO_AVX512 = 1"
+                }
+            }
+            close $makeINC
+        }
+    } else {
+        set makeINC [open ${worksrcpath}/Makefile.rule "w"]
+        puts $makeINC "VERSION = 1"
+        puts $makeINC "LIBNAMESUFFIX = "
+
+        puts $makeINC "CC = ${configure.cc}"
+        puts $makeINC "FC = ${configure.fc}"
+
+        if {${build_arch} eq "x86_64" || ${build_arch} eq "ppc64"} {
+            puts $makeINC "BINARY = 64"
+        } else {
+            puts $makeINC "BINARY = 32"
+        }
+
+        puts $makeINC "COMMON_OPT = -O3"
+        puts $makeINC "COMMON_PROF = -pg"
+
+        if {![variant_isset lapack]} {
+            puts $makeINC "NO_LAPACK = 1"
+        }
+
+        if {![variant_isset native]} { 
+            #We set a minimal target in case native variant is not set
+            puts $makeINC "TARGET = ${blas_arch}"
+        }
+
+        #Setting up build flags
+        if {${build_arch} eq "ppc" || ${build_arch} eq "ppc64"} {
+            # on a PPC of some sort; just disable AVX
+            puts $makeINC "NO_AVX = 1"
+            puts $makeINC "NO_AVX2 = 1"
+            puts $makeINC "NO_AVX512 = 1"
+        } else {
+            if {![avx_compiler_isset]} {
+                ui_msg "Warning: the chosen compiler cannot handle advanced optimisation instructions."
+                ui_msg "         AVX instructions are disabled."
+                puts $makeINC "NO_AVX = 1"
+            }
+            # Disable AVX2 on OSX10.6 (Darwin10) and older only.
+            # On newer platforms AVX2 is now supported via
+            # https://github.com/macports/macports-ports/pull/3486
+            if { ${os.major} <= 10 } {
+                puts $makeINC "NO_AVX2 = 1"
+            }
+            # Deactivating AVX512 instructions which do not build at
+            # this point. Keeping them in -devel subport. See
+            # https://trac.macports.org/ticket/57912
+            if {[string first "-devel" $subport] < 1} {
+                puts $makeINC "NO_AVX512 = 1"
+            }
+        }
+        close $makeINC
+    }
+}
+
+depends_build-append port:cctools
+build.args          "AR=${prefix}/bin/ar RANLIB=${prefix}/bin/ranlib"
+
+platform darwin 8 {
+    depends_build-append    port:gmake
+    build.cmd               ${prefix}/bin/gmake
+
+    depends_test-append     port:gmake
+    test.cmd                build.cmd
+}
+
+
+destroot.args       "PREFIX=${prefix}"
+
+if {[variant_isset universal]} {
+    merger-post-destroot {
+        foreach arch ${universal_archs_to_use} {
+            if {${arch} ne ${build_arch}} {
+                # openblas.pc records the processor name, which is different for 32-bit and 64-bit architectures
+                # see https://github.com/xianyi/OpenBLAS/commit/eb9b021d3890429a41823dc3d90eb0d11c0a6d6d
+                delete ${destroot}-${arch}${prefix}/lib/pkgconfig/openblas.pc
+            }
+            move ${destroot}-${arch}${prefix}/include/cblas.h \
+                ${destroot}-${arch}${prefix}/include/cblas_openblas.h
+            #Correct library name
+            system "install_name_tool -id \
+                ${prefix}/lib/libopenblas-r1.dylib \
+                ${destroot}-${arch}${prefix}/lib/libopenblas-r1.dylib"
+            delete file ${destroot}-${arch}${prefix}/lib/cmake
+            if {[variant_isset lapack]} {
+                #Install lapacke headers too
+                set LAPACKE_DIR [exec /bin/ls ${worksrcpath}/lapack-netlib | \
+                                     grep -i lapacke]
+                xinstall -m 755 ${worksrcpath}-${arch}/lapack-netlib/${LAPACKE_DIR}/include/lapacke_config.h \
+                    ${destroot}-${arch}${prefix}/include/lapacke_config.h
+                xinstall -m 755 ${worksrcpath}-${arch}/lapack-netlib/${LAPACKE_DIR}/include/lapacke_mangling.h \
+                    ${destroot}-${arch}${prefix}/include/lapacke_mangling.h
+                xinstall -m 755 ${worksrcpath}-${arch}/lapack-netlib/${LAPACKE_DIR}/include/lapacke_utils.h \
+                    ${destroot}-${arch}${prefix}/include/lapacke_utils.h
+                xinstall -m 755 ${worksrcpath}-${arch}/lapack-netlib/${LAPACKE_DIR}/include/lapacke.h \
+                    ${destroot}-${arch}${prefix}/include/lapacke.h
+            }
+        }
+    }
+} else {
+    post-destroot {
+        #Avoid conflict with Atlas
+        move ${destroot}${prefix}/include/cblas.h \
+            ${destroot}${prefix}/include/cblas_openblas.h
+        #Correct library name
+        system "install_name_tool -id \
+            ${prefix}/lib/libopenblas-r1.dylib \
+            ${destroot}${prefix}/lib/libopenblas-r1.dylib"
+        delete file ${destroot}${prefix}/lib/cmake
+        if {[variant_isset lapack]} {
+            #Install lapacke headers too
+            set LAPACKE_DIR [exec /bin/ls ${worksrcpath}/lapack-netlib | \
+                                 grep -i lapacke]
+            xinstall -m 755 ${worksrcpath}/lapack-netlib/${LAPACKE_DIR}/include/lapacke_config.h \
+                ${destroot}${prefix}/include/lapacke_config.h
+            xinstall -m 755 ${worksrcpath}/lapack-netlib/${LAPACKE_DIR}/include/lapacke_mangling.h \
+                ${destroot}${prefix}/include/lapacke_mangling.h
+            xinstall -m 755 ${worksrcpath}/lapack-netlib/${LAPACKE_DIR}/include/lapacke_utils.h \
+                ${destroot}${prefix}/include/lapacke_utils.h
+            xinstall -m 755 ${worksrcpath}/lapack-netlib/${LAPACKE_DIR}/include/lapacke.h \
+                ${destroot}${prefix}/include/lapacke.h
+        }
+    }
+}

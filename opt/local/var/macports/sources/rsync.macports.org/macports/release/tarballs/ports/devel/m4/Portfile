@@ -1,0 +1,55 @@
+PortSystem		1.0
+
+name            m4
+version         1.4.18
+revision        2
+categories      devel
+license         GPL-3+
+installs_libs   no
+maintainers     nomaintainer
+platforms       darwin
+description     GNU macro processor
+
+long_description \
+    GNU `m4' is an implementation of the traditional Unix macro         \
+    processor.  It is mostly SVR4 compatible, although it has some      \
+    extensions (for example, handling more than 9 positional parameters \
+    to macros). `m4' also has built-in functions for including files,   \
+    running shell commands, doing arithmetic, etc. Autoconf needs GNU   \
+    `m4' for generating `configure' scripts, but not for running them.
+
+homepage        https://www.gnu.org/software/m4/
+master_sites    gnu
+use_bzip2       yes
+
+checksums       rmd160  a1675a77cfcb4210d02b3ef0e10df322635a254c \
+                sha256  6640d76b043bc658139c8903e293d5978309bf0f408107146505eca701e67cf6
+
+patchfiles      secure_snprintf.patch
+
+configure.args  --program-prefix=g \
+                ac_cv_libsigsegv=no
+
+use_parallel_build  yes
+
+post-destroot {
+    move ${destroot}${prefix}/share/info/m4.info ${destroot}${prefix}/share/info/gm4.info
+
+	set docdir ${prefix}/share/doc/${name}-${version}
+	xinstall -d ${destroot}${docdir}
+	xinstall -m 0644 -W ${worksrcpath} AUTHORS COPYING ChangeLog NEWS README THANKS \
+		TODO ${destroot}${docdir}
+
+    xinstall -m 755 -d ${destroot}${prefix}/libexec/gnubin
+    foreach binary [glob -tails -directory ${destroot}${prefix}/bin g*] {
+        ln -s ${prefix}/bin/${binary} ${destroot}${prefix}/libexec/gnubin/[string range $binary 1 end]
+    }
+    xinstall -m 755 -d ${destroot}${prefix}/libexec/gnubin/man/man1
+    foreach manpage [glob -tails -directory ${destroot}${prefix}/share/man/man1 g*] {
+        ln -s ${prefix}/share/man/man1/${manpage}.gz ${destroot}${prefix}/libexec/gnubin/man/man1/[string range $manpage 1 end].gz
+    }
+}
+
+test.run        yes
+test.target     check
+test.env        TMPDIR=/tmp

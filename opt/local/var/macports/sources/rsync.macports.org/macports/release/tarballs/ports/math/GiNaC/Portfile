@@ -1,0 +1,41 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem      1.0
+PortGroup       cxx11 1.1
+
+name            GiNaC
+version         1.7.8
+revision        0
+categories      math
+platforms       darwin
+license         GPL-2
+maintainers     {mps @Schamschula} openmaintainer
+description     GiNaC is C++ library that provides a set of algebraic capabilities.
+long_description \
+                GiNaC is an iterated and recursive acronym for GiNaC is Not a CAS, where \
+                CAS stands for Computer Algebra System. Its design is revolutionary in a \
+                sense that contrary to other CAS it does not try to provide extensive \
+                algebraic capabilities and a simple programming language but instead \
+                accepts a given language (C++) and extends it by a set of algebraic \
+                capabilities. 
+
+use_bzip2       yes
+distname        ginac-${version}
+
+homepage        http://www.ginac.de/
+master_sites    ${homepage}
+
+checksums       rmd160  468e2f922e9371f236c746a056a5fb8c3520c695 \
+                sha256  0c86501aa6c72efd5937fce42c5e983fc9f05dadb65b4ebdb51ee95c9f6a7067 \
+                size    1075317
+
+depends_build   port:pkgconfig
+depends_lib     port:readline \
+                port:cln
+
+test.run        yes
+test.target     check
+
+livecheck.type      regex
+livecheck.url       ${homepage}News.html
+livecheck.regex     "Version (\[0-9.\]+) released"

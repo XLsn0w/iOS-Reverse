@@ -1,0 +1,74 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+PortSystem      1.0
+PortGroup       muniversal 1.0
+PortGroup       clang_dependency 1.0
+
+name            readline
+set milestone   8.0
+set patchlevel  000
+version         ${milestone}.${patchlevel}
+distname        ${name}-${milestone}
+categories      devel
+platforms       darwin freebsd
+maintainers     {mcalhoun @MarcusCalhoun-Lopez} openmaintainer
+license         GPL-3+
+
+description     Library that provides command line editing
+
+long_description \
+    The GNU Readline library provides a set of functions for use by         \
+    applications that allow users to edit command lines as they are typed   \
+    in. Both Emacs and vi editing modes are available. The Readline library \
+    includes additional functions to maintain a list of previously-entered  \
+    command lines, to recall and perhaps reedit those lines, and perform    \
+    csh-like history expansion on previous commands.
+
+homepage        https://tiswww.case.edu/php/chet/readline/rltop.html
+master_sites    gnu
+
+patch_sites     gnu:${name}/${distname}-patches/
+
+set i 1
+set patchname ${name}[join [split $milestone .] ""]
+if {![regexp {0*([1-9]+)} $patchlevel -> lastpatch]} {
+    set lastpatch 0
+}
+
+# remove "-arch_only `/usr/bin/arch`"
+patchfiles-append  patch-shobj-conf.diff
+while {$i <= $lastpatch} {
+    patchfiles-append ${patchname}-[format "%03d" $i]
+    incr i
+}
+
+checksums           rmd160  25b23261140f5a37225470faecf22663f070cde4 \
+                    sha256  e339f51971478d369f8a053a330a190781acb9864cf4c541060f12078948e461 \
+                    size    2975937
+
+if {${os.platform} eq "darwin" && ${os.major} < 11 && ${cxx_stdlib} eq "libc++"} {
+    # This port is in the dependency chain for clang 3.7 and later
+    clang_dependency.extra_versions 3.7
+}
+
+configure.args  --with-curses
+
+configure.universal_args-delete --disable-dependency-tracking
+
+use_parallel_build  yes
+
+# the configure script runs a program
+set merger_must_run_binaries yes
+
+depends_lib     port:ncurses
+
+post-destroot {
+    set docdir ${prefix}/share/doc/${name}
+    xinstall -d ${destroot}${docdir}/html
+    xinstall -m 0644 -W ${worksrcpath} CHANGELOG CHANGES COPYING NEWS README \
+        ${destroot}${docdir}
+    xinstall -m 0644 {*}[glob ${worksrcpath}/doc/*.html] \
+        ${destroot}${docdir}/html
+}
+
+livecheck.regex     ${name}-(\[\\d.\]+)${extract.suffix}
+livecheck.version   ${milestone}

@@ -1,0 +1,24 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Net-OpenSSH 0.78
+license             {Artistic-1 GPL}
+platforms           darwin
+maintainers         nomaintainer
+
+description         Perl SSH client package implemented on top of OpenSSH
+long_description    ${description}
+
+checksums           rmd160  fcfdf1161a69a28e2a68b4ff07db5147705875b3 \
+                    sha256  8f10844542a2824389decdb8edec7561d8199dc5f0250e849a0bb56f7aee880c \
+                    size    75505
+
+if {${perl5.major} != ""} {
+    depends_lib-append \
+                    port:openssh
+
+    supported_archs noarch
+}

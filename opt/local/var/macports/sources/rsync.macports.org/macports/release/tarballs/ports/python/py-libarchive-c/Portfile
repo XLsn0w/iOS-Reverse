@@ -1,0 +1,43 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           python 1.0
+
+github.setup        Changaco python-libarchive-c 2.7
+name                py-libarchive-c
+platforms           darwin
+supported_archs     noarch
+license             public-domain 
+maintainers         {raimue @raimue} \
+                    openmaintainer
+
+description         Python interface to libarchive
+long_description    ${description}
+
+checksums           rmd160  e930c6e24c66417c1cd1948db1a144b861921a0e \
+                    sha256  5260ab17b32baf6660c57d83eaf94099454a848ce59dbb8ce3e9c31e37bfd218
+
+python.versions     27 35 36 37
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                        port:py${python.version}-setuptools
+
+    depends_run-append  port:libarchive
+
+    post-extract {
+        # Fix permissions
+        fs-traverse item ${worksrcpath} {
+            if {[file isdirectory ${item}]} {
+                file attributes ${item} -permissions a+rx
+            } elseif {[file isfile ${item}]} {
+                file attributes ${item} -permissions a+r
+            }
+        }
+    }
+
+    livecheck.type      none
+} else {
+    livecheck.type      pypi
+}

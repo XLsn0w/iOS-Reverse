@@ -1,0 +1,29 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+github.setup        neilbrown wiggle 1.1 v
+revision            0
+checksums           rmd160  933781094e9a3dd7beabb3a1156af689748cd50e \
+                    sha256  e9ddd860e871b83e552a6338146d866226bfeb0fcfdfec22f401f380395e8dd2 \
+                    size    852798
+
+categories          devel
+license             GPL-2+
+platforms           darwin
+supported_archs     noarch
+maintainers         nomaintainer
+
+description         apply rejected patches and perform word-wise diffs
+long_description    ${description}
+
+depends_build       path:libexec/gnubin/install:coreutils
+depends_lib         port:ncurses
+
+use_configure       no
+
+build.env-append    CC=${configure.cc}
+
+destroot.post_args-append  \
+                    PREFIX=${prefix}

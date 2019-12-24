@@ -1,0 +1,29 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem    1.0
+
+name          libframe
+version       8.30
+epoch         1
+categories    science
+platforms     darwin
+maintainers   nomaintainer
+
+description   LIGO/VIRGO Frame Library
+long_description \
+  A Common Data Frame Format for Interferometric Gravitational \
+  Wave Detector has been developed by VIRGO and LIGO. The Frame \
+  Library is a software dedicated to the frame manipulation \
+  including file input/output.
+
+homepage      http://lappweb.in2p3.fr/virgo/FrameL/
+master_sites  http://software.ligo.org/lscsoft/source/
+
+checksums     rmd160 73f98260d4a279985a5b54001f03f1623e54a038 \
+              sha256 374743ccce835427a0900590a515c112661760e12ec596159d3f86073dd099da
+
+use_parallel_build yes
+
+livecheck.type  regex
+livecheck.url   ${master_sites}
+livecheck.regex {libframe-(\d+(?:\.\d+)*(-\d)*).tar.gz}

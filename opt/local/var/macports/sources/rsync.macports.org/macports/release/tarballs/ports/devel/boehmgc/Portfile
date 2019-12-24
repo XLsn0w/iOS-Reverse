@@ -1,0 +1,58 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           muniversal 1.0
+
+github.setup        ivmai bdwgc 8.0.4 v
+revision            1
+checksums           rmd160  d0499384c904d234b8f8d95d0d7c51e5445ff41e \
+                    sha256  cee2ec847416809934ea30eb674134aa4b8afe4213de00ef3ff3f920bbfb3f3a \
+                    size    803379
+
+name                boehmgc
+
+categories          devel
+platforms           darwin
+maintainers         nomaintainer
+license             Permissive
+# boehmgc only uses the MIT and Permissive parts of libatomic_ops, don't
+# conflict on the GPL part
+license_noconflict  libatomic_ops
+
+description         The Boehm-Demers-Weiser conservative C/C++ Garbage Collector
+long_description \
+    The Boehm-Demers-Weiser conservative garbage collector can be used as \
+    a garbage collecting replacement for C malloc or C++ new. It is also used \
+    by a number of programming language implementations that use C as \
+    intermediate code.
+
+# needed since we use the github version; also has the benefit of teaching
+# glibtool about -stdlib=libc++.
+use_autoreconf  yes
+
+# autoreconf needs pkgconfig
+depends_build-append \
+                port:pkgconfig \
+                port:libatomic_ops
+
+configure.args  --enable-cplusplus \
+                --enable-static
+configure.cppflags-append \
+                -D_XOPEN_SOURCE=600 -D_DARWIN_C_SOURCE
+
+variant redirect description {Redirect malloc and friends to GC routines} {
+    configure.args-append  \
+                --enable-redirect-malloc
+}
+
+platform darwin 8 {
+    # Not needed to "force" ucontext.h on Tiger, and it actually forces POSIX
+    # sys/mman.h which breaks the build there because Tiger's sys/mman.h
+    # doesn't recognize _DARWIN_C_SOURCE
+    configure.cppflags-delete \
+                -D_XOPEN_SOURCE=600
+}
+
+test.run        yes
+test.target     check

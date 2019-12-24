@@ -1,0 +1,54 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           meson 1.0
+
+name                frogr
+version             1.5
+license             GPL-3
+set branch          [join [lrange [split ${version} .] 0 1] .]
+description         Flickr Remote Organizer for GNOME.
+long_description    Frogr is a small application for the GNOME desktop that allows users \
+                    to manage their accounts in the Flickr image hosting website. It \
+                    supports all the basic Flickr features, including uploading pictures, \
+                    adding descriptions, setting tags and managing sets and groups pools.
+
+maintainers         {devans @dbevans} openmaintainer
+categories          gnome
+platforms           darwin
+homepage            https://wiki.gnome.org/Apps/Frogr
+master_sites        gnome:sources/${name}/${branch}/
+
+use_xz              yes
+
+checksums           rmd160  51135da662161e457631f5ce5f695ff49fdea093 \
+                    sha256  874fab2cde9c56519c1675af377d5bd95b21fb7db686723b50da47e8f01907b1 \
+                    size    2233600
+
+depends_build-append \
+                    port:pkgconfig \
+                    port:itstool
+
+depends_lib         port:desktop-file-utils \
+                    port:gsettings-desktop-schemas \
+                    path:lib/pkgconfig/glib-2.0.pc:glib2 \
+                    port:gtk3 \
+                    port:libexif \
+                    port:libxml2 \
+                    port:json-glib \
+                    port:libgcrypt \
+                    port:libsoup \
+                    port:gstreamer1
+
+depends_run         port:adwaita-icon-theme \
+                    port:yelp \
+                    port:epiphany
+
+patchfiles          no-werror.patch
+
+post-activate {
+    system "${prefix}/bin/update-desktop-database ${prefix}/share/applications"
+    system "${prefix}/bin/gtk-update-icon-cache-3.0 -f -t ${prefix}/share/icons/hicolor"
+}
+
+livecheck.type      gnome-with-unstable

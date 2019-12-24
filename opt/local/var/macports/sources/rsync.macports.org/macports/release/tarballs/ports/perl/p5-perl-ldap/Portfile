@@ -1,0 +1,36 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         perl-ldap 0.66 ../../authors/id/M/MA/MARSCHAP/
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         A client interface to LDAP servers
+long_description    ${description}
+platforms           darwin
+
+homepage            https://metacpan.org/release/perl-ldap
+
+checksums           rmd160  97208a3278920a2a8ea770e3b8478db191245402 \
+                    sha256  09263ce6166e80c98d689d41d09995b813389fd069b784601f6dc57f8e2b4102 \
+                    size    319210
+
+if {${perl5.major} != ""} {
+    depends_build-append \
+                    port:p${perl5.major}-text-soundex
+                
+    depends_lib-append \
+                    port:p${perl5.major}-convert-asn1 \
+                    port:p${perl5.major}-authen-sasl \
+                    port:p${perl5.major}-uri \
+                    port:p${perl5.major}-digest-md5 \
+                    port:p${perl5.major}-io-socket-inet6 \
+                    port:p${perl5.major}-io-socket-ssl \
+                    port:p${perl5.major}-json \
+                    port:p${perl5.major}-xml-parser \
+                    port:p${perl5.major}-xml-sax-writer
+
+    supported_archs noarch
+}

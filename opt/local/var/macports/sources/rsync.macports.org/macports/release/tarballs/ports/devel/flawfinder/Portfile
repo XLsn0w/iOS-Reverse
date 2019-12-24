@@ -1,0 +1,52 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                flawfinder
+version             2.0.10
+revision            0
+categories          devel
+license             GPL-2+
+maintainers         {khindenburg @kurthindenburg} openmaintainer
+
+description         Examines C/C++ source code for security flaw
+long_description \
+    Program that examines source code and reports possible  \
+    security weaknesses (``flaws'') sorted by risk level.   \
+    It's very useful for quickly finding and removing at    \
+    least some potential security problems before a program \
+    is widely released to the public.
+
+homepage            https://www.dwheeler.com/flawfinder/
+platforms           darwin
+supported_archs     noarch
+master_sites        ${homepage}
+
+checksums           rmd160  fd769b9ddab8bca9202cdb7095264beca8f253a3 \
+                    sha256  f1dcb1ec3e35685e46a8512137b8062daa1d0327900177998a405feab608adeb \
+                    size    252772
+
+patchfiles          patch-remove_python2.diff
+
+set python_branch   3.7
+set python_version  [string map {. ""} ${python_branch}]
+
+depends_lib         port:python${python_version}
+
+post-patch {
+    reinplace "s|/usr/bin/env python|${prefix}/bin/python${python_branch}|" ${worksrcpath}/flawfinder
+}
+
+use_configure       no
+build.target
+
+destroot {
+    xinstall -m 755 ${worksrcpath}/${name} ${destroot}${prefix}/bin
+        xinstall -m 644 ${worksrcpath}/${name}.1 \
+        ${destroot}${prefix}/share/man/man1
+}
+
+depends_test-append port:py${python_version}-setuptools
+test.run            yes
+test.target         check
+test.env-append     PYTHON3=${prefix}/bin/python${python_branch}

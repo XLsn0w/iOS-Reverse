@@ -1,0 +1,36 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Bio-Phylo v2.0.1
+license             {Artistic-1 GPL}
+categories-append   science
+maintainers         nomaintainer
+description         Bio::Phylo - Phylogenetic analysis using perl
+long_description    ${description}
+
+platforms           darwin
+
+checksums           rmd160  68434a89a17583e931afb906d1fbbe1a302c3e70 \
+                    sha256  30bf253800a12ac501222ea42d17612f0557af6329daf05465b538569a894f4d
+
+if {${perl5.major} != ""} {
+    depends_lib-append \
+                    port:p${perl5.major}-archive-zip \
+                    port:p${perl5.major}-gd \
+                    port:p${perl5.major}-json \
+                    port:p${perl5.major}-math-cdf \
+                    port:p${perl5.major}-math-random \
+                    port:p${perl5.major}-pdf-api2 \
+                    port:p${perl5.major}-rdf-query \
+                    port:p${perl5.major}-rdf-trine \
+                    port:p${perl5.major}-svg \
+                    port:p${perl5.major}-swf-builder \
+                    port:p${perl5.major}-xml-libxml \
+                    port:p${perl5.major}-xml-xml2json \
+                    port:p${perl5.major}-xml-twig
+
+    supported_archs noarch
+}

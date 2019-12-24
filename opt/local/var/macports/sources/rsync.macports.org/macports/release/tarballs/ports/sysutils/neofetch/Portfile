@@ -1,0 +1,24 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+github.setup        dylanaraps neofetch 6.1.0
+platforms           darwin
+supported_archs     noarch
+license             MIT
+maintainers         {@rangeles gmail.com:ronangeles} openmaintainer
+categories          sysutils
+
+description         A CLI system information tool
+long_description    Neofetch is a CLI system information tool written in \
+                    BASH. Neofetch displays information about your system \
+                    next to an image, your OS logo, or any ASCII file of \
+                    your choice.
+
+checksums           rmd160  691849f3d4466b2be1bdbfb64b684fa87dfedf61 \
+                    sha256  be871ba836ec87113c92b532c53165c3b4786ec7847acc84610f1bff928ab0da \
+                    size    118366
+
+use_configure       no
+destroot.post_args  ${destroot.destdir} PREFIX=${prefix}

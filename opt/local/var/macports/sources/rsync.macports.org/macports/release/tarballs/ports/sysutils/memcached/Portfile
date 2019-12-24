@@ -1,0 +1,57 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+PortGroup               muniversal 1.0
+
+name                    memcached
+version                 1.5.10
+revision                1
+description             A high performance, distributed memory object caching system.
+long_description        Memcached is a high-performance, distributed memory object \
+                        caching system, generic in nature, but intended for use in \
+                        speeding up dynamic web applications by alleviating database load.
+maintainers             nomaintainer
+license                 BSD
+categories              sysutils
+platforms               darwin
+installs_libs           no
+
+homepage                https://memcached.org/
+master_sites            ${homepage}files/
+
+checksums               rmd160  4e08d75aa285daa57d5999a2624785c4734599b0 \
+                        sha256  494c060dbd96d546c74ab85a3cc3984d009b4423767ac33e05dd2340c01f1c4b \
+                        size    465169
+
+configure.args          --with-libevent=${prefix} \
+                        ac_cv_search_umem_cache_create=no \
+                        ac_cv_header_umem_h=no
+
+depends_lib             port:libevent
+
+patchfiles-append       patch-configure.diff
+
+startupitem.create      yes
+startupitem.executable  ${prefix}/bin/memcached -u nobody -m 64 -c 10240 -p 11211
+
+if {[variant_isset universal]} {
+    set merger_configure_args(x86_64) --enable-64bit
+    set merger_configure_args(ppc64)  --enable-64bit
+} else {
+    if {[info exists build_arch] && (${build_arch} eq "x86_64" || ${build_arch} eq "ppc64")} {
+        configure.args-append --enable-64bit
+    }
+}
+
+variant sasl description {enable SASL authentication} {
+    configure.args-append   --enable-sasl
+}
+
+variant umem description {enable libumem support} {
+    depends_lib-append      port:umem
+    configure.args-delete   ac_cv_search_umem_cache_create=no
+    configure.args-delete   ac_cv_header_umem_h=no
+}
+
+livecheck.type  regex
+livecheck.regex ${name}-(\\d+(?:\\.\\d+){2,})\\.

@@ -1,0 +1,18 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Regexp-Parser 0.22
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         base class for parsing regexes
+long_description    ${description}
+
+platforms           darwin
+
+checksums           rmd160  452b25e09e67ed6b881222210750400f85415fca \
+                    sha256  d6d3c711657a380f1cb24d8b54a1cd20f725f7f54665189e9e67bb0b877109a3
+
+supported_archs     noarch

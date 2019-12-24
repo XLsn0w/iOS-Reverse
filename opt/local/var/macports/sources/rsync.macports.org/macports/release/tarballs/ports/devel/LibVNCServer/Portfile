@@ -1,0 +1,64 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem                  1.0
+PortGroup                   cmake 1.1
+PortGroup                   github 1.0
+
+github.setup                LibVNC libvncserver 0.9.12 LibVNCServer-
+revision                    0
+checksums                   rmd160  e428d9e554917ac846e598df5d96fa73a738b618 \
+                            sha256  0eb07902da310532fa0177885dc803408728b998f015503c84618a3c2c7f1784 \
+                            size    2237419
+
+name                        LibVNCServer
+categories                  devel
+platforms                   darwin
+maintainers                 {ryandesign @ryandesign} openmaintainer
+license                     GPL-2+
+
+description                 library for writing VNC servers and clients
+
+long_description            ${name} is a library to make it easier to write \
+                            programs that use the RFB (Remote Frame Buffer) \
+                            protocol to implement a VNC server or client.
+
+homepage                    https://libvnc.github.io
+
+depends_build-append        port:pkgconfig
+
+depends_lib-append          port:cyrus-sasl2 \
+                            port:gnutls \
+                            port:jpeg \
+                            port:libgcrypt \
+                            port:libpng \
+                            port:zlib
+
+patchfiles                  no-examples.patch
+
+configure.args              -DWITH_FFMPEG=OFF \
+                            -DWITH_GCRYPT=ON \
+                            -DWITH_GNUTLS=ON \
+                            -DWITH_JPEG=ON \
+                            -DWITH_LZO=ON \
+                            -DWITH_OPENSSL=OFF \
+                            -DWITH_PNG=ON \
+                            -DWITH_SASL=ON \
+                            -DWITH_SDL=OFF \
+                            -DWITH_SYSTEMD=OFF \
+                            -DWITH_ZLIB=ON
+
+# for debugging in trace mode
+configure.args-append -DCMAKE_MAKE_PROGRAM=/usr/bin/make
+
+post-destroot {
+    set docdir ${prefix}/share/doc/${subport}
+    xinstall -d ${destroot}${docdir}
+    xinstall -m 0644 -W ${worksrcpath} \
+        AUTHORS \
+        COPYING \
+        ChangeLog \
+        NEWS \
+        README.md \
+        TODO \
+        ${destroot}${docdir}
+}

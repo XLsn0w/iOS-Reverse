@@ -1,0 +1,157 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+PortGroup           active_variants 1.1
+PortGroup           compiler_blacklist_versions 1.0
+PortGroup           cmake 1.1
+PortGroup           github 1.0
+PortGroup           cxx11 1.1
+
+github.setup        ukoethe vigra 1-11-1 Version-
+version             [strsed ${github.version} {g/-/./}]
+revision            8
+categories          graphics
+platforms           darwin
+license             MIT
+maintainers         {gmail.com:benjamin.seppke @BSeppke}
+description         Generic Image Processing Library for C++
+long_description    VIGRA stands for \"Vision with Generic Algorithms\". \
+                    It's a novel computer vision library that puts its \
+                    main emphasis on customizable algorithms and data \
+                    structures. By using template techniques similar to \
+                    those in the C++ Standard Template Library, you can \
+                    easily adapt any VIGRA component to the needs of your \
+                    application, without thereby giving up execution speed.
+homepage            https://ukoethe.github.io/vigra/
+
+checksums           rmd160  21378c72a0702cbdd4de4d79c59f0587f6bcde8d \
+                    sha256  b0cdf67e283d2b52e35a45cdcff44453b5b73a9b7d7a1ca84d6508107e49832f
+
+depends_lib         port:jpeg \
+                    port:tiff \
+                    port:libpng \
+                    port:zlib \
+                    port:openexr \
+                    port:fftw-3-single \
+                    port:hdf5
+
+# modify tests for existence of c++11 std::unique_ptr
+# see https://github.com/ukoethe/vigra/pull/421
+patchfiles-append   patch-uniq_ptr.diff
+
+# see https://trac.macports.org/ticket/54548
+patchfiles-append   patch-template.diff
+
+# see https://github.com/ukoethe/vigra/pull/451/commits/a6fa62663c6a6b752ed0707e95f643e25867a0f9
+patchfiles-append   patch-python.diff
+
+# allow cmake to find MacPorts boost_python library
+patchfiles-append   patch-boost_python.diff
+
+post-patch {
+    reinplace "s|@DOCDIR@|${prefix}/share/doc/${name}|g" ${worksrcpath}/config/vigra-config.in
+}
+
+# Some additional parameters for cmake. All other params have already been set
+# by the cmake PortGroup
+configure.args-append   -DWITH_OPENEXR=ON \
+                        -DBUILD_SHARED_LIBS=ON
+
+# recursive template instantiation exceeded maximum depth of 128
+configure.cxxflags-append -ftemplate-depth-1024
+
+# The -Os setting causes errors w.r.t. libc++ and clang++. Use -O3 instead
+configure.cxxflags-replace -Os -O3
+
+destroot.env-append DESTDIR=${destroot}
+
+post-destroot {
+    if {[variant_isset docs]} {
+        # move documentation to a unversioned directory
+        xinstall -m 755 -d ${destroot}${prefix}/share/doc
+        move ${destroot}${prefix}/doc/${name} \
+             ${destroot}${prefix}/share/doc/${name}
+    }
+    # delete whatever is left in the doc directory
+    delete ${destroot}${prefix}/doc
+}
+
+variant docs description "Build documentation" {}
+if {[variant_isset docs]} {
+    depends_build-append port:doxygen
+    depends_skip_archcheck doxygen
+} else {
+    configure.args-append   -DDOXYGEN_DOT_EXECUTABLE= \
+                            -DDOXYGEN_EXECUTABLE=
+}
+
+variant valgrind description "Include support for VALGRIND" {}
+if {[variant_isset valgrind]} {
+    depends_lib-append port:valgrind
+} else {
+    configure.args-append -DWITH_VALGRIND=NO
+}
+
+variant python27 conflicts python34 python35 python36 python37 description "Also build vigranumpy python27 bindings" {
+    configure.args-append   -DPYTHON_EXECUTABLE=${prefix}/bin/python2.7 \
+                            -DPYTHON_SPHINX=${prefix}/bin/sphinx-build-2.7
+    depends_lib-append  port:boost \
+                        port:python27 \
+                        port:py27-numpy \
+                        port:py27-sphinx
+    require_active_variants boost python27
+}
+
+variant python34 conflicts python27 python35 python36 python37 description "Also build vigranumpy python34 bindings" {
+    configure.args-append   -DPYTHON_EXECUTABLE=${prefix}/bin/python3.4 \
+                            -DPYTHON_SPHINX=${prefix}/bin/sphinx-build-3.4
+    depends_lib-append  port:boost \
+                        port:python34 \
+                        port:py34-numpy \
+                        port:py34-sphinx
+    require_active_variants boost python34
+}
+
+variant python35 conflicts python27 python34 python36 python37 description "Also build vigranumpy python35 bindings" {
+    configure.args-append   -DPYTHON_EXECUTABLE=${prefix}/bin/python3.5 \
+                            -DPYTHON_SPHINX=${prefix}/bin/sphinx-build-3.5
+    depends_lib-append  port:boost \
+                        port:python35 \
+                        port:py35-numpy \
+                        port:py35-sphinx
+    require_active_variants boost python35
+}
+
+variant python36 conflicts python27 python34 python35 python37 description "Also build vigranumpy python36 bindings" {
+    configure.args-append   -DPYTHON_EXECUTABLE=${prefix}/bin/python3.6 \
+                            -DPYTHON_SPHINX=${prefix}/bin/sphinx-build-3.6
+    depends_lib-append  port:boost \
+                        port:python36 \
+                        port:py36-numpy \
+                        port:py36-sphinx
+    require_active_variants boost python36
+}
+
+variant python37 conflicts python27 python34 python35 python36 description "Also build vigranumpy python37 bindings" {
+    configure.args-append   -DPYTHON_EXECUTABLE=${prefix}/bin/python3.7 \
+                            -DPYTHON_SPHINX=${prefix}/bin/sphinx-build-3.7
+    depends_lib-append  port:boost \
+                        port:python37 \
+                        port:py37-numpy \
+                        port:py37-sphinx
+    require_active_variants boost python37
+}
+
+if {![variant_isset python34] && ![variant_isset python35] && ![variant_isset python36] && ![variant_isset python37]} {
+    default_variants +python27
+}
+
+if {![variant_isset python27] && ![variant_isset python34] && ![variant_isset python35] && ![variant_isset python36] && ![variant_isset python37]} {
+    configure.args-append -DWITH_VIGRANUMPY=NO
+}
+
+livecheck.version   ${version}
+livecheck.type      regex
+livecheck.url       ${homepage}
+livecheck.regex     {>version ([0-9.]+)<}

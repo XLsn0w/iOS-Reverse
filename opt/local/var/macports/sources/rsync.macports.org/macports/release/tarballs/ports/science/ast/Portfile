@@ -1,0 +1,36 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; truncate-lines: t; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+PortGroup               compilers 1.0
+PortGroup               github 1.0
+
+github.setup            Starlink ast 8.6.2 v
+revision                1
+github.tarball_from     releases
+platforms               darwin
+maintainers             {aronnax @lpsinger} openmaintainer
+license                 GPL-2+
+description             StarLink Astrometry Library
+long_description \
+    AST provides a comprehensive range of facilities for attaching world \
+    coordinate systems (such as RA/Dec, frequency, etc) to astronomical data, \
+    for retrieving and interpreting that information and for generating \
+    graphical output based on it.
+
+checksums               rmd160  626ab95d2a2d5a3aa7d45836c042b564a9fe18da \
+                        sha256  a2eed1057f40b374bad10ebb1356e281e01febfde9ef9d645df925558f519b81 \
+                        size    24421925
+
+universal_variant       no
+
+compilers.choose        fc f77 f90
+compilers.setup         require_fortran
+
+depends_lib-append      port:erfa
+
+destroot.args-append    stardocsdir=${prefix}/share/docs \
+                        starexamplesdir=${prefix}/share/examples \
+                        starfacsdir=${prefix}/share/help \
+                        starhelpdir=${prefix}/share/help \
+                        starnewsdir=${prefix}/share/news \
+                        STAR_MANIFEST_DIR=${prefix}/share/manifests

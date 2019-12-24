@@ -1,0 +1,105 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+PortGroup               perl5 1.0
+
+name                    net-snmp
+version                 5.8
+revision                3
+checksums               rmd160  66770d78f2583cda36e90cc35032d7dae2d354c3 \
+                        sha256  b2fc3500840ebe532734c4786b0da4ef0a5f67e51ef4c86b3345d697e4976adf \
+                        size    6591680
+
+categories              net
+license                 BSD
+platforms               darwin
+maintainers             {ryandesign @ryandesign} openmaintainer
+homepage                http://net-snmp.sourceforge.net/
+master_sites            sourceforge:project/${name}/${name}/${version}
+
+description             An extendable SNMP implementation
+
+long_description        This is net-snmp, a derivative of CMU's SNMP \
+                        package. Various tools relating to the Simple \
+                        Network Management Protocol including: an extensible \
+                        agent, an SNMP library, tools to request or set \
+                        information from SNMP agents, tools to generate and \
+                        handle SNMP traps, a version of the unix 'netstat' \
+                        command using SNMP, a Tk/perl MIB browser.
+
+perl5.branches          5.28
+
+depends_lib             port:bzip2 \
+                        port:libpcap \
+                        port:pcre \
+                        port:perl${perl5.major} \
+                        port:zlib
+
+post-extract {
+    # darwin18.h and above do not exist in 5.8
+    # https://sourceforge.net/p/net-snmp/bugs/2504/
+    copy ${worksrcpath}/include/net-snmp/system/darwin17.h ${worksrcpath}/include/net-snmp/system/darwin18.h
+    copy ${worksrcpath}/include/net-snmp/system/darwin17.h ${worksrcpath}/include/net-snmp/system/darwin19.h
+}
+
+patchfiles-append       patch-agent-mibgroup-mibII-icmp.h.diff
+patchfiles-append       configure-frameworks.patch
+patchfiles-append       configure-perl-cc.patch
+patchfiles-append       fix-order-of-L-flags.patch
+patchfiles-append       patch-Makefile.in.diff
+patchfiles-append       yosemite-libtool.patch
+
+configure.env-append    PERLPROG=${perl5.bin}
+
+configure.args          --disable-embedded-perl \
+                        --with-defaults \
+                        --with-sys-contact=nobody@no.where \
+                        --with-perl-modules \
+                        --with-persistent-directory=${prefix}/var/net-snmp \
+                        --with-logfile=${prefix}/var/log \
+                        --without-mysql \
+                        --without-openssl \
+                        --without-rpm \
+                        --with-zlib=${prefix} \
+                        --with-bzip2=${prefix} \
+                        --with-pcre=${prefix} \
+                        --with-install-prefix=${destroot} \
+                        --without-elf \
+                        --without-kmem-usage \
+                        --enable-ipv6 \
+                        --with-out-mib-modules=mibII/ipv6
+
+variant ssl description {Enable ssl support} {
+    depends_lib-append  path:lib/libssl.dylib:openssl
+    configure.args-replace --without-openssl --with-openssl=${prefix}
+}
+default_variants +ssl
+
+variant ksm description {Enable support for kerberos-based SNMP security} {
+    depends_lib-append  port:kerberos5
+    configure.args-append --with-security-modules="usm ksm"
+    configure.args-append --with-krb5=${prefix}
+}
+
+post-build {
+    reinplace -E {s|-arch [a-z0-9_]+||g} ${worksrcpath}/net-snmp-config
+}
+
+post-destroot {
+    destroot.keepdirs ${destroot}${prefix}/var/net-snmp
+    foreach packlist [exec find ${destroot} -name .packlist] {
+        ui_info "Fixing packlist ${packlist}"
+        reinplace "s|${destroot}||" ${packlist}
+    }
+    foreach badfile [exec find ${destroot} -name perllocal.pod] {
+        ui_info "Removing ${badfile}"
+        file delete ${badfile}
+    }
+}
+
+startupitem.create      yes
+startupitem.executable  ${prefix}/sbin/snmpd -f
+
+livecheck.type          regex
+livecheck.url           ${homepage}download.html
+livecheck.regex         {net-snmp/([0-9.]+)/}

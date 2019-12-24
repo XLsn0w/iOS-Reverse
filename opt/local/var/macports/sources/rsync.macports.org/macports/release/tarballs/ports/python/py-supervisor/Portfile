@@ -1,0 +1,45 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-supervisor
+version             4.0.1
+revision            0
+platforms           darwin
+supported_archs     noarch
+license             BSD ZPL-2.1
+maintainers         nomaintainer
+
+description         Process manager for UNIX-like OSs
+
+long_description    \
+    The supervisor is a client/server system that allows its users to control \
+    a number of processes on UNIX-like operating systems
+
+homepage            http://supervisord.org
+
+master_sites        pypi:s/${python.rootname}
+distname            supervisor-${version}
+
+checksums           rmd160  259962831368a94b193de888c0dfc3ddf7e1db7d \
+                    sha256  3268709d7e3d4e728f88fd06a29215916e1e59ff5fad5fead9de856df6f98382 \
+                    size    433742
+
+python.versions     27 37
+
+if {${name} ne ${subport}} {
+    depends_lib-append	\
+                    port:py${python.version}-meld3 \
+                    port:py${python.version}-setuptools
+
+    post-destroot {
+        set docdir ${prefix}/share/doc/${subport}
+        xinstall -d ${destroot}${docdir}
+        xinstall -m 0644 -W ${worksrcpath} CHANGES.rst COPYRIGHT.txt \
+            LICENSES.txt README.rst supervisor/skel/sample.conf \
+            docs/plugins.rst ${destroot}${docdir}
+    }
+
+    livecheck.type  none
+}

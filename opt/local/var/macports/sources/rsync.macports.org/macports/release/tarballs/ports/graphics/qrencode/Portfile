@@ -1,0 +1,31 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem 1.0
+
+name                    qrencode
+version                 4.0.2
+categories              graphics
+maintainers             nomaintainer
+license                 LGPL-2.1+
+description             QR Code generation
+long_description        Libqrencode is a C library for encoding data in a QR Code \
+                        symbol, a kind of 2D symbology that can be scanned by handy \
+                        terminals such as a mobile phone with CCD. The capacity of \
+                        QR Code is up to 7000 digits or 4000 characters, and is highly robust.
+homepage                https://fukuchi.org/works/qrencode/index.html.en
+master_sites            https://fukuchi.org/works/qrencode/
+platforms               darwin
+use_bzip2               yes
+
+checksums               rmd160  c8df9964d0d7f13f6e2708febd05c10d8d49607c \
+                        sha256  c9cb278d3b28dcc36b8d09e8cad51c0eca754eb004cb0247d4703cb4472b58b4 \
+                        size    430309
+
+depends_build           port:pkgconfig
+depends_lib             port:libpng
+
+test.run                yes
+test.target             check
+
+livecheck.type          regex
+livecheck.regex         ${name}-(\[0-9.\]+)${extract.suffix}

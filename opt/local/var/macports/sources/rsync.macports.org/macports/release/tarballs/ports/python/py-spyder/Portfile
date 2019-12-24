@@ -1,0 +1,158 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           python 1.0
+PortGroup           qt5 1.0
+PortGroup           active_variants 1.1
+PortGroup           select 1.0
+
+github.setup        spyder-ide spyder 3.3.6 v
+name                py-spyder
+revision            0
+# Preference on mailing list is to use small numbers for epoch.
+# This is already a date code, so sticking with dates.
+epoch               20111202
+
+python.versions     27 35 36 37
+
+categories-append   devel
+platforms           darwin
+maintainers         {reneeotten @reneeotten} openmaintainer
+license             MIT
+homepage            https://packages.python.org/spyder/
+description         Spyder is the Scientific PYthon Development EnviRonment
+long_description    ${description}. \
+                    Spyder provides a powerful interactive development \
+                    environment for the Python language with advanced \
+                    editing, interactive testing, debugging and introspection \
+                    features as well as a numerical computing environment \
+                    thanks to the support of IPython (enhanced interactive \
+                    Python interpreter) and popular Python libraries such as \
+                    NumPy (linear algebra), SciPy (signal and image \
+                    processing) or matplotlib (interactive 2D/3D plotting) \
+                    development environment with advanced editing, \
+                    interactive testing, debugging and introspection features.
+
+supported_archs     noarch
+
+checksums           rmd160  848f5fc7ee8d1bc5dc1d4cf749d531aeb9ec89e1 \
+                    sha256  3e95c6342324608a746c9a7cad7678b583a3c90e734706b6b5028efba21b6229 \
+                    size    3949802
+
+if {${name} ne ${subport}} {
+    require_active_variants py${python.version}-qtpy qt5
+
+    conflicts       py${python.version}-spyder-devel
+
+    depends_run-append \
+        port:spyder_select
+
+    depends_lib-append \
+        port:py${python.version}-chardet \
+        port:py${python.version}-cloudpickle \
+        port:py${python.version}-codestyle \
+        port:py${python.version}-jedi \
+        port:py${python.version}-keyring \
+        port:py${python.version}-nbconvert \
+        port:py${python.version}-numpydoc \
+        port:py${python.version}-pickleshare \
+        port:py${python.version}-psutil \
+        port:py${python.version}-pyflakes \
+        port:py${python.version}-pygments \
+        port:py${python.version}-pylint \
+        port:py${python.version}-pyqt5 \
+        port:py${python.version}-pyqt5-webengine \
+        port:py${python.version}-qtawesome \
+        port:py${python.version}-qtconsole \
+        port:py${python.version}-qtpy \
+        port:py${python.version}-rope \
+        port:py${python.version}-sphinx \
+        port:py${python.version}-spyder-kernels \
+        port:py${python.version}-zmq
+
+    variant small description "Remove all optional dependencies." {}
+
+    variant webkit description "Use QtWebKit; only recommended for systems that do not support QtWebEngine" {
+        depends_lib-delete \
+            port:py${python.version}-pyqt5-webengine \
+
+        require_active_variants py${python.version}-pyqt5 webkit
+    }
+
+    variant no_anti_alias description "Use non-anti-aliased fonts in editor." {
+        patchfiles-append   patch-spyder_utils_syntaxhighlighters.py.diff
+    }
+
+    if {![ variant_isset small ]} {
+        depends_lib-append \
+            port:py${python.version}-matplotlib \
+            port:py${python.version}-scipy \
+            port:py${python.version}-numpy \
+            port:py${python.version}-pandas \
+            port:py${python.version}-sympy \
+            port:py${python.version}-cython
+    }
+
+    variant docs description "Include offline Python and Qt documentation." {
+        depends_lib-append  port:py${python.version}-htmldocs \
+                            port:qt5-docs
+    }
+
+    variant pil description "Support image objects in editor through PIL or Pillow." {
+        depends_lib-append \
+            path:${python.pkgd}/PIL:py${python.version}-Pillow
+    }
+
+    if {${os.major} <= 13} {
+        default_variants +webkit
+    }
+
+    set WINPDB_BIN_NAME     winpdb-${python.branch}
+    patchfiles-append       patch-spyder_config_base.py.diff \
+                            patch-spyder_plugins_editor.py.diff \
+                            patch-spyder_app_start.py.diff \
+                            patch-spyder_app_mainwindow.py.diff \
+                            patch-spyder_utils_programs.py.diff
+
+    post-patch {
+        reinplace "s|@@WINPDB_BIN_NAME@@|${WINPDB_BIN_NAME}|g" \
+            ${worksrcpath}/spyder/plugins/editor.py
+        reinplace "s|\"assistant\"|\"Assistant\"|g" \
+            ${worksrcpath}/spyder/app/mainwindow.py
+        reinplace "s|\"linguist\"|\"Linguist\"|g" \
+            ${worksrcpath}/spyder/app/mainwindow.py
+        reinplace "s|\"designer\"|\"Designer\"|g" \
+            ${worksrcpath}/spyder/app/mainwindow.py
+        reinplace "s|@@PREFIX@@|${prefix}|g" \
+            ${worksrcpath}/spyder/app/mainwindow.py
+        reinplace "s|@@APPS_DIR@@|${applications_dir}/Qt5|g" \
+            ${worksrcpath}/spyder/utils/programs.py
+    }
+
+    post-destroot {
+        delete \
+          ${destroot}${prefix}/bin/spyder_win_post_install.py-${python.branch}
+        delete ${destroot}${python.prefix}/bin/spyder_win_post_install.py
+
+        set docdir ${prefix}/share/doc/${subport}
+        xinstall -d ${destroot}${docdir}
+        xinstall -m 0644 -W ${worksrcpath} AUTHORS.txt Announcements.md LICENSE.txt \
+            CHANGELOG.md CONTRIBUTING.md README.md RELEASE.md TROUBLESHOOTING.md \
+            ${destroot}${docdir}
+    }
+
+    select.group    spyder
+    select.file     ${filespath}/spyder-${python.version}
+
+    notes "
+To make the Python ${python.branch} version of spyder the one that is run \
+when you execute the commands without a version suffix, e.g. 'spyder', run:
+
+sudo port select --set ${select.group} [file tail ${select.file}]
+"
+
+    livecheck.type  none
+} else {
+    github.livecheck.regex (3\\.\\d+\.\\d+)
+}

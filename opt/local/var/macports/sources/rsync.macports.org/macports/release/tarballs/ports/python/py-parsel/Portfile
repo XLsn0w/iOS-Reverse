@@ -1,0 +1,43 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-parsel
+set real_name       parsel
+version             1.5.2
+revision            0
+python.versions     27 34 35 36 37
+platforms           darwin
+maintainers         {khindenburg @kurthindenburg} openmaintainer
+license             BSD
+description         Extract data from HTML and XML using XPath and CSS selectors
+long_description    ${description}
+
+homepage            https://pypi.python.org/pypi/parsel
+master_sites        pypi:p/${real_name}/
+distname            ${real_name}-${version}
+
+checksums           rmd160  5f3ca0605494490c30670b49d9fe0ab0230f2b61 \
+                    sha256  4da4262ba4605573b6b72a5f557616a2fc9dee7a47a1efad562752a28d366723 \
+                    size    41134
+
+if {${name} ne ${subport}} {
+    depends_build-append port:py${python.version}-setuptools \
+                        port:py${python.version}-pytest-runner
+    depends_lib-append  port:py${python.version}-cssselect \
+                        port:py${python.version}-lxml \
+                        port:py${python.version}-six \
+                        port:py${python.version}-w3lib
+
+    depends_test-append port:py${python.version}-pytest
+    set pyver [join [split ${python.version} {}] {.}]
+    test.run            yes
+    test.cmd            py.test-${pyver}
+    test.target
+    test.env            PYTHONPATH=${worksrcpath}/build/lib
+
+    livecheck.type  none
+} else {
+    livecheck.type  pypi
+}

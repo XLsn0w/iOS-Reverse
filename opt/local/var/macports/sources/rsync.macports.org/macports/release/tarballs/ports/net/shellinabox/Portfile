@@ -1,0 +1,61 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+PortGroup               github 1.0
+
+# Missing compatibility implementation of strndup.
+# https://github.com/shellinabox/shellinabox/issues/400
+PortGroup               legacysupport 1.0
+legacysupport.newest_darwin_requires_legacy 10
+
+github.setup            shellinabox shellinabox 2.20 v
+revision                1
+categories              net shells www
+platforms               darwin
+maintainers             {ryandesign @ryandesign} openmaintainer
+license                 {GPL-2 OpenSSLException}
+
+description             a web-based terminal emulator for ssh or other command line tools
+
+long_description        Shell In A Box implements a web server that can export arbitrary \
+                        command line tools (e.g. ssh) to a web-based terminal emulator. \
+                        This emulator is accessible to any JavaScript- and CSS-enabled \
+                        web browser and does not require any additional browser plugins.
+
+checksums               rmd160  855ebe76832b4b7c6daab5caca689269b157161b \
+                        sha256  be800d80f251fc72ecb99f9db5c456209ab6b61d1b7bf345f0ee018be7185fc1 \
+                        size    745949
+
+depends_lib             path:lib/libssl.dylib:openssl \
+                        port:zlib
+
+use_autoreconf          yes
+
+# Enable openssl support
+# https://code.google.com/p/shellinabox/issues/detail?id=110
+configure.args-append   --disable-runtime-loading --disable-pam
+
+if {${os.platform} eq "darwin" && ${os.major} > 8} {
+    set user _${name}
+} else {
+    set user ${name}
+}
+set group ${user}
+
+add_users               ${user} group=${group} realname=${name}
+
+set certdir             ${prefix}/etc/${name}/certs
+
+startupitem.create      yes
+startupitem.executable  ${prefix}/bin/${name}d --user=${user} --group=${group} --cert=${certdir}
+
+destroot.keepdirs       ${destroot}${certdir}
+
+post-destroot {
+    xinstall -o ${user} -g ${group} -d ${destroot}${certdir}
+}
+
+notes {
+There is no configuration file; you may wish to use your own launchd plist instead of the\
+one included in this port if you want to run the daemon with different options.
+}

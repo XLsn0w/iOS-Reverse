@@ -1,0 +1,39 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                libbluray
+version             1.1.2
+categories          multimedia
+license             LGPL-2.1
+platforms           darwin
+maintainers         {jeremyhu @jeremyhu} openmaintainer
+description         an open-source library designed for Blu-Ray Discs playback
+
+long_description    ${description}
+
+homepage            https://www.videolan.org/developers/libbluray.html
+master_sites        https://get.videolan.org/libbluray/${version}
+
+use_bzip2           yes
+
+depends_build       port:pkgconfig \
+                    port:perl5
+
+depends_lib         port:libxml2 \
+                    port:fontconfig \
+                    port:freetype
+
+checksums           rmd160  bbfea1093f9fc5ea089cf5860e55e020b916a4b0 \
+                    sha256  a3dd452239b100dc9da0d01b30e1692693e2a332a7d29917bf84bb10ea7c0b42 \
+                    size    745779
+
+configure.perl      ${prefix}/bin/perl5
+
+configure.args      --disable-doxygen-doc \
+                    --disable-bdjava-jar \
+                    --disable-examples
+
+livecheck.type      regex
+livecheck.url       ${homepage}
+livecheck.regex     libbluray (\[0-9.]+)

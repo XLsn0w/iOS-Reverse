@@ -1,0 +1,46 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem      1.0
+
+name            remake
+set makeversion 4.2.1
+set dbgversion  1.4
+version         ${makeversion}-dbg-${dbgversion}
+revision        1
+categories      devel
+platforms       darwin
+license         GPL-3+
+maintainers     {raimue @raimue} \
+                openmaintainer
+description     Debugger for GNU Makefiles
+
+long_description \
+    remake is a patched and modernized version of GNU make utility that adds \
+    improved error reporting, the ability to trace execution in a \
+    comprehensible way, and a debugger.
+homepage        http://bashdb.sourceforge.net/remake/
+
+master_sites    sourceforge:bashdb
+
+checksums       sha1    b48d98a6a3650cadbb791e416361a2a7ade9a7bd \
+                rmd160  6a209cb73020d27fbce85e27980aa3d8ca3d87bb \
+                sha256  55df3b2586ab90ac0983a049f1911c4a1d9b68f7715c69768fbb0405e96a0e7b \
+                size    1508613
+
+distname        ${name}-${makeversion}+dbg-${dbgversion}
+use_bzip2       yes
+
+depends_lib     port:gettext \
+                port:libiconv \
+                port:readline
+
+post-destroot {
+    # Avoid conflict with gmake port
+    delete ${destroot}${prefix}/include/gnumake.h
+    delete {*}[glob ${destroot}${prefix}/share/info/make.info*]
+}
+
+livecheck.type      regex
+livecheck.url       http://sourceforge.net/projects/bashdb/files/remake/
+livecheck.version   [strsed ${version} {s/-/+/}]
+livecheck.regex     (\\d+(?:\\.\\d+)+\\+dbg-\\d+(?:\\.\\d+)+)

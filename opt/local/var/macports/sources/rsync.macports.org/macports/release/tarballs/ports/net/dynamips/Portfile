@@ -1,0 +1,32 @@
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           cmake 1.1
+
+github.setup        GNS3 dynamips 0.2.20 v
+revision            0
+
+license             GPL-2
+categories          net
+maintainers         {gmail.com:lasticppc @lastic} openmaintainer
+platforms           darwin
+
+homepage	    https://github.com/GNS3/dynamips
+description         Cisco router emulator
+long_description    Dynamips emulates a variety of Cisco routers on a \
+                    traditional PC.  It supports the emulation of select 7200, \
+                    3600, 3700, and 2600 series routers.  It uses real Cisco \
+                    IOS images (which are not part of this package).  Of \
+                    course, this emulator cannot replace a real router. It is \
+                    simply a complementary tool to real labs for administrators \
+                    of Cisco networks or people wanting to pass their \
+                    CCNA/CCNP/CCIE exams.
+
+checksums           rmd160  23c02f144b13a466a1b6a96d43cd6c1d4770e1d4 \
+                    sha256  9688563ffca379e96a29f5777f68958501282fd02f1f9748526e4b8770f2e80d \
+                    size    834033
+
+depends_lib         port:libelf \
+                    port:libpcap
+
+configure.args-append \
+                    -DDYNAMIPS_CODE=stable

@@ -1,0 +1,26 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         HTML-Form 6.05
+platforms           darwin
+maintainers         nomaintainer
+license             {Artistic-1 GPL}
+supported_archs     noarch
+
+description         HTML::Form - Class that represents an HTML form element
+long_description    ${description}
+
+checksums           rmd160  1006963cea93e6ee81d262af3a1a93068bcd9371 \
+                    sha256  36c6c601ca829719f6651be1b80872028f82bec1712608dd860deeb67da32492 \
+                    size    40239
+
+if {${perl5.major} != ""} {
+    depends_lib-append \
+                    port:p${perl5.major}-encode \
+                    port:p${perl5.major}-html-parser \
+                    port:p${perl5.major}-http-message \
+                    port:p${perl5.major}-uri
+}

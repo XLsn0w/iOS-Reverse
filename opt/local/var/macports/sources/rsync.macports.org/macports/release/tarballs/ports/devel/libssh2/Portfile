@@ -1,0 +1,42 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           muniversal 1.0
+
+name                libssh2
+version             1.9.0
+revision            0
+categories          devel net
+platforms           darwin
+maintainers         {wohner.eu:normen @Gminfly} openmaintainer
+
+description         libssh2 is a library implementing the SSH2 protocol
+long_description    libssh2 is a library implementing the SSH2 protocol as \
+                    defined by Internet Drafts: SECSH-TRANS(22), \
+                    SECSH-USERAUTH(25), SECSH-CONNECTION(23), SECSH-ARCH(20), \
+                    SECSH-FILEXFER(06), SECSH-DHGEX(04), and SECSH-NUMBERS(10).
+
+license             BSD
+
+homepage            https://www.libssh2.org/
+master_sites        ${homepage}download/
+
+checksums           rmd160  eb3553a9b2c05d5b6a24159db8a1478f9aea3877 \
+                    sha256  d5fb8bd563305fd1074dda90bd053fb2d29fc4bce048d182f96eaa466dfadafd \
+                    size    888551
+
+if {${os.platform} eq "darwin" && ${os.major} < 10} {
+    # remove errant pragmas inside functions no supported on older gcc versions
+    patchfiles-append patch-libssh2-pragmas-older-gcc.diff
+}
+
+depends_lib         path:lib/libssl.dylib:openssl port:zlib
+
+configure.args      ac_cv_prog_AWK=/usr/bin/awk
+
+variant debug description {Enable debug mode including tracing support} {
+    configure.args-append \
+        --enable-debug
+}
+
+livecheck.regex     libssh2-(\\d(?:\\.\\d)+)${extract.suffix}

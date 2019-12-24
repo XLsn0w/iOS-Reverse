@@ -1,0 +1,41 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+PortGroup               python 1.0
+
+name                    pdfposter
+version                 0.6.0
+categories-prepend      print
+license                 GPL-3+
+platforms               darwin
+maintainers             nomaintainer
+supported_archs         noarch
+
+description             scale and tile PDF images/pages to print on multiple pages
+
+long_description        Pdfposter can be used to create a large poster by \
+                        building it from multiple pages and/or printing it on \
+                        large media. It expects as input a PDF file, normally \
+                        printing on a single page. The output is again a PDF \
+                        file, maybe containing multiple pages together building \
+                        the poster. The input page will be scaled to obtain the \
+                        desired size, much like poster does for PostScript \
+                        files, but working with PDF, since sometimes poster \
+                        does not like your files converted from PDF. :-) \
+                        Indeed pdfposter was inspired by poster.
+
+homepage                https://pythonhosted.org/pdftools.pdfposter/
+master_sites            pypi:p/pdftools.pdfposter/
+use_bzip2               yes
+distname                pdftools.${name}-${version}
+
+checksums               rmd160  897068423034fc1a1ddbff7f15c304f39113020a \
+                        sha256  aa720f31350355bb9152bf69cb1eb79a7e82197d2c4e9f10503b1de1b8c232c5 \
+                        size    178517
+
+python.default_version  27
+
+depends_lib-append      port:py${python.version}-pypdf2 \
+                        port:py${python.version}-setuptools
+
+livecheck.name          pdftools.${name}

@@ -1,0 +1,50 @@
+--- Makefile.conf	2015-09-07 14:11:23.000000000 -0400
++++ Makefile.conf	2016-10-16 10:43:04.000000000 -0400
+@@ -45,11 +45,11 @@
+ # Installation locations (edit if required)
+ 
+ ifneq ($(HOST),MINGW)
+-prefix=/usr/local
++prefix=@PREFIX@
+ bindir=$(prefix)/bin
+ incdir=$(prefix)/include
+ libdir=$(prefix)/lib
+-docdir=$(prefix)/doc/routino
++docdir=$(prefix)/share/doc/routino
+ datadir=$(prefix)/share/routino
+ else
+ prefix="c:/Program Files/Routino"
+@@ -62,12 +62,12 @@
+ 
+ 
+ # Compilation programs
+-CC=gcc
+-LD=gcc
++#CC=gcc
++#LD=gcc
+ 
+ 
+ # Language dialect selection
+-CFLAGS=-std=c99
++#CFLAGS=-std=c99
+ 
+ # Warning options
+ CFLAGS+=-Wall -Wmissing-prototypes -Wextra -Wno-unused-parameter -pedantic
+@@ -89,7 +89,7 @@
+ 
+ # Extra flags for compiling libroutino shared library (visibility of symbols, shared)
+ CFLAGS_LIB=-fvisibility=hidden
+-LDFLAGS_LIB=-shared
++LDFLAGS_LIB=-dynamiclib -install_name @PREFIX@/lib/$@
+ 
+ ifeq ($(HOST),UNIX)
+ # Extra flags for compiling libroutino shared library (position independent code)
+@@ -98,7 +98,7 @@
+ endif
+ 
+ # Put the current directory in the shared library path for the router using libroutino
+-LDFLAGS_LDSO=-Wl,-R.
++LDFLAGS_LDSO=-Wl,-rpath,.
+ 
+ 
+ # Required for multi-threaded support (comment these two lines out if not required)

@@ -1,0 +1,31 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           texlive 1.0
+
+name                texlive-plain-generic
+version             50884
+revision            0
+
+categories          tex
+maintainers         {dports @drkp}
+license             Copyleft Permissive
+description         TeX Live: Plain (La)TeX packages
+long_description    Add-on packages and macros that work with plain TeX, often LaTeX, and occasionally other formats.
+
+checksums           texlive-plain-generic-50884-run.tar.xz \
+                    rmd160  8ffb1e7a647891c3e3cfaad0d3b6c1da9ecd1ac5 \
+                    sha256  f41b7aaf4bb874450bb2e30219cadcaef8d0a1ab2b73ba7b13c642576624268e \
+                    texlive-plain-generic-50884-doc.tar.xz \
+                    rmd160  acbd614e49cc723941e5f646d1c6f6e28e3aef96 \
+                    sha256  77e5ca06494d202153c1de51b753d595b7f1de64a85ca71147572aa7747340f6 \
+                    texlive-plain-generic-50884-src.tar.xz \
+                    rmd160  f04c8cb2cfe69719a63a9bceef60cc24be2256c2 \
+                    sha256  4071fbc1ef5f97abb7f629c915dde0f0729e51437de1227045d1b34925acf55d
+
+depends_lib         port:texlive-basic
+
+texlive.binaries    ht htcontext htlatex htmex httex httexi htxelatex htxetex mk4ht t4ht tex4ht xhlatex
+
+
+texlive.texmfport

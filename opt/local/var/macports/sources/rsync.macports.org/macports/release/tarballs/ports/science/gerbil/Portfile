@@ -1,0 +1,52 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           cmake 1.0
+PortGroup           github 1.0
+
+github.setup        gerbilvis gerbil 94f704447b5ce2dcd77019a641d96382dcb174a7
+version             2017-02-19-94f7044
+checksums           rmd160  0f56728d486d366ab9bac90bc4057007a5b4bca2 \
+                    sha256  a7fb37313dbacac0fb580296183aa92563bfaa39e11a518965e58320c16270c0 \
+                    size    2304146
+
+categories          science
+license             GPL-3
+maintainers         {cal @neverpanic} openmaintainer
+platforms           darwin
+description         Hyperspectral Image Visualization & Analysis Framework
+long_description    \
+    Gerbil is a generic framework for visualization and analysis of \
+    multispectral and hyperspectral data that strives to both bring new \
+    innovations in analysis capabilities and be of use in a wide range of \
+    hyperspectral data applications.
+
+homepage            http://gerbilvis.org/
+
+depends_lib         port:qt5 \
+                    port:opencv \
+                    port:boost \
+                    port:gdal \
+                    port:tbb
+
+cmake.out_of_source yes
+configure.args-append \
+                    -DOpenCV_DIR="${prefix}/lib/cmake" \
+                    -DCMAKE_BUILD_TYPE=Release \
+                    -DBoost_DIR="${prefix}"
+
+# the gerbil makefiles do not provide an install target
+destroot {
+    # install binaries
+    xinstall -m 755 "${build.dir}/bin/gerbil" "${destroot}${prefix}/bin/"
+    xinstall -m 755 "${build.dir}/bin/qgerbil" "${destroot}${prefix}/bin/"
+
+    # create directories for shared files
+    xinstall -d -m 755 "${destroot}${prefix}/share/doc/${name}"
+
+    # install shared files
+    set sharefiles [list "AUTHORS" "LICENSE" "README.md"]
+    foreach file $sharefiles {
+        xinstall -m 644 "${worksrcpath}/${file}" "${destroot}${prefix}/share/doc/${name}/${file}"
+    }
+}

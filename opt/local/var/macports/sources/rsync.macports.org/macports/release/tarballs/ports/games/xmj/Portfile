@@ -1,0 +1,35 @@
+PortSystem 1.0
+PortGroup  muniversal 1.0
+
+name		xmj
+version		1.15
+categories	games x11
+platforms	darwin
+maintainers	{mmoll @mamoll}
+license     GPL-2+
+description	X graphical mahjong multi-player game
+long_description	\
+	xmj is a multi-player version of the Chinese game of Mah-Jong. \
+	One can play against computer players or against other human \
+	players over the network.
+homepage	http://mahjong.julianbradfield.org
+distname	mj-${version}-src
+master_sites	${homepage}/Source
+checksums           rmd160  b5ae9c22c48e429ce053b6150cc5ee494ca8119b \
+                    sha256  d115a1769b41a32cced0b236e4dbca9d9b0f30827032b507a18216896ef6da92 \
+                    size    401105
+depends_build	port:pkgconfig
+depends_lib	port:gtk2
+use_configure   no
+universal_variant yes
+patch {
+    reinplace "s|/usr|${prefix}|g" ${worksrcpath}/Makefile
+}
+build.args	CDEBUGFLAGS=-O2 CC="${configure.cc} [get_canonical_archflags]"
+destroot.target	install install.man
+destroot.destdir DESTDIR=${destroot}/ BINDIR=${prefix}/bin \
+	MANDIR=${prefix}/share/man/man1
+
+livecheck.type  regex
+livecheck.url   http://mahjong.julianbradfield.org/Source
+livecheck.regex mj-(\[0-9.\]+)-src\\.tar\\.gz

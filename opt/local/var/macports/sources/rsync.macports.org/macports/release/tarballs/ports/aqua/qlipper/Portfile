@@ -1,0 +1,26 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           qt5 1.0
+PortGroup           cmake 1.1
+PortGroup           github 1.0
+
+github.setup        pvanek qlipper 5.1.1
+categories          aqua office textproc
+license             GPL-2+
+platforms           darwin
+maintainers         nomaintainer
+
+description         Lightweight & cross-platform clipboard history applet
+long_description    ${description}
+
+checksums           rmd160  a8c700ca72e71889a0f84bc75c7d6ba5d983e6b0 \
+                    sha256  fbace1f9575c3b65de44c4abac6bad7d1ae2a2228c5c14f5e4950d03f9d55a1b \
+                    size    101398
+
+qt5.depends_component   qttools
+qt5.min_version     5.6.0
+
+
+# on next rev change to use cmake.install_prefix ${applications_dir}
+configure.args-append   -DCMAKE_INSTALL_PREFIX=${applications_dir}

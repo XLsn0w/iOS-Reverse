@@ -1,0 +1,22 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Math-BigInt-FastCalc 0.5009
+license             {Artistic-1 GPL}
+maintainers         {devans @dbevans} openmaintainer
+description         Math::BigInt::FastCalc - Math::BigInt::Calc with some XS for more speed
+long_description    ${description}
+
+platforms           darwin
+
+checksums           rmd160  f15f0c9d62c04f14a5fbffc3b605f982140f4fe9 \
+                    sha256  b4eeecba81a75250c04f0e92c709b3f628ac12ec99edee97978e0db966a64330 \
+                    size    2449837
+
+if {${perl5.major} != ""} {
+    depends_lib-append \
+                    port:p${perl5.major}-math-bigint
+}

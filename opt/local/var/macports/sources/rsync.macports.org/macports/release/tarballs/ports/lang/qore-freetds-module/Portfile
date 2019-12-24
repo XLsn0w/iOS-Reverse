@@ -1,0 +1,24 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                qore-freetds-module
+version             1.0.4
+categories          lang
+license             LGPL-2.1
+maintainers         {davidnichols @davidnich}
+description         FreeTDS module for Qore
+long_description    Module provides a freetds DBI driver, allowing communication with Sybase and MS SQL Server DBs
+homepage            http://qore.org
+platforms           darwin
+distname            qore-sybase-modules-${version}
+master_sites        https://github.com/qorelanguage/module-sybase/releases/download/v${version}
+
+checksums           md5 4a857b86cedd8b5ef759063470c893e6 \
+                    sha1 7fbb3b87ba5ce63f3c4f924ec89e624b34a24084 \
+                    rmd160 527ecb1b7e831169c602f6c918c0992daa5c7104
+
+depends_lib         port:qore \
+                    port:freetds
+
+configure.args      --disable-debug

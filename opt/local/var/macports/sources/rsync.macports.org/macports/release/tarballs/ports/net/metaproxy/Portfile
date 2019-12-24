@@ -1,0 +1,38 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem 1.0
+
+name                metaproxy
+version             1.11.5
+revision            2
+categories          net databases devel
+platforms           darwin
+license             GPL-2+
+maintainers         nomaintainer
+description         Z39.50 proxy and router utilizing Yaz toolkit.
+long_description    Metaproxy is a proxy front end server that presents a \
+                    single Z39.50/SRW/SRU front end to multiple back end \
+                    Z39.50 database servers. It can also work in conjunction \
+                    with Index Data's library of gateways to access \
+                    non-Z39.50-compliant database servers.
+
+homepage            http://www.indexdata.com/metaproxy/
+
+master_sites        http://ftp.indexdata.com/pub/metaproxy/
+
+checksums           rmd160  2ec31fe8744396877bdb8fd2e32d8bfcb3fbc378 \
+                    sha256  34a8d122db1117e0f534b5a3d487826b4a86d8ca867b3fac15bf8e74c0170fb6
+
+# metaproxy links with boost libs
+
+depends_lib         port:boost \
+                    port:yaz \
+                    port:yazpp \
+                    port:libiconv \
+                    port:libxml2 \
+                    port:xz \
+                    port:zlib
+
+livecheck.type      regex
+livecheck.url       [lindex ${master_sites} 0]
+livecheck.regex     "${name}-(\[0-9\]+(\\.\[0-9\]+)+)${extract.suffix}"

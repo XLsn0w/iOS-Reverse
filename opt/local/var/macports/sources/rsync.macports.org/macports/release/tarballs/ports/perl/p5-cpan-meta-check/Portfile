@@ -1,0 +1,29 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         CPAN-Meta-Check 0.014
+platforms           darwin
+maintainers         nomaintainer
+license             {Artistic-1 GPL}
+
+description         CPAN::Meta::Check - Verify requirements in a CPAN::Meta object
+
+long_description    This module verifies if requirements described in a CPAN::Meta object are present.
+
+checksums           rmd160  e19a7355d0f4ce858570d65334fcd6d3f217a2f8 \
+                    sha256  28a0572bfc1c0678d9ce7da48cf521097ada230f96eb3d063fcbae1cfe6a351f
+
+if {${perl5.major} != ""} {
+    depends_build-append \
+                    port:p${perl5.major}-test-deep
+    
+    depends_lib-append \
+                    port:p${perl5.major}-cpan-meta \
+                    port:p${perl5.major}-cpan-meta-requirements \
+                    port:p${perl5.major}-module-metadata
+    
+    supported_archs noarch
+}

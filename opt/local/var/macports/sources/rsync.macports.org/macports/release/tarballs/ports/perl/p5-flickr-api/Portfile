@@ -1,0 +1,29 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Flickr-API 1.28
+platforms           darwin
+maintainers         nomaintainer
+license             Artistic-2
+supported_archs     noarch
+
+description         Perl interface to the Flickr API
+long_description    ${description}
+
+checksums           rmd160  ab8cdd1d4b05532887a89ae9f1a08de186cd0630 \
+                    sha256  464b447b714ceb890ef52f0799c82c4f2906e0047fffb2e5c7d1338e08e199a5
+
+if {${perl5.major} != ""} {
+    depends_lib-append \
+                    port:p${perl5.major}-getopt-long \
+                    port:p${perl5.major}-http-message \
+                    port:p${perl5.major}-libwww-perl \
+                    port:p${perl5.major}-net-oauth \
+                    port:p${perl5.major}-test-script \
+                    port:p${perl5.major}-uri \
+                    port:p${perl5.major}-xml-libxml-simple \
+                    port:p${perl5.major}-xml-parser-lite-tree
+}

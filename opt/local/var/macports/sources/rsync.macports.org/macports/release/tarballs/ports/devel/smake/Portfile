@@ -1,0 +1,41 @@
+PortSystem 1.0
+PortGroup  compiler_blacklist_versions 1.0
+
+name			smake
+version			1.2.5
+categories		devel
+platforms		darwin
+maintainers		nomaintainer
+license			CDDL
+description		highly portable make program with automake features
+long_description	Smake is a highly portable make program with automake \
+				features. It is currently mainly targeted to be used \
+				with the makefiles system. 
+
+homepage		https://sourceforge.net/projects/s-make/
+master_sites	sourceforge:project/s-make
+use_bzip2		yes
+
+checksums           rmd160  f683a4051273b3e24e45a2b435ddb23509db55bf \
+                    sha256  27566aa731a400c791cd95361cc755288b44ff659fa879933d4ea35d052259d4
+
+use_configure	no
+
+# https://trac.macports.org/ticket/31616
+compiler.blacklist-append llvm-gcc-4.2 {clang < 318}
+
+build.type		gnu
+build.args      CC=${configure.cc}
+use_parallel_build  no
+
+destroot.args       CC=${configure.cc}
+destroot.destdir	INS_BASE=${destroot}${prefix} \
+					MANDIR=man \
+					INSUSR=`id -u` INSGRP=`id -g`
+post-destroot	{
+	file delete -force ${destroot}${prefix}/share/man/man5 \
+		${destroot}${prefix}/lib ${destroot}${prefix}/include
+}
+
+livecheck.url       https://sourceforge.net/projects/s-make/files/
+livecheck.regex     ${name}-(\\d+(?:\\.\\d+)*)${extract.suffix}

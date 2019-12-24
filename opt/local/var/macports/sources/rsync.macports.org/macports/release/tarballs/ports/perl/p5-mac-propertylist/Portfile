@@ -1,0 +1,24 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Mac-PropertyList 1.413
+license             Artistic-2
+maintainers         nomaintainer
+
+description         Mac::PropertyList - work with Mac plists at a low level
+long_description    ${description}
+
+platforms           darwin
+supported_archs     noarch
+
+checksums           rmd160  ca1c6102f6f0614f71a0050dc1475ea6685b11a5 \
+                    sha256  ad47f2cb0d22798ff412415a6ea8150bb44400d3e53369aecbbe49fb860eeb76 \
+                    size    38201
+
+if {${perl5.major} != ""} {
+    depends_lib-append \
+                    port:p${perl5.major}-xml-entities
+}

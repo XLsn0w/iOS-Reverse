@@ -1,0 +1,33 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                vcs
+version             1.13.2
+categories          graphics
+platforms           darwin
+maintainers         ryandesign openmaintainer
+license             LGPL-2.1+
+supported_archs     noarch
+
+description         creates video contact sheets (previews) of videos
+
+long_description    ${name} ${description}.
+
+homepage            http://p.outlyer.net/vcs/
+master_sites        ${homepage}files/
+
+checksums           rmd160  3f6dfe6f540775b3dd7348530ce981c80f366e5e \
+                    sha256  fc2a2b3994d5ffb5d87fb3dceaa5f6855aca7a89c58533b12fd11b8fb5b623af
+
+depends_run         path:bin/ffmpeg:ffmpeg \
+                    port:grep \
+                    port:ImageMagick
+
+use_configure       no
+
+destroot.args       prefix=${prefix}
+
+livecheck.type      regex
+livecheck.url       [lindex ${master_sites} 0]
+livecheck.regex     ${name}-(\[0-9.\]+)${extract.suffix}

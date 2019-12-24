@@ -1,0 +1,28 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem 1.0
+
+name            xfce4-appfinder
+version         4.12.0
+revision        1
+set branch      [join [lrange [split ${version} .] 0 1] .]
+categories      xfce
+platforms       darwin
+license         GPL-2+
+maintainers     nomaintainer
+description     Software to find every application supporting Desktop entry format
+long_description ${description}
+homepage        https://www.xfce.org
+master_sites    http://archive.xfce.org/src/xfce/${name}/${branch}/
+use_bzip2       yes
+checksums       md5 0b238b30686388c507c119b12664f1a1 \
+                sha1 c6fe75b140e6c864654e9485e30a4718cdfd7321 \
+                sha256 2ad4a58019a76a6b64a816050db25f96854917c2f2e89d6a9df6c18e6c84c567
+
+depends_build   port:intltool port:xfce4-dev-tools port:pkgconfig
+depends_lib     port:libxfce4ui port:garcon port:Thunar
+
+# Needed for intltool
+configure.perl  ${prefix}/bin/perl5.28
+
+configure.args  INTLTOOL_PERL=${configure.perl}

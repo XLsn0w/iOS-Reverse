@@ -1,0 +1,31 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           texlive 1.0
+
+name                texlive-bibtex-extra
+version             50834
+revision            0
+
+categories          tex
+maintainers         {dports @drkp}
+license             Copyleft Permissive
+description         TeX Live: BibTeX additional styles
+long_description    Additional BibTeX styles and bibliography data(bases), notably including BibLaTeX.
+
+checksums           texlive-bibtex-extra-50834-run.tar.xz \
+                    rmd160  806394e068290780ff80d752b1bad9b39c1eeb8e \
+                    sha256  c242d8d6ac9f10a810634c81df845bda278af0c3635854c25e90872fbf1a20a2 \
+                    texlive-bibtex-extra-50834-doc.tar.xz \
+                    rmd160  c554f37c240e54e8affa22c941aa3db9a6aeab4a \
+                    sha256  00ece623e1e8173589d696aa4c04df0bc79a25e1371666afb127a1ce0005361a \
+                    texlive-bibtex-extra-50834-src.tar.xz \
+                    rmd160  ebc3f4af636381556abf0a22554cc5d27712a41a \
+                    sha256  fa488d0aa65a9c0cbd96575d70ead86e3575b32dcc58398b9a88caf6cdbd8c7c
+
+depends_lib         port:texlive-latex
+
+texlive.binaries    bbl2bib bib2gls bibdoiadd bibexport bibmradd biburl2doi bibzbladd convertgls2bib listbib ltx2crossrefxml multibibliography urlbst
+
+
+texlive.texmfport

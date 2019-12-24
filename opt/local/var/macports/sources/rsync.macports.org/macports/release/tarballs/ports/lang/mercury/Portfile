@@ -1,0 +1,48 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                mercury
+version             14.01.1
+revision            2
+categories          lang
+maintainers         nomaintainer
+platforms           darwin
+license             GPL-2 LGPL-2
+
+description         The Mercury Programming Language
+long_description    \
+    Mercury is a new logic/functional programming \
+    language, which combines the clarity and \
+    expressiveness of declarative programming with \
+    advanced static analysis and error detection \
+    features. Its highly optimized execution \
+    algorithm delivers efficiency far in excess of \
+    existing logic programming systems, and close \
+    to conventional programming systems. Mercury \
+    addresses the problems of large-scale program \
+    development, allowing modularity, separate \
+    compilation, and numerous optimization/time \
+    trade-offs.
+
+homepage            http://www.mercurylang.org/
+master_sites        http://dl.mercurylang.org/release/
+
+distname            ${name}-srcdist-${version}
+
+checksums           md5     28eb85861b9c5fd13ea8382b63f5741b \
+                    sha1    8d8295aed6cadb6cd2e932490042de6075d18acf \
+                    rmd160  8ee4a5ee694985b6d6453bee86a3a7e12cc9d0ac \
+                    sha256  98f7cbde7a7425365400feef3e69f1d6a848b25dc56ba959050523d546c4e88b
+
+worksrcdir          ${name}-srcdist-${version}
+
+depends_lib \
+    port:readline
+
+destroot.args       INSTALL_INFO_DIR=${destroot}${prefix}/share/info \
+                    INSTALL_MAN_DIR=${destroot}${prefix}/share/man
+
+livecheck.url       http://dl.mercurylang.org/index.html
+livecheck.type      regex
+livecheck.regex     ${name}-srcdist-(\[0-9.\]+)${extract.suffix}

@@ -1,0 +1,54 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                zebra
+version             2.0.62
+revision            2
+categories          databases net www devel
+license             GPL-2+
+platforms           darwin
+maintainers         nomaintainer
+description         information management system
+long_description    Zebra is a high-performance, general-purpose \
+                    structured text indexing and retrieval engine. \
+                    It reads structured records in a variety of input formats \
+                    (e.g. email, XML, MARC) and allows access to them \
+                    through exact boolean search expressions \
+                    and relevance-ranked free-text queries.
+
+homepage            http://www.indexdata.dk/zebra/
+
+master_sites        http://ftp.indexdata.dk/pub/zebra/
+distname            idzebra-${version}
+
+checksums           rmd160  888ae8b7d8d09ffebfe0aa7577d1aa5559cb90c8 \
+                    sha256  f14e34509c0b7d6df98f83ff05cf81b8b82919a5a3cdcccf42125caf30f5a7f0
+
+depends_lib         port:yaz \
+                    port:icu \
+                    port:tcl \
+                    port:libiconv \
+                    port:expat \
+                    port:libxml2 \
+                    port:libxslt
+
+configure.args      --enable-mod-text \
+                    --enable-mod-grs-regx \
+                    --enable-mod-grs-marc \
+                    --enable-mod-grs-xml \
+                    --enable-mod-dom \
+                    --enable-mod-alvis \
+                    --enable-mod-safari \
+                    --with-yaz=${prefix}/bin \
+                    --with-tclconfig=${prefix}/lib \
+                    --with-iconv=${prefix}/lib \
+                    --with-expat=${prefix}/lib
+
+configure.cppflags-append -DUSE_INTERP_ERRORLINE -DUSE_INTERP_RESULT
+
+use_parallel_build  yes
+
+livecheck.type      regex
+livecheck.url       ${master_sites}?M=D
+livecheck.regex     "${name}-(\[0-9\]+(\\.\[0-9\]+)+)${extract.suffix}"

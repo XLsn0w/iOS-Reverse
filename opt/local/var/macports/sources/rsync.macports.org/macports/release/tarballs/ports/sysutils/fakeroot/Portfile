@@ -1,0 +1,72 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                fakeroot
+version             1.24
+revision            0
+checksums           rmd160  4a1098a2bfa2ed6eccaf61879b6c0f035354ca82 \
+                    sha256  2e045b3160370b8ab4d44d1f8d267e5d1d555f1bb522d650e7167b09477266ed \
+                    size    522497
+
+categories          sysutils
+platforms           darwin
+license             GPL-3+
+maintainers         {ryandesign @ryandesign} openmaintainer
+
+description         Tool for simulating superuser privileges
+long_description    fakeroot runs a command in an environment where it \
+                    appears to have root privileges for file manipulation. \
+                    It does this by means \
+                    of LD_PRELOAD and SYSV IPC (or TCP) trickery.
+
+homepage            https://wiki.debian.org/FakeRoot/
+
+master_sites        debian:f/${name}
+distname            ${name}_${version}.orig
+worksrcdir          ${name}-${version}
+
+patchfiles          patch-libfakeroot.c.diff \
+                    patch-message.h.diff \
+                    patch-wrapfunc.inp.diff
+
+# Build settings adapted from instructions at
+# https://github.com/mackyle/fakeroot/blob/787d757/README_MACOSX.txt
+
+use_autoreconf      yes
+autoreconf.cmd      ./bootstrap
+autoreconf.pre_args
+autoreconf.args
+depends_build       port:autoconf port:automake port:libtool
+depends_skip_archcheck-append libtool
+
+default_variants    +universal
+variant_set         universal
+switch -- ${os.major} {
+    8 {
+        configure.universal_archs   x86_64 i386 ppc64 ppc
+        configure.cflags-append     -mmacosx-version-min=10.4
+    }
+    9 {
+        configure.universal_archs   x86_64 i386 ppc64 ppc
+        configure.ldflags-append    -Wl,-force_cpusubtype_ALL
+    }
+    10 {
+        configure.universal_archs   x86_64 i386 ppc
+        configure.cflags-append     -Wno-deprecated-declarations
+        configure.ldflags-append    -Wl,-force_cpusubtype_ALL
+    }
+    default {
+        configure.universal_archs   x86_64 i386
+        configure.cflags-append     -Wno-deprecated-declarations -Wno-extra-tokens
+    }
+}
+
+configure.args      --disable-static
+
+test.run            yes
+test.target         check
+
+livecheck.type      regex
+livecheck.url       http://packages.debian.org/unstable/fakeroot
+livecheck.regex     {fakeroot \(([\d.]+)}

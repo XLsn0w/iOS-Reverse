@@ -1,0 +1,18 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Attribute-Handlers 0.99
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         Simpler definition of attribute handlers
+long_description    ${description}
+
+platforms           darwin
+
+checksums           rmd160  1ab579464862bf85eb3a7be6e2156f40e166cc1c \
+                    sha256  937ea3ebfc9b14f4a4148bf3c32803709edbd12a387137a26370b38ee1fc9835
+
+supported_archs     noarch

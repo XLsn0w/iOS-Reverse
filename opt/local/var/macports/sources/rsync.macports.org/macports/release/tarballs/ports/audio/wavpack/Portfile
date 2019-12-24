@@ -1,0 +1,53 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           muniversal 1.0
+PortGroup           compiler_blacklist_versions 1.0
+
+name                wavpack
+version             5.1.0
+categories          audio
+license             BSD
+maintainers         nomaintainer
+description         Hybrid lossless audio compression
+long_description    WavPack is a completely open audio compression format \
+                    providing lossless, high-quality lossy, and a unique \
+                    hybrid compression mode. Although the technology is \
+                    loosely based on previous versions of WavPack, the new \
+                    version 4 format has been designed from the ground up \
+                    to offer unparalleled performance and functionality.
+homepage            http://www.wavpack.com/
+platforms           darwin
+master_sites        ${homepage}
+
+use_bzip2           yes
+
+checksums           rmd160  00f3ed759e9e3f7a92d5604e3527545be327fe4d \
+                    sha256  1939627d5358d1da62bc6158d63f7ed12905552f3a799c799ee90296a7612944
+
+depends_lib         port:libiconv
+
+platform darwin {
+    # handrolled asm has issues on older platforms.  Disable it if we don't have access to newer compilers.
+    # Note that "libc++" is really a proxy here for "configuration that supports newer compilers", the C++
+    # runtime actually isn't relevant other than being a requirement of clang-3.5+.
+    if {${configure.cxx_stdlib} eq "libc++"} {
+        compiler.blacklist {macports-clang-3.[34]} {clang < 500} *gcc*
+    } else {
+        configure.args-append --disable-asm
+    }
+}
+
+# if host is not set in 32-bit mode, wrong assembly code is used
+if {![variant_isset universal] && ${build_arch} eq "i386"} {
+    configure.args-append \
+        --host=i686-apple-${os.platform}${os.version}
+}
+if { [variant_isset universal] } {
+    lappend merger_configure_args(i386) \
+        --host=i686-apple-${os.platform}${os.version}
+}
+
+livecheck.type      regex
+livecheck.url       ${homepage}/downloads.html
+livecheck.regex     "${name}-(\\d+(?:\\.\\d+)*)${extract.suffix}"

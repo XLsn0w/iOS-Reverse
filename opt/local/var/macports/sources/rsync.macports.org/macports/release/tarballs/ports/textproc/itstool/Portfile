@@ -1,0 +1,57 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                itstool
+epoch               1
+version             2.0.6
+license             GPL-3+
+set branch          [join [lrange [split ${version} .] 0 1] .]
+
+description         ITS Tool allows you to translate your XML documents with PO files, \
+                    using rules from the W3C Internationalization Tag Set.
+
+long_description    ${description}
+
+maintainers         {devans @dbevans} openmaintainer
+categories          textproc
+platforms           darwin
+homepage            http://itstool.org/
+master_sites        http://files.itstool.org/${name}
+
+use_bzip2           yes
+
+checksums           rmd160  536ebd2f700485fa7ebba81656eee703495b24e6 \
+                    sha256  6233cc22726a9a5a83664bf67d1af79549a298c23185d926c3677afa917b92a9 \
+                    size    103067
+
+supported_archs     noarch
+installs_libs       no
+
+depends_build       port:gawk
+
+patchfiles          patch-configure.diff
+
+variant python27 conflicts python37 description {Use Python 2.7} {
+    configure.python \
+                    ${prefix}/bin/python2.7
+
+    depends_lib-append \
+                    port:py27-libxml2
+}
+
+variant python37 conflicts python27 description {Use Python 3.7 (experimental, still a few bugs)} {
+    configure.python \
+                    ${prefix}/bin/python3.7
+    
+    depends_lib-append \
+                    port:py37-libxml2
+}
+
+if {![variant_isset python27] && ![variant_isset python37]} {
+    default_variants +python27
+}
+
+livecheck.type      regex
+livecheck.url       http://itstool.org/download/
+livecheck.regex     "${name}-(\\d+(?:\\.\\d+)*)${extract.suffix}"

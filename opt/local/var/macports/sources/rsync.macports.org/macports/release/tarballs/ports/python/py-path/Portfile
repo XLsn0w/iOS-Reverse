@@ -1,0 +1,38 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim: fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-path
+version             12.0.1
+revision            0
+categories-append   devel
+platforms           darwin
+license             MIT
+supported_archs     noarch
+
+python.versions     27 34 35 36 37
+
+maintainers         {stromnov @stromnov} openmaintainer
+
+description         A module wrapper for os.path.
+long_description    ${description}
+
+homepage            https://github.com/jaraco/path.py
+master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}.py
+
+distname            ${python.rootname}.py-${version}
+
+checksums           rmd160  6043b7f77716e81ddf563815cf42dcd5b4e4bc7c \
+                    sha256  9f2169633403aa0423f6ec000e8701dd1819526c62465f5043952f92527fea0f \
+                    size    42742
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                        port:py${python.version}-setuptools \
+                        port:py${python.version}-setuptools_scm
+
+    livecheck.type      none
+} else {
+    livecheck.name      ${python.rootname}.py
+}

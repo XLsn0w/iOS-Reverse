@@ -1,0 +1,51 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-upt-cpan
+version             0.5
+revision            0
+
+platforms           darwin
+supported_archs     noarch
+license             BSD
+maintainers         {@korusuke somaiya.edu:karan.sheth} openmaintainer
+
+description         CPAN frontend for upt
+long_description    ${description}
+
+homepage            https://framagit.org/upt/upt-cpan
+master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
+distname            ${python.rootname}-${version}
+
+checksums           sha256  182cd011053a9d496069e99b0d1750be849b434bf5be3bd88d578b2caa162bc7 \
+                    rmd160  46b5b3696c04510f21cc04bd9bff478785c17c38 \
+                    size    5108
+
+python.versions     37
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                    port:py${python.version}-setuptools
+
+    depends_lib-append \
+                    port:py${python.version}-requests
+
+    depends_test-append \
+                    port:py${python.version}-requests-mock
+
+    test.run        yes
+    test.cmd        ${python.bin} -m unittest
+    test.target
+    test.env        PYTHONPATH=${worksrcpath}/build/lib
+
+    post-destroot {
+        set docdir ${prefix}/share/doc/${subport}
+        xinstall -d ${destroot}${docdir}
+        xinstall -m 0644 -W ${worksrcpath} README.md LICENSE \
+            ${destroot}${docdir}
+    }
+
+    livecheck.type  none
+}

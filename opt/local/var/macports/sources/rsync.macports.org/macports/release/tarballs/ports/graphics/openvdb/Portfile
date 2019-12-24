@@ -1,0 +1,101 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+PortGroup               github 1.0
+PortGroup               cmake 1.1
+PortGroup               cxx11 1.1
+PortGroup               active_variants 1.1
+PortGroup               compiler_blacklist_versions 1.0
+
+github.setup            AcademySoftwareFoundation openvdb 6.1.0 v
+revision                1
+homepage                https://www.openvdb.org/
+categories              graphics
+license                 MPL-2
+maintainers             {mcalhoun @MarcusCalhoun-Lopez} openmaintainer
+description             sparse volume data structure and tools
+long_description        OpenVDB is an open source C++ library comprising a novel hierarchical data structure \
+                        and a large suite of tools for the efficient storage and manipulation of \
+                        sparse volumetric data discretized on three-dimensional grids.
+platforms               darwin
+
+checksums               rmd160  3a6786cee02d404f98f1507c359837d9ca97e823 \
+                        sha256  6b832d207175f8396c6984cfc78e7f6b7b15f501536c03359bf3af9085dec509 \
+                        size    1865580
+
+# /openvdb/../openvdb/version.h:226:8: error: unknown type name 'constexpr'
+# inline constexpr const char* getLibraryVersionString() { return OPENVDB_LIBRARY_VERSION_STRING; }
+compiler.blacklist-append *gcc* {clang < 920} {macports-clang-3.[0-9]} {macports-clang-[4-6].0}
+
+# see https://github.com/AcademySoftwareFoundation/openvdb/issues/427
+# Find correct Python version
+patchfiles-append       patch-python3.diff \
+                        patch-python_verison.diff
+
+configure.env-append    BLOSC_ROOT=${prefix} \
+                        TBB_ROOT=${prefix} \
+                        GLFW3_ROOT=${prefix} \
+                        ILMBASE_ROOT=${prefix} \
+                        OPENEXR_ROOT=${prefix}
+
+depends_build-append    port:pkgconfig
+
+depends_lib-append      port:zlib \
+                        port:boost \
+                        port:blosc \
+                        port:tbb \
+                        path:lib/pkgconfig/glfw3.pc:glfw \
+                        port:ilmbase \
+                        port:openexr
+
+# FindOpenEXR.cmake guesses wrong on how to include version number in library name
+# use GLFW version 3
+# avoid
+#    ccache: error: Failed to create directory ${prefix}/var/macports/build/.ccache/tmp: Operation not permitted
+# use latest ABI version (default is 3)
+configure.args-append   -DOPENEXR_NAMESPACE_VERSIONING=OFF \
+                        -DUSE_GLFW3=ON \
+                        -DUSE_CCACHE=OFF \
+                        -DOPENVDB_ABI_VERSION_NUMBER=[lindex [split ${version} .] 0]
+
+# do not "Build the OpenVDB unit tests" (avoid dependency on cppunit)
+configure.args-append   -DOPENVDB_BUILD_UNITTESTS=OFF
+
+variant python27 description {Build the Python 2.7 bindings} conflicts python36 python37 {
+    depends_lib-append \
+        port:python27 \
+        port:py27-numpy
+    post-patch {
+        reinplace "s|__MACPORTS_PYTHON_VERSION__|2.7|g" ${worksrcpath}/CMakeLists.txt
+    }
+    require_active_variants boost python27
+}
+
+variant python36 description {Build the Python 3.6 bindings} conflicts python27 python37 {
+    depends_lib-append \
+        port:python36 \
+        port:py36-numpy
+    post-patch {
+        reinplace "s|__MACPORTS_PYTHON_VERSION__|3.6|g" ${worksrcpath}/CMakeLists.txt
+    }
+    require_active_variants boost python36
+}
+
+variant python37 description {Build the Python 3.7 bindings} conflicts python27 python36 {
+    depends_lib-append \
+        port:python37 \
+        port:py37-numpy
+    post-patch {
+        reinplace "s|__MACPORTS_PYTHON_VERSION__|3.7|g" ${worksrcpath}/CMakeLists.txt
+    }
+    require_active_variants boost python37
+}
+
+if {![variant_isset python36] && ![variant_isset python37]} {
+    default_variants    +python27
+}
+
+if {![variant_isset python27] && ![variant_isset python36] && ![variant_isset python37]} {
+    configure.args-append -DOPENVDB_BUILD_PYTHON_MODULE=OFF
+    patchfiles-delete     patch-python_verison.diff
+}

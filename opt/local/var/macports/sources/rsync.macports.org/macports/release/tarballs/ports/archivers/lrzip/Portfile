@@ -1,0 +1,32 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                lrzip
+version             0.631
+revision            0
+categories          archivers
+maintainers         nomaintainer
+license             GPL-2+
+platforms           darwin
+homepage            http://ck.kolivas.org/apps/lrzip/
+description         Long Range ZIP or Lzma RZIP
+long_description    lrzip is a compression program optimised for large files.\
+                    The larger the file and the more memory you have, the \
+                    better the compression advantage this will provide, \
+                    especially once the files are larger than 100MB. The \
+                    advantage can be chosen to be either size (much smaller \
+                    than bzip2) or speed (much faster than bzip2).
+
+master_sites        ${homepage}
+use_bzip2           yes
+checksums           rmd160  c88cd1c48ecc390b0fe1a5892cdb0d87ab81f3a3 \
+                    sha256  0d11e268d0d72310d6d73a8ce6bb3d85e26de3f34d8a713055f3f25a77226455 \
+                    size    522158
+
+depends_lib         port:lzo2 port:bzip2 port:zlib
+
+livecheck.type      regex
+livecheck.url       ${master_sites}
+livecheck.regex     "${name}-(\[\\d.\]+)${extract.suffix}"
+

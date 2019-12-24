@@ -1,0 +1,35 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim: fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-webcolors
+version             1.10
+revision            0
+categories-append   graphics
+platforms           darwin
+license             BSD
+supported_archs     noarch
+
+python.versions     27 34 35 36 37
+
+maintainers         {stromnov @stromnov} openmaintainer
+
+description         A library for working with web color names
+long_description    ${description}
+
+homepage            http://webcolors.readthedocs.io/
+master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
+
+distname            ${python.rootname}-${version}
+
+checksums           rmd160  d6f332969856002ac1ed3c3076ee44cefb6afb89 \
+                    sha256  7b11194c414dcf4b9bd8fb5ceaafc9da183b27430883c62f620589eb79b91b6e \
+                    size    36108
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                        port:py${python.version}-setuptools
+
+    livecheck.type      none
+}

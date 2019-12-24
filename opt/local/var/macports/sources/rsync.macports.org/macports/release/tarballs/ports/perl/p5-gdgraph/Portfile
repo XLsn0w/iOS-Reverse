@@ -1,0 +1,32 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         GDGraph 1.54 GD
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+
+description         Graph Plotting Module for Perl 5
+long_description    This is GDGraph, a package to generate charts, using \
+                    Lincoln Stein's GD.pm. See the documentation for \
+                    some history and more information.
+
+homepage            https://metacpan.org/release/${perl5.module}
+
+checksums           rmd160  bea2d35746a3464605d8268bdb0ba628a06b0f39 \
+                    sha256  b96f5c10b656c17d16ab65a1777c908297b028d3b6815f6d54b2337f006bfa4f
+
+platforms           darwin
+supported_archs     noarch
+
+if {${perl5.major} != ""} {
+    depends_build-append \
+                    port:p${perl5.major}-capture-tiny \
+                    port:p${perl5.major}-test-exception
+
+    depends_lib-append \
+                    port:p${perl5.major}-gd \
+                    port:p${perl5.major}-gdtextutil
+}

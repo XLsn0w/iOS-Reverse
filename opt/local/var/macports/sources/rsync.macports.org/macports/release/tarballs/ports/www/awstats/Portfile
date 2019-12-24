@@ -1,0 +1,106 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                awstats
+version             7.7
+revision            0
+categories          www
+license             GPL-3
+platforms           darwin freebsd
+maintainers         nomaintainer
+
+description         Free real-time logfile analyzer to get advanced web statistics
+
+long_description    AWStats is short for Advanced Web Statistics. It's a free \
+                    tool that generates advanced web (but also ftp or mail) \
+                    server statistics, graphically. \
+                    \
+                    \n\nThis log analyzer works as a CGI or from command line \
+                    and shows you all possible information that your logs \
+                    contain, in a few graphical web pages. It uses a partial \
+                    information file to be able to process large log files, \
+                    often and quickly. \
+                    \
+                    \n\nIt can analyze log files from IIS (W3C log format), \
+                    Apache log files (NCSA combined/XLF/ELF log format or \
+                    common/CLF log format), WebStar and most of all web, \
+                    proxy, WAP, and streaming servers (and FTP servers or \
+                    mail logs).
+
+homepage            http://www.awstats.org
+master_sites        sourceforge:project/awstats/AWStats/${version}/
+
+checksums           rmd160  361ad5383670bed8a7e343d64d96f6de8b2f800a \
+                    sha256  428e6dd01807c602d75b17e64db17ca10b453bca076d9fb45434ca6be539777c \
+                    size    2956851
+
+depends_lib         path:bin/perl:perl5 port:apache2
+
+patch {
+    reinplace -W ${worksrcpath} -locale C "s|/usr/local|${prefix}|g" \
+        tools/awstats_buildstaticpages.pl \
+        tools/awstats_configure.pl \
+        tools/awstats_updateall.pl \
+        tools/httpd_conf \
+        tools/webmin/awstats-2.0.wbm \
+        wwwroot/cgi-bin/awstats.model.conf \
+        wwwroot/cgi-bin/awstats.pl
+    reinplace -W ${worksrcpath} "s|/usr/bin/perl|${prefix}/bin/perl|g" \
+        tools/awstats_buildstaticpages.pl \
+        tools/awstats_configure.pl \
+        tools/awstats_exportlib.pl \
+        tools/awstats_updateall.pl \
+        tools/logresolvemerge.pl \
+        tools/maillogconvert.pl \
+        tools/urlaliasbuilder.pl \
+        wwwroot/cgi-bin/awstats.pl
+}
+
+use_configure       no
+
+build {}
+
+set docpath         ${prefix}/www/awstats
+
+destroot {
+    xinstall -m 755 -d \
+        ${destroot}${prefix}/share/doc \
+        ${destroot}${prefix}/etc/awstats
+    copy ${worksrcpath}/wwwroot ${destroot}${docpath}
+    copy ${worksrcpath}/tools ${destroot}${docpath}
+    copy ${worksrcpath}/docs ${destroot}${prefix}/share/doc/awstats
+    xinstall -m 755 -W ${worksrcpath} wwwroot/cgi-bin/awstats.model.conf ${destroot}${prefix}/etc/awstats
+}
+
+variant apache22 description "use apache22 instead of apache2" {
+    # remove after 2020-05-02
+    ui_error "Please do not install this variant since Apache 2.2 is obsolete."
+    return -code error
+}
+
+post-install {
+    ui_msg "**********************************************************************"
+    ui_msg "Add the following to your Apache httpd.conf, save, and restart Apache:"
+    ui_msg ""
+    ui_msg "Alias /awstatsclasses \"${docpath}/classes/\""
+    ui_msg "Alias /awstatscss \"${docpath}/css/\""
+    ui_msg "Alias /awstatsicons \"${docpath}/icons/\""
+    ui_msg "ScriptAlias /awstats/ \"${docpath}/cgi-bin/\""
+    ui_msg ""
+    ui_msg "<Directory \"${docpath}/\">"
+    ui_msg "    Options None"
+    ui_msg "    AllowOverride None"
+    ui_msg "    Order allow,deny"
+    ui_msg "        Allow from all"
+    ui_msg "</Directory>"
+    ui_msg ""
+    ui_msg "Find your sample config file in ${prefix}/etc/awstats, rename it to"
+    ui_msg "\"awstats.domain_name.conf\", and edit it to configure Awstats. You"
+    ui_msg "can then access Awstats by pointing your browser to:"
+    ui_msg ""
+    ui_msg "http://yourdomain/awstats/awstats.pl"
+}
+
+livecheck.regex     /${name}-(\[0-9.\]+)${extract.suffix}
+

@@ -1,0 +1,29 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           python 1.0
+
+github.setup        jeffkaufman icdiff 1.9.1 release-
+categories          textproc sysutils devel
+platforms           darwin
+maintainers         {raimue @raimue} \
+                    openmaintainer
+license             PSF
+
+description         improved colored diff
+
+long_description    \
+    icdiff can show you the differences between similar files without getting \
+    in the way. This is especially helpful for identifying and understanding \
+    small changes within existing lines.
+
+homepage            http://www.jefftk.com/icdiff
+
+checksums           rmd160  118cd781f26348efb116e582b963c3467af99ea6 \
+                    sha256  8d7da8a3a8c8110ff227924bea42f3892e8a221d6da22cb71d81dbd2cde91d9b \
+                    size    24380
+
+python.default_version 27
+
+depends_build-append port:py${python.version}-setuptools

@@ -1,0 +1,52 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           compiler_blacklist_versions 1.0
+PortGroup           meson 1.0
+PortGroup           muniversal 1.0
+
+name                gcab
+version             1.2
+license             LGPL-2.1+
+set branch          [join [lrange [split ${version} .] 0 1] .]
+description         A tool and library mainly made to create Cabinet files
+long_description    ${description}, using GObject/GIO API, providing GIR bindings.
+maintainers         nomaintainer
+categories          gnome
+platforms           darwin
+homepage            https://wiki.gnome.org/msitools
+master_sites        gnome:sources/${name}/${branch}/
+
+use_xz              yes
+
+checksums           rmd160  e9a3684cf6cdd8c3b8a4a45903994456a0940cbc \
+                    sha256  5a2d96fe7e69e42d363c31cf2370d7afa3bb69cec984d4128322ea40e62c100d \
+                    size    76088
+
+depends_build-append \
+                    port:pkgconfig \
+                    port:git \
+                    port:gtk-doc
+
+depends_lib         path:lib/pkgconfig/glib-2.0.pc:glib2 \
+                    port:gobject-introspection \
+                    port:vala \
+                    port:zlib
+
+patchfiles          dont-use-version-script.patch
+
+# attempt to fix build on 10.6 by blacklisting troublesome compilers
+compiler.blacklist-append  *gcc-3.* *gcc-4.* {clang < 300}
+
+# gobject-introspection uses g-ir-scanner, which uses $CC from env
+if {[variant_isset universal]} {
+    foreach arch ${configure.universal_archs} {
+        lappend merger_build_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+        lappend merger_destroot_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+    }
+} else {
+    build.env-append       "CC=${configure.cc} ${configure.cc_archflags}"
+    destroot.env-append    "CC=${configure.cc} ${configure.cc_archflags}"
+}
+
+livecheck.type      gnome-with-unstable

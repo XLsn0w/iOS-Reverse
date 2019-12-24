@@ -1,0 +1,52 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+PortGroup           github 1.0
+
+github.setup        nucleic kiwi 1.1.0
+revision            0
+
+name                py-kiwisolver
+categories-append   math
+maintainers         {reneeotten @reneeotten} openmaintainer
+description         Kiwi is an efficient C++ implementation of the Cassowary constraint solving algorithm.
+long_description    Kiwi is an implementation of the algorithm based on the\
+                    seminal Cassowary paper. It is not a refactoring of the\
+                    original C++ solver. Kiwi has been designed from the ground\
+                    up to be lightweight and fast. Kiwi ranges from 10x to 500x\
+                    faster than the original Cassowary solver with typical use\
+                    cases gaining a 40x improvement. Memory savings are\
+                    consistently > 5x.
+
+license             BSD
+platforms           darwin
+
+checksums           rmd160  96f6c040491c7f4d279cf0b26b3704661a6621bb \
+                    sha256  40c64d1d47ff5e3bdde95b41021f4d90f6e77fbe949c66daf390e1a0a71cc7cb \
+                    size    55105
+
+python.versions     27 34 35 36 37 38
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                    port:py${python.version}-setuptools
+
+    post-destroot {
+        set docdir ${prefix}/share/doc/${subport}
+        xinstall -d ${destroot}${docdir}
+        xinstall -m 0644 -W ${worksrcpath} LICENSE README.rst \
+            ${destroot}${docdir}
+    }
+
+    pre-test {
+        test.env    PYTHONPATH=[glob -nocomplain ${worksrcpath}/build/lib*]
+    }
+    depends_test-append \
+                    port:py${python.version}-pytest
+    test.run        yes
+    test.cmd        py.test-${python.branch}
+    test.target
+
+    livecheck.type  none
+}

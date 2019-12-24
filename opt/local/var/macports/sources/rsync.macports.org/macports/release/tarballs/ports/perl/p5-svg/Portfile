@@ -1,0 +1,28 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         SVG 2.84
+license             {Artistic-1 GPL}
+maintainers         {devans @dbevans} openmaintainer
+platforms           darwin
+supported_archs     noarch
+
+description         Perl extension for generating Scalable Vector Graphics \
+                    (SVG) documents
+
+long_description    ${description}
+
+checksums           rmd160  1d2cf2e25f9d507768cd2d0a88709832b81210a5 \
+                    sha256  ec3d6ddde7a46fa507eaa616b94d217296fdc0d8fbf88741367a9821206f28af \
+                    size    55797
+
+if {${perl5.major} != ""} {
+    post-destroot {
+        set examplesdir ${destroot}${prefix}/share/perl${perl5.major}/examples/SVG
+        xinstall -d ${examplesdir}
+        xinstall -m 644 {*}[glob ${worksrcpath}/examples/*] ${examplesdir}
+    }
+}

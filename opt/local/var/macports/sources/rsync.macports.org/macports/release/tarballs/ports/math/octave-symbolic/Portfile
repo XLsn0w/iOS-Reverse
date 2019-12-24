@@ -1,0 +1,64 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           octave 1.0
+
+octave.setup        symbolic 2.8.0
+revision            1
+platforms           darwin
+license             GPL-3
+maintainers         {mps @Schamschula} openmaintainer
+description         Symbolic toolbox based on SymPy.
+
+long_description    ${description}
+
+checksums           rmd160  36566228f2bf3e6e81dfcaf5bad4ac4da4e23369 \
+                    sha256  983ff3534387202be447d873100855fc2fb1fdbccd7ce02d890656435467c1bf \
+                    size    257186
+
+supported_archs     noarch
+
+variant python27 description "Use Python 2.7 SymPy" conflicts python35 python36 python37 {
+    depends_lib-append  port:python27 \
+                        port:py27-sympy
+    configure.python    ${prefix}/bin/python2.7
+}
+
+variant python35 description "Use Python 3.5 SymPy" conflicts python27 python36 python37 {
+    # remove after October 11, 2020
+    ui_error "Please do not install this variant since it has been replaced by the python37 variant."
+    return -code error
+}
+
+variant python36 description "Use Python 3.6 SymPy" conflicts python27 python35 python37 {
+    depends_lib-append  port:python36 \
+        port:py36-sympy
+    configure.python    ${prefix}/bin/python3.6
+}
+
+variant python37 description "Use Python 3.7 SymPy" conflicts python27 python35 python36 {
+    depends_lib-append  port:python37 \
+        port:py37-sympy
+    configure.python    ${prefix}/bin/python3.7
+}
+
+if {![variant_isset python27] && ![variant_isset python35] && ![variant_isset python36] && ![variant_isset python37]} {
+    default_variants +python37
+}
+
+# make sure -python27 was not specified alone
+
+if {![variant_isset python27] && ![variant_isset python35] && ![variant_isset python36] && ![variant_isset python37]} {
+
+    ui_error "\n\nYou must select one of the python variants.\n"
+    return -code error "Invalid variant selection"
+
+}
+
+# see https://trac.macports.org/ticket/55361
+patchfiles-append patch-inst-private-defaultpython.m.diff
+post-patch {
+    reinplace \
+        "s|__MACPORTS_PYTHON__|${configure.python}|g" \
+        ${worksrcpath}/inst/private/defaultpython.m
+}

@@ -1,0 +1,31 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         RPC-XML 0.80
+maintainers         nomaintainer
+license             {Artistic-1 GPL}
+platforms           darwin
+categories-append   textproc
+description         A set of classes for core data, message and XML handling.
+
+long_description    The RPC::XML package is an implementation of the \
+                    XML-RPC standard.
+
+checksums           rmd160  faa9a679854a3dacd504e809a2ed64fa4e113c61 \
+                    sha256  ea0d7ca87aab70c12817df5893f6bfe0492ce63f6e0e63c0b452e375344c7ef7
+
+if {${perl5.major} != ""} {
+    depends_build-append \
+                    port:p${perl5.major}-net-server
+
+    depends_lib-append \
+                    port:p${perl5.major}-datetime-format-iso8601 \
+                    port:p${perl5.major}-xml-libxml \
+                    port:p${perl5.major}-xml-parser \
+                    port:p${perl5.major}-libwww-perl
+
+    supported_archs noarch
+}

@@ -1,0 +1,50 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+PortGroup               github 1.0
+
+github.setup            emacs-php php-mode 1.22.0 v
+revision                0
+checksums               rmd160  c132f7b2a78c506b34cb91fe00357e979c16099b \
+                        sha256  1bb4b5aaf9d4822c193292f8ca81f6bafc41f77a21141fb25155a0fb275ed047 \
+                        size    90227
+
+name                    php-mode.el
+categories              lang editors
+platforms               darwin
+license                 GPL-3+
+maintainers             {ryandesign @ryandesign} openmaintainer
+
+description             PHP mode for Emacs
+
+long_description        An Emacs major mode for editing PHP code. \
+                        Features: Syntax coloring and indenting\; \
+                        Documentation browse and search functions\; \
+                        Support for Imenu and SpeedBar\; \
+                        Customization options
+
+# We want emacs from MacPorts since this will install stuff in emacs' site-lisp and we want
+# it to go into ${prefix}'s site-lisp.
+depends_lib             path:bin/emacs:emacs
+
+use_configure           no
+
+build {
+    system -W ${worksrcpath} "emacs --batch --eval \
+        '(progn (setq load-path (cons \".\" load-path)) \
+                (byte-compile-file \"php-mode.el\"))'"
+}
+
+destroot {
+    set site_lisp ${prefix}/share/emacs/site-lisp
+    xinstall -d ${destroot}${site_lisp}
+    xinstall -W ${worksrcpath} php-mode.el php-mode.elc ${destroot}${site_lisp}
+}
+
+notes "
+To use this, put the following into your ~/.emacs:
+
+(setq auto-mode-alist
+  (cons '(\"\\\\.php\\\\w?\" . php-mode) auto-mode-alist))
+(autoload 'php-mode \"php-mode\" \"PHP mode.\" t)
+"

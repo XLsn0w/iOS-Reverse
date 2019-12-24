@@ -1,0 +1,52 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+PortGroup           github 1.0
+
+github.setup        srnas barnaba 0.1.7
+name                py-barnaba
+
+platforms           darwin
+categories-append   science
+license             GPL-3
+maintainers         {gmail.com:giovanni.bussi @GiovanniBussi} openmaintainer
+
+description         BaRNAba is a tool for analyzing RNA three-dimensional structures and simulations.
+long_description    ${description} \
+                    BaRNAba uses MDtraj to read/write topology and trajectory files, as such it \
+                    supports several formats including pdb, xtc, trr, dcd, binpos, netcdf, mdcrd, \
+                    prmtop, and more. See ${homepage} for more information.
+
+supported_archs     noarch
+
+checksums           rmd160  f6e4f68d5af8149e9a884e6dc88fbe77545507e6 \
+                    sha256  392402230279c710a263062d52a239d5a9cbebd19946f6dd03dbc8453c62dc87 \
+                    size    30260068
+
+python.versions     27 36 37
+
+if {${name} ne ${subport}} {
+
+    depends_build-append    port:py${python.version}-setuptools_scm \
+                            port:py${python.version}-setuptools_scm_git_archive
+
+    depends_lib-append      port:py${python.version}-future \
+                            port:py${python.version}-mdtraj \
+                            port:py${python.version}-numpy \
+                            port:py${python.version}-pandas \
+                            port:py${python.version}-scikit-learn \
+                            port:py${python.version}-scipy
+
+    depends_test-append     port:py${python.version}-nose
+    test.run                yes
+    test.cmd                nosetests-${python.branch}
+    test.target
+}
+
+foreach {old new} {34 36 35 36} {
+    subport py${old}-${python.rootname} "
+        replaced_by py${new}-${python.rootname}
+        PortGroup obsolete 1.0
+    "
+}

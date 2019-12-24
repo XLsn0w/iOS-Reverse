@@ -1,0 +1,49 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+PortGroup           github 1.0
+
+github.setup        Toblerity Fiona 1.8.8
+revision            0
+name                py-fiona
+categories-append   gis
+platforms           darwin
+license             BSD
+
+python.versions     27 34 35 36 37 38
+
+maintainers         {stromnov @stromnov} openmaintainer
+
+description         OGR's neat, nimble, no-nonsense API for Python programmers.
+
+long_description    Fiona provides uncomplicated Python interfaces \
+                    to functions in OGR, the best open source C/C++ \
+                    library for reading and writing geographic vector data.
+
+homepage            https://github.com/Toblerity/Fiona
+
+checksums           rmd160  aba5caa32122a560b0504871f90091b0b89635b8 \
+                    sha256  b60c69a767c548385253a1e2cb0de815c0e867f89f38353b575086d437f9869e \
+                    size    244865
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                        port:py${python.version}-cython
+    depends_lib-append  port:py${python.version}-setuptools \
+                        port:py${python.version}-attrs \
+                        port:py${python.version}-click \
+                        port:py${python.version}-cligj \
+                        port:py${python.version}-click-plugins \
+                        port:py${python.version}-six \
+                        port:py${python.version}-munch \
+                        port:gdal
+
+    if {${python.version} == 27} {
+        depends_lib-append  port:py${python.version}-enum34
+    }
+
+    patchfiles-append   patch-setup.py.diff
+
+    livecheck.type      none
+}

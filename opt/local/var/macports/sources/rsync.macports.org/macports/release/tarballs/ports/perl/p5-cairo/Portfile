@@ -1,0 +1,40 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Cairo 1.107 ../../authors/id/X/XA/XAOC
+license             LGPL-2.1+
+maintainers         nomaintainer
+description         Perl bindings to the cairo library
+long_description    Perl bindings to the 2.x series of the Gtk+ graphical user interface \
+                    library.  This module allows you to write graphical user interfaces in \
+                    a perlish and object-oriented way, freeing you from the casting and \
+                    memory management in C, yet remaining very close in spirit to original \
+                    API.
+
+platforms           darwin
+
+checksums           rmd160  0b93c6e0ea9857d9c4e2e5c9db70f9cd65813010 \
+                    sha256  5e1de126ddf93bd5b13f13a52f50d7f7af1157265b7f10e53d585ee1827be169 \
+                    size    111203
+
+if {${perl5.major} != ""} {
+    depends_lib-append \
+                    path:lib/pkgconfig/cairo.pc:cairo \
+                    port:p${perl5.major}-extutils-depends \
+                    port:p${perl5.major}-extutils-pkgconfig \
+                    port:p${perl5.major}-font-freetype \
+                    port:p${perl5.major}-glib
+
+    depends_test-append \
+                    port:bitstream-vera \
+                    port:dejavu-fonts
+
+    patchfiles      patch-CairoFT-test-fonts.diff
+
+    post-patch {
+        reinplace "s|@@MP_PREFIX@@|${prefix}|" ${worksrcpath}/t/CairoFt.t
+    }
+}

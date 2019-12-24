@@ -1,0 +1,27 @@
+PortSystem 1.0
+
+name            calcurse
+version         4.3.0
+categories      sysutils
+platforms       darwin
+maintainers     {puffin.lb.shuttle.de:michael.klein @mklein-de} openmaintainer
+license         BSD
+
+description     text-based personal organizer
+long_description \
+    Calcurse is a text-based personal organizer which helps \
+    keep track of events and everyday tasks.
+
+homepage        https://calcurse.org
+master_sites    ${homepage}/files
+
+checksums       rmd160  5f6f839e62e0ee7241d055f86a96eb8411a87d0c \
+                sha256  31ecc3dc09e1e561502b4c94f965ed6b167c03e9418438c4a7ad5bad2c785f9a
+
+depends_lib     port:gettext port:libiconv port:ncurses
+
+configure.args-append --disable-rpath
+
+livecheck.type  regex
+livecheck.url   ${homepage}/downloads/
+livecheck.regex "latest.*>(\\d+(?:\\.\\d+)*)</"

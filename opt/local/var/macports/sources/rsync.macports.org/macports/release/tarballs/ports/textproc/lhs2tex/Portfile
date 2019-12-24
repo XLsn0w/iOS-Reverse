@@ -1,0 +1,20 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           haskell_stack 1.0
+
+name                lhs2tex
+version             1.22
+checksums           rmd160  257e58b02249fd8403b14d314a519552afd2a5ab \
+                    sha256  7eea3b5b4bae019aa9acb6036e6c2606c62a0d9969a081d4b9b9f04baa3129bd \
+                    size    679988
+
+license             GPL-2+
+maintainers         {cal @neverpanic} openmaintainer
+platforms           darwin
+categories          textproc tex haskell
+description         Preprocessor for typesetting Haskell sources with LaTeX
+long_description    ${description}
+
+homepage            https://hackage.haskell.org/package/${name}
+master_sites        ${homepage}-${version}

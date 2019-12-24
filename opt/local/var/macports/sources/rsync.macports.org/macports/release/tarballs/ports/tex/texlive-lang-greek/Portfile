@@ -1,0 +1,44 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           texlive 1.0
+
+name                texlive-lang-greek
+version             50805
+revision            0
+
+categories          tex
+maintainers         {dports @drkp}
+license             Copyleft Permissive
+description         TeX Live: Greek
+long_description    Support for Greek.
+
+checksums           texlive-lang-greek-50805-run.tar.xz \
+                    rmd160  a7c1ef02e69e352611b048ffc5120fba0f7dd7db \
+                    sha256  744b75774f5b6d2926e4df59a214f909793d35dd30f55639341d7bd8a5b996f4 \
+                    texlive-lang-greek-50805-doc.tar.xz \
+                    rmd160  4b30a267ee8e531d834c49fde4222ec0f48e8636 \
+                    sha256  464e835087e3127e484a81a254169de389b11e826a85b49aa36ea737dd04c015 \
+                    texlive-lang-greek-50805-src.tar.xz \
+                    rmd160  2014a98a999329aa339370258b8c87b73bf1d2e3 \
+                    sha256  fcde07064423f5a6bba8d54d6e875f430b647ab5d1a72c3aa0b4e3036a4a8823
+
+depends_lib         port:texlive-basic
+
+texlive.languages      \
+    {monogreek loadhyph-el-monoton.tex 1 1 {} {hyph-el-monoton.pat.txt} {} {} } \
+    {greek loadhyph-el-polyton.tex 1 1 {polygreek} {hyph-el-polyton.pat.txt} {} {} } \
+    {ancientgreek loadhyph-grc.tex 1 1 {} {hyph-grc.pat.txt} {} {} } \
+    {ibycus ibyhyph.tex 2 2 {} {} {} {disabled:8-bit only} }
+
+texlive.maps      \
+    {MixedMap cbgreek-full.map} \
+    {Map gfsbaskerville.map} \
+    {Map gfsporson.map} \
+    {MixedMap iby.map} \
+    {Map kerkis.map}
+
+texlive.binaries    mkgrkindex
+
+
+texlive.texmfport

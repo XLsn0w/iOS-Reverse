@@ -1,0 +1,55 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+PortGroup               qt5 1.0
+PortGroup               cmake 1.1
+PortGroup               github 1.0
+
+github.setup            nomacs nomacs 3.12
+revision                0
+checksums               rmd160  222b50472bad62cf681f1c13638eb128f1e8ccb3 \
+                        sha256  008fc1126cecf87fcf4d00e632879adf19641e6338ca97df45b042af17e9a4fa \
+                        size    1736877
+
+name                    nomacs
+license                 GPL-3+
+maintainers             nomaintainer
+description             nomacs image viewer application bundle
+long_description        nomacs is a free image viewer. nomacs is small, fast and able to \
+                        handle the most common image formats. Additionally it is possible \
+                        to synchronize multiple viewers. A synchronization of viewers running \
+                        on the same computer or via LAN is possible. It allows to compare \
+                        images and spot the differences (e.g. schemes of architects to show the progress).
+categories              aqua graphics
+platforms               darwin
+homepage                https://nomacs.org
+
+depends_lib-append      port:exiv2 \
+                        port:libraw \
+                        port:zlib \
+                        port:tiff \
+                        port:opencv
+qt5.depends_component   qtsvg qttools
+
+worksrcdir              ${worksrcdir}/ImageLounge
+
+configure.args-append   -DCMAKE_INSTALL_PREFIX="${applications_dir}"
+configure.args-append   -DQT_QMAKE_EXECUTABLE=${qt_qmake_cmd}
+
+#give name consistent with other macOS applications
+#allow high resolution
+patchfiles-append       patch-name.diff \
+                        patch-Info.plist.in.diff \
+                        patch-CMakeLists.txt.diff
+
+#ImageLounge/src/DkCore/DkMetaData.cpp:1267:7: error: no member named 'cout' in namespace 'std'
+#        std::cout << xmpPacket << "\n";
+#        ~~~~~^
+patchfiles-append       patch-nomacs-iostream-missing.diff
+
+post-destroot {
+    move {*}[glob ${destroot}${applications_dir}/*.dylib ${destroot}${prefix}/lib]
+    xinstall -d -m 0755 ${destroot}${applications_dir}/Nomacs.app/Contents/Resources
+    xinstall -m 0644 ${worksrcpath}/macosx/nomacs.icns ${destroot}${applications_dir}/Nomacs.app/Contents/Resources
+    copy ${worksrcpath}/src/themes ${destroot}${applications_dir}/Nomacs.app/Contents/Resources
+}

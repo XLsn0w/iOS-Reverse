@@ -1,0 +1,25 @@
+PortSystem 1.0
+name             libosip2
+version          5.1.0
+categories       net
+maintainers      {toby @tobypeterson} openmaintainer
+license          LGPL-2.1+
+description      GNU oSIP library
+long_description \
+	oSIP is an implementation of SIP. SIP stands for the \
+	Session Initiation Protocol and is described by the \
+	rfc3261 (wich deprecates rfc2543). This library aims \
+	to provide multimedia and telecom software developers \
+	an easy and powerful interface to initiate and control \
+	SIP based sessions in their applications. SIP is a \
+	open standard replacement from IETF for H323.
+homepage         https://www.gnu.org/software/osip/
+platforms        darwin
+master_sites     gnu:osip
+checksums        rmd160 32d9616b61726c3b58ab7bc23a79094f479d4491 \
+                 sha256 40573a997a656f967b2b5ebafbd36d7f1d4a4634abcf312643854057d061f145 \
+                 size   713281
+configure.args	 --enable-mt --mandir=${prefix}/share/man
+
+livecheck.name   libosip2
+livecheck.url    https://ftp.gnu.org/gnu/osip/

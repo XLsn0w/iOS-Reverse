@@ -1,0 +1,40 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         MetaCPAN-Client 2.026000 ../../authors/id/M/MI/MICKEY
+license             {Artistic-1 GPL}
+maintainers         {devans @dbevans} openmaintainer
+description         MetaCPAN::Client - A comprehensive, DWIM-featured client to the MetaCPAN API
+long_description    ${description}
+
+platforms           darwin
+
+checksums           rmd160  d325059f3e7b1c4f36dbe1b52e397dfe21bbe53c \
+                    sha256  ee711619d59655dac1bd2e4b894ffeb3171bd73b1ed38ba4b7b07d3690f94465 \
+                    size    53003
+
+if {${perl5.major} != ""} {
+# requires ExtUtils::MakeMaker version 7.1101, perl 5.24.0 core version is 7.10_01
+    depends_build-append \
+                    port:p${perl5.major}-extutils-makemaker \
+                    port:p${perl5.major}-lwp-protocol-https \
+                    port:p${perl5.major}-test-fatal \
+                    port:p${perl5.major}-test-needs
+
+    depends_lib-append \
+                    port:p${perl5.major}-http-tiny \
+                    port:p${perl5.major}-io-socket-ssl \
+                    port:p${perl5.major}-json-maybexs \
+                    port:p${perl5.major}-moo \
+                    port:p${perl5.major}-net-ssleay \
+                    port:p${perl5.major}-ref-util \
+                    port:p${perl5.major}-safe-isa \
+                    port:p${perl5.major}-type-tiny \
+                    port:p${perl5.major}-uri
+
+
+    supported_archs noarch
+}

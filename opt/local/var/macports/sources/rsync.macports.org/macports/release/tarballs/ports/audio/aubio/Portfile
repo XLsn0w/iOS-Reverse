@@ -1,0 +1,61 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+PortGroup               waf 1.0
+
+# strnlen
+PortGroup               legacysupport 1.0
+legacysupport.newest_darwin_requires_legacy 10
+
+name                    aubio
+version                 0.4.6
+revision                1
+license                 GPL-2
+categories              audio
+maintainers             nomaintainer
+platforms               darwin
+
+description             audio labeling library
+long_description        ${name} is a library for audio labeling. \
+                        Its features include segmenting a sound file before each of its attacks, \
+                        performing pitch detection, \
+                        tapping the beat and producing MIDI streams from live audio.
+
+homepage                https://aubio.org/
+master_sites            ${homepage}pub/
+
+use_bzip2               yes
+
+checksums               rmd160  c795e46af4ca44d52bbb27c92f5cebc27e19d73d \
+                        sha256  bdc73be1f007218d3ea6d2a503b38a217815a0e2ccc4ed441f6e850ed5d47cfb \
+                        size    363016
+
+depends_build-append    port:pkgconfig \
+                        port:txt2man
+
+depends_skip_archcheck  txt2man
+
+depends_lib-append      path:lib/libavcodec.dylib:ffmpeg \
+                        port:fftw-3-single \
+                        port:libsamplerate \
+                        port:libsndfile
+
+patchfiles              patch-wscript.diff \
+                        patch-ffmpeg-4.0.diff
+
+configure.ldflags-delete \
+                        -L${prefix}/lib
+
+configure.args-append   --enable-fftw3f \
+                        --disable-jack \
+                        --notests
+
+configure.post_args-delete  --nocache
+variant jack description {Enable jack support} {
+    configure.args-delete   --disable-jack
+    depends_lib-append      port:jack
+}
+
+livecheck.type          regex
+livecheck.url           ${master_sites}
+livecheck.regex         "${name}-(\\d+(?:\\.\\d+)*)${extract.suffix}"

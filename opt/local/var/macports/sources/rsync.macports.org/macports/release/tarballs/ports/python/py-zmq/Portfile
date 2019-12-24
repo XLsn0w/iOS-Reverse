@@ -1,0 +1,43 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-zmq
+
+version             18.1.0
+checksums           rmd160 8b762b1405b8206874672eefb763cb01e7b62f04 \
+                    sha256 93f44739db69234c013a16990e43db1aa0af3cf5a4b8b377d028ff24515fbeb3 \
+                    size   1158509
+revision            0
+
+python.versions     27 34 35 36 37 38
+
+maintainers         {gmail.com:jrjsmrtn @jrjsmrtn} {michaelld @michaelld} openmaintainer
+
+categories-append   devel net
+platforms           darwin
+license             LGPL
+
+description         Python bindings for 0MQ
+
+long_description    PyZMQ is a lightweight and super-fast messaging library \
+                    built on top of the ZeroMQ library.
+
+homepage            https://github.com/zeromq/pyzmq
+master_sites        pypi:p/pyzmq
+
+distname            pyzmq-${version}
+
+if {${name} ne ${subport}} {
+    depends_lib-append     path:lib/libzmq.dylib:zmq
+
+    post-patch {
+        set setup_cfg ${worksrcpath}/setup.cfg
+        file copy ${worksrcpath}/setup.cfg.template ${setup_cfg}
+        reinplace "s|/usr/local|${prefix}|g" ${setup_cfg}
+    }
+}
+
+livecheck.name      pyzmq
+livecheck.regex     {"filename":"pyzmq-([0-9.]+).tar.gz",}

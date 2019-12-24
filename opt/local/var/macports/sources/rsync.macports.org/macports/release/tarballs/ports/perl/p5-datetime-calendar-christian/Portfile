@@ -1,0 +1,28 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         DateTime-Calendar-Christian 0.08
+license             {Artistic-1 GPL}
+maintainers         {devans @dbevans} openmaintainer
+description         DateTime::Calendar::Christian - Dates in the Christian calendar
+long_description    ${description}
+
+platforms           darwin
+
+checksums           rmd160  f3af2ef6dc287ca55945f4630056633a8c94283d \
+                    sha256  a57a4b51bc71b923fd10518dd98b05f7e9867d0488ce26463fcb795a13b8b5eb \
+                    size    27404
+
+if {${perl5.major} != ""} {
+    depends_build-append \
+                    port:p${perl5.major}-module-metadata
+
+    depends_lib-append \
+                    port:p${perl5.major}-datetime \
+                    port:p${perl5.major}-datetime-calendar-julian
+
+    supported_archs noarch
+}

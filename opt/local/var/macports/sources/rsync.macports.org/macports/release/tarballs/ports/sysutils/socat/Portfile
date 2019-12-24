@@ -1,0 +1,41 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem 1.0
+
+PortGroup legacysupport 1.0
+legacysupport.newest_darwin_requires_legacy 10
+
+name            socat
+version         1.7.3.3
+revision        1
+categories      sysutils net
+license         {GPL-2 OpenSSLException}
+maintainers     {g5pw @g5pw} openmaintainer
+platforms       darwin
+
+description     netcat on steroids
+long_description        \
+ socat is a relay for bidirectional data transfer between two independent data \
+ channels. Each of these data channels may be a file, pipe, device (serial line \
+ etc. or a pseudo terminal), a socket (UNIX, IP4, IP6 - raw, UDP, TCP), an \
+ SSL socket, proxy CONNECT connection, a file descriptor (stdin etc.), the \
+ GNU line editor (readline), a program, or a combination of two of these.
+
+homepage        http://www.dest-unreach.org/socat/
+master_sites    http://www.dest-unreach.org/socat/download/
+
+checksums       rmd160  692b2d350b38355ad4d9d50c32ee7eb076e85b0e \
+                sha256  0dd63ffe498168a4aac41d307594c5076ff307aa0ac04b141f8f1cec6594d04a \
+                size    489901
+
+use_bzip2 yes
+
+depends_lib     port:readline \
+                path:lib/libssl.dylib:openssl
+
+patchfiles      patch-xio-termios.h.diff
+
+livecheck.type      regex
+livecheck.url       ${master_sites}
+livecheck.regex     "${name}-(\\d+(?:\\.\\d+)*)${extract.suffix}"
+

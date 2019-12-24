@@ -1,0 +1,54 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                fatsort
+version             1.5.0.456
+categories          sysutils
+platforms           darwin freebsd linux
+license             GPL-2+
+maintainers         {ionic @Ionic}
+
+installs_libs       no
+
+description         Utility to sort FAT12, FAT16 and FAT32 partitions
+long_description    FATSort is a C utility that sorts FAT12, FAT16 and \
+                    FAT32 partitions. It even can handle long file \
+                    name entries. FATSort reads the boot sector and \
+                    sorts the directory structure recursively.
+homepage            http://fatsort.sourceforge.net/
+
+depends_build       port:help2man
+depends_lib         port:libiconv
+
+master_sites        sourceforge:${name}
+use_xz              yes
+checksums           rmd160  667c8fe248d1008212c9e28e5faee168e6d3054b \
+                    sha256  a835b47814fd30d5bad464b839e9fc404bc1a6f5a5b1f6ed760ce9744915de95 \
+                    size    56100
+
+use_configure       no
+variant universal   {}
+
+build.type          gnu
+if {[vercmp [macports_version] 2.5.99] >= 0} {
+build.env           "CFLAGS=${configure.cppflags} ${configure.cflags} [get_canonical_archflags cc]" \
+                    "LDFLAGS=${configure.ldflags} [get_canonical_archflags ld]"
+} else {
+build.env           CFLAGS="${configure.cppflags} ${configure.cflags} [get_canonical_archflags cc]" \
+                    LDFLAGS="${configure.ldflags} [get_canonical_archflags ld]"
+}
+build.args          CC=${configure.cc} \
+                    LD=${configure.cc}
+
+destroot.args       MANDIR=${prefix}/share/man/man1 \
+                    SBINDIR=${prefix}/sbin
+
+# OS X can't run the tests, but they could hypothetically run on
+# any system with bbe, mkfs.vfat, and fsck.vfat.
+test.run            yes
+test.target         tests
+
+livecheck.type      regex
+livecheck.url       http://sourceforge.net/api/file/index/project-name/${name}/rss
+livecheck.regex     /${name}/files/${name}-(\[a-zA-Z0-9.\]+\\.\[a-zA-Z0-9.\]+)\\.tar\\.?\[a-zA-Z\]*/

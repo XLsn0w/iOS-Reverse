@@ -1,0 +1,82 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                mod_security2
+set name_package    modsecurity
+version             2.9.3
+revision            2
+categories          www security
+license             Apache-2
+platforms           darwin
+maintainers         {mps @Schamschula} openmaintainer
+description         Apache 2 intrusion detection and prevention engine for web applications
+long_description    ModSecurity is an open source intrusion detection and \
+                    prevention engine for web applications. It operates \
+                    embedded into the web server, acting as a powerful \
+                    umbrella - shielding applications from attacks.
+homepage            http://www.modsecurity.org
+master_sites        https://www.modsecurity.org/tarball/${version}/
+distname            ${name_package}-${version}
+
+checksums           rmd160  de34a027da168abdb3397a2c3ca4ac5ba4081e73 \
+                    sha256  4192019d169d3f1dd82cc4714db6986df54c6ceb4ee1c8f253de78d1a6b62118 \
+                    size    4307670
+
+worksrcdir          ${distname}
+
+depends_build       port:pkgconfig
+
+depends_lib         port:apache2 \
+                    port:libxml2 \
+                    port:lua \
+                    port:curl
+
+set apxs            ${prefix}/bin/apxs
+set httpd_conf      ${prefix}/etc/apache2/httpd.conf
+set mdir            ${destroot}${prefix}/lib/apache2/modules/
+
+variant apache22 description "use apache22 instead of apache2" {
+    # remove after 2020-05-06
+    ui_error "Please do not install this variant since Apache 2.2 is obsolete."
+    return -code error
+}
+
+configure.args      --with-apxs=${apxs} \
+                    --with-pcre=${prefix}/bin/pcre-config \
+                    --with-apr=${prefix}/bin/apr-1-config \
+                    --with-apu=${prefix}/bin/apu-1-config \
+                    --with-curl=${prefix}/bin/curl-config \
+                    --with-libxml=${prefix} \
+                    --with-lua=${prefix}
+
+destroot {
+    xinstall -d -m 755 ${mdir}
+    xinstall -m 644 -W ${worksrcpath}/apache2/.libs mod_security2.so \
+                        ${mdir}
+    xinstall -m 755 -W ${worksrcpath}/mlogc mlogc mlogc-batch-load.pl \
+                        ${destroot}${prefix}/bin
+    xinstall -m 755 -W ${worksrcpath}/tools rules-updater.pl \
+                        ${destroot}${prefix}/bin
+    xinstall -m 755 -W ${worksrcpath}/mlogc mlogc-default.conf \
+                        ${destroot}${prefix}/etc
+    xinstall -d -m 755 ${destroot}${prefix}/share/doc/${name}
+    xinstall -m 644 -W ${worksrcpath} CHANGES LICENSE NOTICE README.md \
+                        ${destroot}${prefix}/share/doc/${name}
+}
+
+livecheck.type      regex
+livecheck.url       http://www.modsecurity.org/download.html
+livecheck.regex     "tarball/(\\d+(?:\\.\\d+)*)/modsecurity-\\1.tar.gz"
+
+notes "
+
+# Now edit ${httpd_conf} and add the following lines at the end of the LoadModules section:
+    LoadFile ${prefix}/lib/libxml2.dylib
+    LoadFile ${prefix}/lib/liblua.dylib
+    LoadModule security2_module modules/mod_security2.so
+
+# And finally reload apache.
+    $ sudo apachectl graceful
+
+"

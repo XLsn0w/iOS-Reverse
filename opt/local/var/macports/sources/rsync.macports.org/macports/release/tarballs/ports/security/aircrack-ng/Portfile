@@ -1,0 +1,62 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+epoch               1
+github.setup        aircrack-ng aircrack-ng 1.5.2
+revision            0
+checksums           rmd160  b95a3413b8949ad604e845a8e0f52a650bee7e62 \
+                    sha256  9e592fe7658046220e0ac0a6d05c4026903f3077b248893e0056ccbe4ee88241 \
+                    size    7138360
+
+categories          security
+license             GPL-2+ BSD OpenSSL
+platforms           darwin
+maintainers         {ryandesign @ryandesign} openmaintainer
+supported_archs     i386 x86_64
+
+description         Aircrack-ng is the next generation of aircrack with lots of new features
+
+long_description    aircrack is an 802.11 WEP and WPA-PSK keys cracking \
+                    program that can recover keys once enough data packets \
+                    have been captured. It implements the standard FMS \
+                    attack along with some optimizations like KoreK attacks, \
+                    thus making the attack much faster compared to other WEP \
+                    cracking tools. In fact, aircrack is a set of tools for \
+                    auditing wireless networks.
+
+homepage            http://aircrack-ng.org/
+master_sites        http://download.aircrack-ng.org/
+
+depends_build       port:autoconf \
+                    port:automake \
+                    port:gmake \
+                    port:libtool \
+                    port:pkgconfig
+
+depends_lib         port:libpcap \
+                    path:lib/libssl.dylib:openssl \
+                    port:pcre \
+                    port:sqlite3
+
+patchfiles-append   aircrack_ng_mac.m4.patch
+
+# No configure script in tarball.
+configure.cmd       ./autogen.sh
+
+configure.args      --disable-silent-rules \
+                    --with-libpcap-include=${prefix}/include \
+                    --with-libpcap-lib=${prefix}/lib \
+                    --with-openssl=${prefix} \
+                    --with-sqlite3=${prefix} \
+                    --without-duma \
+                    --without-experimental \
+                    --without-ext-scripts \
+                    --without-gcrypt \
+                    --without-xcode
+
+build.cmd           ${prefix}/bin/gmake
+
+test.run            yes
+test.target         check

@@ -1,0 +1,17 @@
+--- setup.py.orig	2018-11-12 08:58:25.000000000 -0500
++++ setup.py	2018-11-17 11:13:23.000000000 -0500
+@@ -87,13 +87,7 @@
+     },
+ 
+     entry_points={
+-        # Install a script as "coverage", and as "coverage[23]", and as
+-        # "coverage-2.7" (or whatever).
+-        'console_scripts': [
+-            'coverage = coverage.cmdline:main',
+-            'coverage%d = coverage.cmdline:main' % sys.version_info[:1],
+-            'coverage-%d.%d = coverage.cmdline:main' % sys.version_info[:2],
+-        ],
++        'console_scripts': ['coverage = coverage.cmdline:main'],
+     },
+ 
+     # We need to get HTML assets from our htmlfiles directory.

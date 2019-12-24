@@ -1,0 +1,77 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           compiler_blacklist_versions 1.0
+
+name                yelp
+version             3.34.0
+license             GPL-2
+set branch          [join [lrange [split ${version} .] 0 1] .]
+description         Help browser for GNOME.
+long_description    Yelp is the default help browser for the \
+                    GNOME desktop. Yelp provides a simple graphical \
+                    interface for viewing DocBook, HTML, man, and info \
+                    formatted documentation.
+maintainers         {devans @dbevans} openmaintainer
+categories          gnome
+platforms           darwin
+homepage            https://wiki.gnome.org/Apps/Yelp
+master_sites        gnome:sources/${name}/${branch}/
+
+use_xz              yes
+
+checksums           rmd160  974de26a8fa89786cd1da6f916bdba4b4bac3826 \
+                    sha256  e3d6527c5963d73206891b32f1f23363164be57de248555513bd0be77a7bd045 \
+                    size    1538980
+
+depends_build       port:pkgconfig \
+                    port:intltool \
+                    port:itstool \
+                    port:appstream-glib \
+                    port:autoconf \
+                    port:automake \
+                    port:libtool \
+                    port:gtk-doc
+
+depends_lib         port:desktop-file-utils \
+                    port:gtk3 \
+                    port:sqlite3 \
+                    port:xz \
+                    port:bzip2 \
+                    port:yelp-xsl \
+                    path:lib/pkgconfig/webkit2gtk-4.0.pc:webkit2-gtk
+
+#
+# if yelp is invoked without a URI argument
+# it defaults to help:user-guide
+#
+
+depends_run         port:gnome-user-docs \
+                    port:gnome-getting-started-docs \
+                    port:adwaita-icon-theme
+
+patchfiles          patch-m4-ax_compiler_flags_ldflags.m4.diff
+
+# error: redefinition of typedef ‘WebKitWebEditor’
+compiler.blacklist  *gcc-3.* *gcc-4.* {clang < 300}
+
+# reconfigure using upstream autogen.sh for intltool 0.51 compatibility
+
+configure.cmd       ./autogen.sh
+
+configure.args      --enable-compile-warnings=minimum \
+                    --disable-schemas-compile \
+                    --disable-silent-rules \
+                    --enable-debug
+
+# dependency tracking breaks configuration in 3.28.1
+# disable for now
+configure.args-append \
+                    --disable-dependency-tracking
+
+post-activate {
+    system "${prefix}/bin/glib-compile-schemas ${prefix}/share/glib-2.0/schemas"
+    system "${prefix}/bin/update-desktop-database ${prefix}/share/applications"
+}
+
+livecheck.type      gnome

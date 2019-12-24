@@ -1,0 +1,179 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           cmake 1.0
+PortGroup           conflicts_build 1.0
+PortGroup           github 1.0
+
+name                weechat
+
+if {${name} eq ${subport}} {
+    conflicts       weechat-devel
+    name            weechat
+    version         2.5
+    revision        0
+    checksums       rmd160  d71265cdfb4df485f8fa7902a459c76168c95870 \
+                    sha256  4c772c949c59949ff4156560c66900c5aaa9ab2da4439ee278b7c21b24daf191 \
+                    size    2968058
+
+    master_sites    https://weechat.org/files/src/
+    use_bzip2       yes
+}
+
+subport weechat-devel {
+    conflicts       weechat
+    name            weechat-devel
+    version         2.5-dev-20190424
+    revision        0
+    checksums       rmd160  ef1b9219d799507e783f84aab90b163546184139 \
+                    sha256  00ca8188a67175e158fafa356a528731ed6520ae8b629627791653f1b204af1b \
+                    size    2952987
+
+    master_sites    https://weechat.org/files/src/devel/
+    use_bzip2       yes
+    distname        ${name}-20190424
+    worksrcdir      ${name}
+}
+
+homepage            https://weechat.org/
+license             GPL-3
+description         Fast, light & extensible IRC client
+long_description    \
+    WeeChat (Wee Enhanced Environment for Chat) is a fast and light IRC client \
+    for many operating systems. Everything can be done with a keyboard. It is \
+    customizable and extensible with plugins/scripts, and includes: \
+    \n - nicklist \
+    \n - smart hotlist \
+    \n - infobar with highlight notification \
+    \n - horizontal and vertical split \
+    \n - double charset support (decode/encode) \
+    \n - FIFO pipe for remote control \
+    \n - and much more!
+
+categories          irc
+maintainers         {gmail.com:starkhalo @harciga} \
+                    openmaintainer
+platforms           darwin
+
+depends_build-append \
+                    port:asciidoctor \
+                    port:libxslt \
+                    port:docbook-xsl-nons
+
+depends_lib-append  \
+                    port:curl \
+                    port:gettext \
+                    port:libgcrypt \
+                    port:libiconv \
+                    port:ncurses
+
+license_noconflict  asciidoctor
+
+cmake.out_of_source yes
+
+conflicts_build v8
+
+configure.args-append \
+                    -DENABLE_GNUTLS=OFF \
+                    -DENABLE_LUA=OFF \
+                    -DENABLE_GUILE=OFF \
+                    -DENABLE_PERL=OFF \
+                    -DENABLE_PYTHON=OFF \
+                    -DENABLE_PYTHON3=OFF \
+                    -DENABLE_RUBY=OFF \
+                    -DENABLE_ASPELL=OFF \
+                    -DENABLE_TCL=OFF \
+                    -DENABLE_MAN=ON
+
+variant python requires python27 description {Compatibility variant, requires +python27} {}
+
+variant python27 description "Bindings for python 2.7 plugins" conflicts python36 {
+    configure.args-replace  -DENABLE_PYTHON=OFF -DENABLE_PYTHON=ON
+    configure.args-append   -DPYTHON_EXECUTABLE=${prefix}/bin/python2.7
+    configure.args-append   -DPYTHON_INCLUDE_PATH=${frameworks_dir}/Python.framework/Versions/2.7/Headers
+    configure.args-append   -DPYTHON_LIBRARY=${frameworks_dir}/Python.framework/Versions/2.7/Python
+    depends_lib-append      port:python27
+}
+
+variant python36 description "Bindings for python 3.6 plugins" conflicts python27 {
+    configure.args-replace  -DENABLE_PYTHON=OFF -DENABLE_PYTHON=ON
+    configure.args-replace  -DENABLE_PYTHON3=OFF -DENABLE_PYTHON3=ON
+    configure.args-append   -DPYTHON_EXECUTABLE=${prefix}/bin/python3.6
+    configure.args-append   -DPYTHON_INCLUDE_PATH=${frameworks_dir}/Python.framework/Versions/3.6/Headers
+    configure.args-append   -DPYTHON_LIBRARY=${frameworks_dir}/Python.framework/Versions/3.6/Python
+    depends_lib-append      port:python36
+
+    # From https://weechat.org/files/doc/stable/weechat_user.en.html#dependencies
+    notes "Recommended Python version is 2.7 (all scripts run fine with version 2.7, but not with versions < 2.7 or ≥ 3.0)."
+}
+
+post-configure {
+    if {[variant_isset python27] || [variant_isset python36]} {
+        set patchfile ${configure.dir}/src/plugins/python/CMakeFiles/python.dir/link.txt
+
+        reinplace -E "s| \(Python.framework\)| ${frameworks_dir}/\\1|g" ${patchfile}
+
+        if {[variant_isset python36]} {
+            reinplace -E "s|-Wl,-stack_size,1000000||" ${patchfile}
+        }
+    }
+}
+
+variant tcl description {Support for tcl} {
+    configure.args-delete   -DENABLE_TCL=OFF
+    configure.args-append   -DENABLE_TCL=ON
+    depends_lib-append      port:tcl
+}
+
+variant aspell description {Support for aspell} {
+    configure.args-delete   -DENABLE_ASPELL=OFF
+    configure.args-append   -DENABLE_ASPELL=ON
+    depends_lib-append      port:aspell
+}
+
+variant lua description {Bindings for lua plugins} {
+    configure.args-delete   -DENABLE_LUA=OFF
+    configure.args-append   -DENABLE_LUA=ON
+    depends_lib-append      port:lua
+}
+
+variant scheme description {Bindings for Scheme (guile) plugins} {
+    configure.args-delete   -DENABLE_GUILE=OFF
+    configure.args-append   -DENABLE_GUILE=ON
+    depends_lib-append      port:guile
+}
+
+variant perl description {Bindings for perl plugins} {
+    configure.args-delete   -DENABLE_PERL=OFF
+    configure.args-append   -DENABLE_PERL=ON
+    depends_lib-append      path:bin/perl:perl5
+}
+
+variant ruby description {Bindings for ruby plugins} {
+    configure.args-delete   -DENABLE_RUBY=OFF
+    configure.args-append   -DENABLE_RUBY=ON
+    depends_lib-append      port:ruby
+}
+
+variant tls description {Support for secure connecting} {
+    depends_run-append      path:etc/openssl/cert.pem:curl-ca-bundle
+
+    configure.args-delete   -DENABLE_GNUTLS=OFF
+    configure.args-append   -DENABLE_GNUTLS=ON \
+                            -DCA_FILE=${prefix}/etc/openssl/cert.pem
+    depends_lib-append      port:gnutls
+}
+
+variant doc description {Build Documentation and plugin API} {
+    depends_build-append    port:source-highlight
+
+    configure.args-append   -DENABLE_DOC=ON
+}
+
+default_variants    +tls
+
+post-destroot {
+    xinstall -m 755 -d ${destroot}${prefix}/share/doc/weechat
+    xinstall -m 644 -W ${worksrcpath} AUTHORS.adoc COPYING ChangeLog.adoc README.adoc ${destroot}${prefix}/share/doc/weechat
+    xinstall -m 644 -W ${worksrcpath} {*}[glob doc/en/weechat*.adoc] ${destroot}${prefix}/share/doc/weechat
+}

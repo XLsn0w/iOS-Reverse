@@ -1,0 +1,35 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           texlive 1.0
+
+name                texlive-games
+version             50815
+revision            0
+
+categories          tex
+maintainers         {dports @drkp}
+license             Copyleft Permissive
+description         TeX Live: Games typesetting
+long_description    Setups for typesetting various games, including chess.
+
+checksums           texlive-games-50815-run.tar.xz \
+                    rmd160  b53412ebcbd7a128f96546e8900010f4a275dfe3 \
+                    sha256  02f5ca7e8e37e13820c55fb203b3abfe8902a26ec1a8d0448e63f9920176a0ed \
+                    texlive-games-50815-doc.tar.xz \
+                    rmd160  470644d2bdf3ed42333fdf7a82f3cef1d8833a98 \
+                    sha256  c2c163bbc01771f07c95b355ebe3421fac865a24657a06e299d68bfd2b5daf81 \
+                    texlive-games-50815-src.tar.xz \
+                    rmd160  ee96a5e69eb8153c2e4e97a12b2f005ffa23f80b \
+                    sha256  da00d832fd2ecbd96759cefece0bccc166d2090ca696f593f8d712b0664481cd
+
+depends_lib         port:texlive-latex
+
+texlive.maps      \
+    {Map SkakNew.map}
+
+texlive.binaries    rubikrotation
+
+depends_lib-append port:texlive-plain-generic
+
+texlive.texmfport

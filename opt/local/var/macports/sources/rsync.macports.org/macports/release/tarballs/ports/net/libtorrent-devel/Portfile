@@ -1,0 +1,70 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+github.setup        rakshasa libtorrent 3a6a61a4138048134f9048aef81a52f9bf821b29
+version             20181027
+revision            1
+
+name                libtorrent-devel
+conflicts           libtorrent
+set real_name       libtorrent
+
+categories          net
+platforms           darwin
+maintainers         nomaintainer
+license             {GPL-2+ OpenSSLException}
+
+description         BitTorrent library (unstable release)
+
+long_description    libTorrent is a BitTorrent library written in C++ for \
+                    *nix. It is designed to avoid redundant copying and \
+                    storing of data that other clients and libraries suffer from. \
+                    This is the "unstable" release of libTorrent.
+
+checksums           rmd160  84fccee8263f2f0df34939d4a3de5abdace69bb2 \
+                    sha256  84b9f0f5f3d5819db889e4a012436132d37e5442376eeddb118668c1a764dd61 \
+                    size    357393
+
+use_autoreconf      yes
+autoreconf.cmd      ./autogen.sh
+
+depends_build-append \
+                    port:pkgconfig \
+                    port:autoconf \
+                    port:automake \
+                    port:libtool
+
+# malformed object (unknown load command 2)
+if {${os.platform} eq "darwin" && ${os.major} <= 10} {
+    depends_build-append port:cctools
+}
+
+depends_lib-append \
+                    path:lib/libssl.dylib:openssl \
+                    port:libsigcxx2
+
+compiler.cxx_standard   2011
+
+configure.args      --disable-debug \
+                    --with-kqueue
+
+post-destroot {
+    set docdir ${prefix}/share/doc/${real_name}
+    xinstall -d ${destroot}${docdir}
+    xinstall -m 0644 -W ${worksrcpath} AUTHORS COPYING ChangeLog NEWS README \
+        ${destroot}${docdir}
+}
+
+if {${os.platform} eq "darwin" && ${os.major} <= 9} {
+    # currently broken, ticket #27289
+    pre-fetch {
+        return -code error "$name currently cannot be compiled on Mac OS X 10.5 or earlier."
+    }
+    # clear deps so users don't waste time installing them for a broken port
+    depends_lib
+    depends_build
+
+    patchfiles-append   no_posix_memalign.patch
+}

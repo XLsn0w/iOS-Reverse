@@ -1,0 +1,77 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:et:sw=4:ts=4:sts=4
+
+PortSystem      1.0
+PortGroup       github 1.0
+PortGroup       xcode 1.0
+
+github.setup    transmission transmission 2.94
+revision        1
+categories      net aqua
+maintainers     {khindenburg @kurthindenburg} openmaintainer
+license         MIT GPL-2
+
+description     Lightweight BitTorrent client
+long_description \
+    Transmission is a free, lightweight BitTorrent client. \
+    It features a simple, intuitive interface on top of an \
+    efficient, cross-platform back-end. Transmission is open \
+    source (MIT license) and runs on Mac OS X (Cocoa interface), \
+    Linux/NetBSD/FreeBSD/OpenBSD (GTK+ interface) and BeOS \
+    (native interface). \
+    This is the Cocoa version.
+
+homepage        https://transmissionbt.com
+
+checksums           rmd160  be98df0828b1b7ac5668f6d6c65c70c9cea9a05f \
+                    sha256  aadf9bdcf07e8065f7160d3012cce36b6f0c9eeca4773dbd90fb1902fe487c4c \
+                    size    6342235
+
+patchfiles      patch-xcodebuild.diff patch-sparkle.diff \
+                patch-disable-sparkle-menu.diff
+
+platforms       macosx
+
+depends_lib-append      port:gettext \
+                        port:libevent \
+                        port:curl
+
+xcode.target            Transmission
+xcode.configuration     Release
+
+variant daemon description {Builds headless daemon} {
+    xcode.target-append transmission-daemon
+    xcode.target-append transmission-remote
+}
+
+pre-patch {
+    reinplace -E "s%third-party/(curl|libevent|openssl)/(include|lib)%@@PREFIX@@/\\2%g" \
+        ${worksrcpath}/Transmission.xcodeproj/project.pbxproj
+}
+
+post-patch {
+    reinplace -E "s|@@PREFIX@@|${prefix}|g" \
+        ${worksrcpath}/Transmission.xcodeproj/project.pbxproj
+}
+
+destroot {
+    file copy ${worksrcpath}/build/${xcode.configuration}/Transmission.app \
+        ${destroot}${applications_dir}/Transmission.app
+
+    if {[variant_isset daemon]} {
+        xinstall -m 755 -W ${worksrcpath}/build/${xcode.configuration} \
+        transmission-daemon transmission-remote \
+        ${destroot}${prefix}/bin
+
+        xinstall -m 644 -W ${worksrcpath}/daemon \
+        transmission-daemon.1 transmission-remote.1 \
+        ${destroot}${prefix}/share/man/man1
+   }
+}
+
+if {([vercmp $xcodeversion 7.0] < 0) || ([vercmp ${macosx_deployment_target} 10.9] < 0)} {
+    pre-fetch {
+        ui_error "${name} ${version} requires Xcode 7.0 or greater to build and macOS 10.9 to run."
+        ui_error "Consider installing transmission-x11 instead."
+        return -code error "incompatible OS X version"
+    }
+}

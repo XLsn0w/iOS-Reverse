@@ -1,0 +1,34 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+PortGroup           github 1.0
+
+name                py-pyinterval
+github.setup        taschini pyinterval 1.2.0
+categories-append   math
+platforms           darwin
+supported_archs     noarch
+license             BSD
+maintainers         nomaintainer
+
+description         Interval arithmetic in Python
+long_description    \
+    This library provides a Python implementation of an algebraically closed \
+    interval system on the extended real number set. An interval object \
+    consists of a finite union of closed, possibly unbound, mathematical \
+    intervals.
+
+checksums           md5     ea9fde4a95d089d55466799697bed3cf \
+                    rmd160  baf27c4acb5c617879a425635bd9fe77fa23a54b \
+                    sha256  e33e1f7fc4d25ffd60bae4b6b82a4b414c3edd6591103d41883831e9687fd3e0
+
+python.versions     27 34 35 36
+
+if {${name} ne ${subport}} {
+    depends_build-append    port:py${python.version}-setuptools
+
+    depends_lib-append      port:py${python.version}-pycrlibm
+
+    livecheck.type      none
+}

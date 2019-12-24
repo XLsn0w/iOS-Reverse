@@ -1,0 +1,50 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+PortGroup           github 1.0
+PortGroup           xcode 1.0
+PortGroup           xcodeversion 1.0
+
+github.setup        yujitach MenuMeters 1.9.8
+categories          aqua sysutils
+maintainers         {stevenmyint.com:git @myint} openmaintainer
+license             GPL-2
+
+# bundled MenuCracker is only compiled for these archs
+supported_archs     i386 ppc x86_64
+
+description         Set of CPU, memory, disk, and network monitoring tools
+long_description    The MenuMeters monitors are true SystemUIServer plugins     \
+                    (also known as Menu Extras). This means they can be reordered   \
+                    using command-drag and remember their positions in the menubar  \
+                    across logins and restarts.
+
+checksums           rmd160  a93d08d6e4a0bf180171550c97eaf27b970f3786 \
+                    sha256  3c6b3a22f095da6dccbe0f54211d1b6abd26491421a316b8128335000339be5e \
+                    size    234533
+
+patchfiles          patch-MenuMeters.xcodeproj-project.pbxproj.diff
+
+xcode.configuration Release
+xcode.scheme        PrefPane
+destroot.pre_args   -derivedDataPath ./DerivedData
+build.pre_args      -derivedDataPath ./DerivedData
+
+destroot.violate_mtree \
+                    yes
+
+destroot    {
+    xinstall -m 755 -d ${destroot}/Library/PreferencePanes
+    file copy ${worksrcpath}/build/UninstalledProducts/macosx/${name}.prefPane \
+        ${destroot}/Library/PreferencePanes
+}
+
+minimum_xcodeversions {14 8.0}
+
+pre-fetch {
+    if {${os.subplatform} eq "macosx" && [vercmp ${macosx_version} 10.10] < 0} {
+        ui_error "${name} ${version} requires OS X 10.10 or greater."
+        return -code error "incompatible macOS version"
+    }
+}

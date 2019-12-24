@@ -1,0 +1,205 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+# Please remember to keep this file in sync with the pypy-tkinter port!
+
+PortSystem          1.0
+PortGroup           bitbucket 1.0
+PortGroup           select 1.0
+
+name                pypy
+bitbucket.setup     pypy pypy 7.2.0 {release-pypy${python.branch}-v}
+revision            1
+categories          lang python devel
+license             MIT PSF
+maintainers         {danchr @danchr} openmaintainer
+
+platforms           darwin
+
+homepage            http://pypy.org/
+use_bzip2           yes
+bitbucket.tarball_from \
+                    downloads
+
+depends_build       port:pkgconfig \
+                    port:py27-docutils
+depends_lib         port:libffi \
+                    port:sqlite3 \
+                    port:bzip2 \
+                    path:lib/libssl.dylib:openssl \
+                    port:gettext \
+                    port:gdbm \
+                    port:expat \
+                    port:ncurses
+depends_run         port:python_select
+select.entries      [list python python-$subport $subport]
+
+patchfiles          darwin.py.diff \
+                    no-embed.diff \
+                    make_output.diff \
+                    ffiplatform.py.diff \
+                    paths.diff
+
+use_configure       no
+
+# a simple mapping from scripts to modules -- ideally, upstream
+# provided these
+array set module_scripts {
+    pydoc pydoc
+    2to3 lib2to3
+    smtpd.py smtpd
+}
+
+subport pypy3 {
+    set python.branch 3.6
+
+    set module_scripts(venv) venv
+    set module_scripts(idle) idlelib
+
+    depends_lib-append port:xz
+
+    depends_run-append port:python3_select
+    select.entries-append [list python3 python3-$subport $subport]
+
+    checksums           rmd160  cdcc01b6235ea2598d978c84c974977d60f1be05 \
+                        sha256  0d7c707df5041f1593fe82f29c40056c21e4d6cb66554bbd66769bd80bcbfafc \
+                        size    21850076
+}
+
+if {$subport == ${name}} {
+    set python.branch 2.7
+
+    depends_run-append port:python2_select
+    select.entries-append [list python2 python2-$subport $subport]
+
+    checksums           rmd160  e2cd6ff78845f1b674997e99adbdcc8bd8780e7f \
+                        sha256  55cb7757784fbe3952102447f65b27d80e6c885a464a7af1a9ce264492439dcc \
+                        size    20219532
+}
+
+distname            pypy${python.branch}-v${version}-src
+description         A fast interpreter for Python ${python.branch}
+long_description \
+    PyPy is a replacement for CPython ${python.branch}. The main reason to use it \
+    instead of CPython is speed, as it runs generally faster.
+
+build.env           PYPY_USESSION_DIR=${workpath} PYPY_LOCALBASE=${prefix} \
+                    PYPY_NO_EMBED_DEPENDENCIES=1 \
+                    "CFLAGS=${configure.cc_archflags} ${configure.cppflags}" \
+                    "LDFLAGS=${configure.ld_archflags} ${configure.ldflags}"
+
+build.dir           ${worksrcpath}/pypy/goal
+build.args          --batch --verbose \
+                    --cc=${configure.cc} --opt=jit \
+                    --make-jobs=${build.jobs}
+build.target        ../../rpython/bin/rpython
+build.post_args     targetpypystandalone
+
+destroot.env        {*}${build.env}
+destroot.dir        ${worksrcpath}/pypy/tool/release
+destroot.args       --builddir ${destroot}${prefix}/lib \
+                    --archive-name ${subport} \
+                    --without-tk --no-embedded-dependencies
+destroot.target     package.py
+destroot.post_args
+
+post-patch {
+    # sanity check, useful when upgrading, as upstream tends to move these around
+    if { ![catch {exec grep --exclude "*.orig" -Ilwre /sw -e ${prefix} ${worksrcpath}} result] } {
+        ui_warn "patching potentially didn't catch all references to /sw and ${prefix}:\n$result"
+    }
+
+    reinplace "s|__PREFIX__|${prefix}|" \
+        ${worksrcpath}/extra_tests/ctypes_tests/conftest.py \
+        ${worksrcpath}/pypy/tool/cpyext/extbuild.py \
+        ${worksrcpath}/lib_pypy/cffi/ffiplatform.py \
+        ${worksrcpath}/lib_pypy/_tkinter/tklib_build.py
+
+    if {${python.branch} == "2.7" && ${macosx_deployment_target} != "10.14"} {
+        reinplace "/MACOSX_DEPLOYMENT_TARGET/s/10.14/${macosx_deployment_target}/" \
+            lib-python/2.7/distutils/sysconfig_pypy.py
+    }
+
+    # sanity check, likewise
+    if { ![catch {exec grep --exclude "*.orig" -lIwre __PREFIX__ ${worksrcpath}} result] } {
+        ui_warn "patching potentially didn't catch all references to __PREFIX__:\n$result"
+    }
+}
+
+# Which Python binary should we use? Building PyPy is _very_ resource
+# intensive, and one of the best cases for using PyPy itself over
+# CPython.
+if {$subport ne $name} {
+    # just use our own pypy2 for building pypy3
+    depends_build-append port:pypy
+    build.cmd       ${prefix}/lib/pypy/bin/pypy
+} elseif {![tbool ports_trace] && [file executable ${prefix}/lib/pypy/pypy]} {
+    # if we're not in trace mode, use pypy from this port if it's available
+    build.cmd       ${prefix}/lib/pypy/pypy
+} else {
+    if {${os.platform} eq "darwin" && ${os.arch} eq "i386" && ![catch {sysctl hw.cpu64bit_capable} is64bit] && $is64bit == 1} {
+        # use a binary distribution of pypy itself
+        depends_build-append port:pypy-bootstrap
+        build.cmd       ${prefix}/lib/pypy-bootstrap/bin/pypy
+    } else {
+        # fall back to good old CPython...
+        depends_build-append port:python27
+        build.cmd       ${prefix}/bin/python2.7
+    }
+}
+
+# a lot of memory is used before the C compiler even runs, so limit build.jobs
+# according to available memory more tightly than the default
+if {![catch {sysctl hw.memsize} memsize]} {
+    if {$build_arch eq "x86_64" || $build_arch eq "ppc64"} {
+        incr memsize -4000000000
+    } else {
+        incr memsize -2000000000
+    }
+    if {$memsize <= 0} {
+        build.jobs 1
+    } elseif {${build.jobs} > $memsize / 1000000000 + 1} {
+        build.jobs [expr {$memsize / 1000000000 + 1}]
+    }
+}
+
+# memory usage bug in gcc 4.2 on x86_64
+if {$build_arch eq "x86_64"} {
+    compiler.blacklist gcc-4.2
+}
+
+platform darwin {
+    # use arch -foo if available
+    if {${os.major} >= 9} {
+        build.cmd arch -${build_arch} ${build.cmd}
+    }
+}
+
+# JIT is not available on powerpc at present
+if {${os.arch} ne "i386"} {
+    build.args-delete --opt=jit
+    build.args-append --opt=3
+}
+
+post-destroot {
+    file delete ${destroot}${prefix}/lib/${subport}.tar.bz2
+    ln -s ../lib/${subport}/bin/${subport} ${destroot}${prefix}/bin/${subport}
+
+    xinstall -d ${destroot}${prefix}/share/man/man1
+    system -W ${worksrcpath}/pypy/doc/man \
+        "rst2man-2.7.py pypy.1.rst ${destroot}${prefix}/share/man/man1/${subport}.1"
+
+    foreach script [array names module_scripts] {
+        set module $module_scripts($script)
+        set scriptpath "${destroot}${prefix}/lib/${subport}/bin/${script}"
+
+        xinstall -m 755 ${filespath}/module-script.sh $scriptpath
+        reinplace "s+__PYPY__+${prefix}/bin/${subport}+" $scriptpath
+        reinplace "s+__MODULE__+${module}+" $scriptpath
+    }
+}
+
+variant opt1 description {use optimization level 1 for faster build (but slower execution)} {
+    depends_lib-append port:boehmgc
+    build.args-delete  --opt=3 --opt=jit
+    build.args-append  --opt=1
+}

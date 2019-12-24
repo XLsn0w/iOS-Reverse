@@ -1,0 +1,146 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           select 1.0
+
+name                ruby26
+version             2.6.5
+revision            0
+
+categories          lang ruby
+maintainers         {kimuraw @kimuraw} openmaintainer
+platforms           darwin
+
+description         Powerful and clean object-oriented scripting language
+long_description    Ruby is the interpreted scripting language for quick \
+                    and easy object-oriented programming. It has many \
+                    features to process text files and to do system \
+                    management tasks (as in Perl). It is simple, \
+                    straight-forward, extensible, and portable.
+
+homepage            https://www.ruby-lang.org/
+license             {Ruby BSD}
+
+master_sites        ruby:2.6
+use_bzip2           yes
+distname            ruby-${version}
+dist_subdir         ruby26
+
+checksums           md5 d1b89c88effb71d75cd7ef77c35e1985 \
+                    rmd160 a20e84f1630c0b0b0e7e99b61552d180c6d1cea5 \
+                    sha1 d959802f994594f3296362883b5ce7edf5e6e465 \
+                    sha256 97ddf1b922f83c1f5c50e75bf54e27bba768d75fea7cda903b886c6745e60f0a
+
+use_parallel_build  no
+
+depends_lib         port:readline \
+                    path:lib/libssl.dylib:openssl \
+                    port:zlib \
+                    port:libyaml \
+                    port:libffi \
+                    port:gdbm
+depends_run         port:ruby_select
+depends_build       port:pkgconfig
+depends_skip_archcheck pkgconfig
+
+select.group        ruby
+select.file         ${filespath}/ruby26
+
+configure.args      --enable-shared \
+                    --enable-install-static-library \
+                    --disable-install-doc \
+                    --mandir="${prefix}/share/man" \
+                    --enable-pthread \
+                    --without-gmp \
+                    --with-opt-dir="${prefix}" \
+                    --program-suffix=2.6 \
+                    --with-rubylibprefix="${prefix}/lib/ruby2.6"
+
+# Add the architecture flag as required
+if {[info exists build_arch] && ${build_arch} != ""} {
+    configure.args-append "--with-arch=${build_arch}"
+}
+
+post-patch {
+    # (see rb-bundler) sh "gem build ..." -> sh "gem2.6 build ..."
+    reinplace -E "s/(gem) (build|install|push)/gem2.6 \\2/g" \
+        ${worksrcpath}/lib/bundler/gem_helper.rb
+}
+
+post-destroot {
+    foreach type {site vendor} {
+        set libdir ${destroot}${prefix}/lib/ruby2.6/${type}_ruby/2.6.0
+        xinstall -m 0755 -d ${libdir}
+        foreach subdir [exec find ${libdir} -type d -empty] {
+            destroot.keepdirs-append ${subdir}
+        }
+    }
+
+    # install destination of commands from port:rb26-*
+    xinstall -m 0755 -d ${destroot}${prefix}/libexec/ruby2.6
+    destroot.keepdirs-append ${destroot}${prefix}/libexec/ruby2.6
+}
+
+variant doc description "Install rdoc indexes and C API documents" {
+        configure.args-delete   --disable-install-doc
+}
+
+variant gmp description "use gmp" {
+        configure.args-delete   --without-gmp
+        depends_lib-append      port:gmp
+}
+
+variant jemalloc description "use jemalloc" {
+        configure.args-delete   --without-jemalloc
+        configure.args-append   --with-jemalloc
+        depends_lib-append      port:jemalloc
+}
+
+variant universal {
+        # use ruby built-in universal mechanism.
+        configure.args-append   --with-arch=[join ${universal_archs} ,]
+        # clear macports' universal flags
+        configure.universal_cflags
+        configure.universal_cppflags
+        configure.universal_cxxflags
+        configure.universal_ldflags
+}
+
+variant relative description "Enable relative loading of libraries to allow for relocation of binaries." {
+        #enable relative loading
+        configure.args-append  --enable-load-relative
+}
+
+# legacy systems suport
+platform darwin {
+
+    # Build requires 10.8 SDK when targeting 10.7
+    # see https://trac.macports.org/ticket/57986
+    if {${os.major} == 11} {
+        set ten_eight_sdkpath ${developer_dir}/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk
+        if {[file exists $ten_eight_sdkpath]} {
+            configure.sdkroot $ten_eight_sdkpath
+        } else {
+            pre-fetch {
+                error "Building $name @${version} on Mac OS X 10.7 requires the MacOSX10.8.sdk to be present in ${developer_dir}/Platforms/MacOSX.platform/Developer/SDKs"
+            }
+        }
+    }
+
+    if {${os.major} < 11} {
+        depends_build-append    port:gmake
+        build.cmd               ${prefix}/bin/gmake
+        configure.args-append   --disable-dtrace
+        configure.cflags-append -std=c99
+    }
+
+    if {${os.major} == 8} {
+        configure.cppflags-append -DCPU_SUBTYPE_MASK=0xff000000
+    }
+}
+
+
+livecheck.type  regex
+livecheck.url   https://cache.ruby-lang.org/pub/ruby/2.6/
+livecheck.regex ruby-(2.6.\\d+)${extract.suffix}
+

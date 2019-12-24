@@ -1,0 +1,30 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                xwd
+version             1.0.7
+categories          x11 graphics
+license             X11
+maintainers         {jeremyhu @jeremyhu} openmaintainer
+description         Dump an image of an X11 window
+long_description    ${description}
+
+platforms           darwin
+
+homepage            https://www.x.org/
+master_sites        xorg:individual/app/
+use_bzip2           yes
+
+checksums           rmd160  4a9b24140af9e3ed189641eeb62378bcff8287ec \
+                    sha256  cd6815b8b9e0b98e284d3d732fb12162159cb9dcee4f45a7d4c0bd8b308a6794 \
+                    size    148026
+
+depends_build       port:pkgconfig
+
+depends_lib         port:xorg-libX11 \
+                    port:xorg-libxkbfile
+
+livecheck.type      regex
+livecheck.regex     ${name}-(\[\\d.\]+)${extract.suffix}
+livecheck.url       https://xorg.freedesktop.org/archive/individual/app/?C=M&O=D

@@ -1,0 +1,32 @@
+PortSystem          1.0
+
+name                nslint
+version             3.1
+categories          net
+license             BSD
+maintainers         nomaintainer
+description         Lint program for dns files
+long_description    ${description}
+
+platforms           darwin sunos
+
+homepage            http://ee.lbl.gov/
+master_sites        ftp://ftp.ee.lbl.gov/ \
+                    ftp://ftp.ee.lbl.gov/old/
+
+checksums           rmd160  dec29dec9cb0a2bbe2221c2bec1ef6122d26c166 \
+                    sha256  907b6924f2e15581ed1d0d2cc7c32bfbd09c2bbfd2f2a6d00cd650cd2c4d8668
+
+depends_build       port:automake
+
+patchfiles          patch-Makefile.in.diff
+
+pre-configure {
+   # Replace the symlinks which point to /usr/local with a real file
+   foreach fileToReplace {config.guess config.sub install-sh} {
+      delete ${worksrcpath}/${fileToReplace}
+      copy [glob ${prefix}/share/automake-*/${fileToReplace}] ${worksrcpath}
+   }
+}
+
+build.target

@@ -1,0 +1,11 @@
+--- configure.old	2015-07-19 11:54:14.000000000 +0200
++++ configure	2015-07-19 11:56:22.000000000 +0200
+@@ -25705,7 +25705,7 @@
+     { $as_echo "$as_me:${as_lineno-$LINENO}: result: found in $with_ecw/lib." >&5
+ $as_echo "found in $with_ecw/lib." >&6; }
+   elif test -r $with_ecw/bin/libNCSEcw.so -o -r $with_ecw/bin/libNCSEcw.dylib ; then
+-    ECW_LIBS="-L$with_ecw/bin -lNCSEcw -lNCSEcwC -lNCSCnet -lNCSUtil"
++    ECW_LIBS="-L$with_ecw/redistributable/libstdc++ -lNCSEcw"
+     { $as_echo "$as_me:${as_lineno-$LINENO}: result: found in $with_ecw/bin." >&5
+ $as_echo "found in $with_ecw/bin." >&6; }
+   elif test -r $with_ecw/lib/libecwj2.dylib ; then

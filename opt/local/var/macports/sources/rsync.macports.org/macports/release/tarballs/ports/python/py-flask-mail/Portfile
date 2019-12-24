@@ -1,0 +1,34 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+PortGroup           github 1.0
+
+github.setup        mattupstate flask-mail 0.9.1
+name                py-flask-mail
+version             0.9.1
+revision            2
+python.versions     27 34 35 36
+categories-append   www
+maintainers         {aronnax @lpsinger} openmaintainer
+description         Flask Mail extension
+long_description    \
+    A Flask extension for sending email messages.
+
+license             BSD
+platforms           darwin
+supported_archs     noarch
+homepage            http://pythonhosted.org/Flask-Mail/
+
+checksums           rmd160  4428a70c792d942f41ea2fdef3f515444f473705 \
+                    sha256  3f5c2a7218bca5328a70c8cc4f1da2c09a14e6fc9a375485303dd92bf5883938
+
+if {${name} ne ${subport}} {
+    depends_build-append    port:py${python.version}-setuptools \
+                            port:py${python.version}-sphinx
+
+    depends_lib-append      port:py${python.version}-flask \
+                            port:py${python.version}-blinker
+
+    livecheck.type          none
+}

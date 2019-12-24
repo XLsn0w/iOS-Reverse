@@ -1,0 +1,53 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-lxml
+version             4.4.1
+categories-append   devel
+platforms           darwin
+license             BSD
+
+python.versions     27 35 36 37 38
+
+maintainers         {petr @petrrr} openmaintainer
+
+description         Powerful and Pythonic XML processing library
+
+long_description    lxml is a Pythonic binding for the libxml2 and \
+                    libxslt libraries.  It is unique in that it \
+                    combines the speed and feature completeness of \
+                    these libraries with the simplicity of a native \
+                    Python API, mostly compatible but superior to \
+                    the well-known ElementTree API.
+
+homepage            https://lxml.de/
+master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
+
+distname            ${python.rootname}-${version}
+
+checksums           rmd160  59cdb459fe7c4f0b7e90fa4e133d6f88f55d226b \
+                    sha256  c81cb40bff373ab7a7446d6bbca0190bccc5be3448b47b51d729e37799bb5692 \
+                    size    4532114
+
+# https://trac.macports.org/ticket/56666
+patchfiles-append   patch-setupinfo-remove-xcrun-call.diff
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                        port:py${python.version}-setuptools
+
+    depends_lib-append  port:zlib \
+                        port:libxml2 \
+                        port:libxslt
+
+    test.run            yes
+    test.cmd            ${python.bin} src/lxml/tests/selftest.py
+    test.target
+    test.env            PYTHONPATH=${worksrcpath}/build/lib
+
+    livecheck.type      none
+} else {
+    livecheck.type      pypi
+}

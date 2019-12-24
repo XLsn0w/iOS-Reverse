@@ -1,0 +1,61 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           cmake 1.1
+PortGroup           cxx11 1.1
+PortGroup           github 1.0
+PortGroup           compiler_blacklist_versions 1.0
+
+github.setup        CastXML CastXML 0.2.0 v
+
+name                castxml
+epoch               20190718
+revision            0
+categories          lang
+platforms           darwin
+license             Apache-2
+
+maintainers         {stromnov @stromnov} openmaintainer
+
+description         CastXML is a C-family abstract syntax tree XML output tool.
+long_description    ${description}
+
+checksums           rmd160  32a444fcf649bbbd3757ff58ea16b605e158a261 \
+                    sha256  669b2a06f04ed2fb3a3dc41eb8e68051d439e4e01a665153b8f424d084199725 \
+                    size    94839
+
+depends_lib-append  port:zlib \
+                    port:libffi \
+                    port:libedit \
+                    port:ncurses
+
+configure.args-append \
+                    -DCastXML_INSTALL_DOC_DIR=share/doc/castxml
+
+variant clang60 conflicts clang70 clang80 description {Use clang 6.0 toolchain.} {
+    depends_lib-append  port:llvm-6.0
+    depends_build-append \
+                        port:clang-6.0
+    configure.args-append \
+                        -DLLVM_DIR=${prefix}/libexec/llvm-6.0/lib/cmake/llvm
+}
+
+variant clang70 conflicts clang60 clang80 description {Use clang 7.0 toolchain.} {
+    depends_lib-append  port:llvm-7.0
+    depends_build-append \
+                        port:clang-7.0
+    configure.args-append \
+                        -DLLVM_DIR=${prefix}/libexec/llvm-7.0/lib/cmake/llvm
+}
+
+variant clang80 conflicts clang60 clang70 description {Use clang 8.0 toolchain.} {
+    depends_lib-append  port:llvm-8.0
+    depends_build-append \
+                        port:clang-8.0
+    configure.args-append \
+                        -DLLVM_DIR=${prefix}/libexec/llvm-8.0/lib/cmake/llvm
+}
+
+if {![variant_isset clang60] && ![variant_isset clang70]} {
+    default_variants +clang80
+}

@@ -1,0 +1,65 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+PortGroup               github 1.0
+
+# mono_version is the version of port Mono
+# see https://github.com/mono/mono/blob/mono-${mono_version}/packaging/MacSDK/msbuild.py for version
+github.setup            mono msbuild ad9c9926a76e3db0d2b878a24d44446d73640d19
+version                 20190605
+revision                0
+categories              devel
+platforms               darwin
+license                 MIT
+maintainers             {mcalhoun @MarcusCalhoun-Lopez} openmaintainer
+description             the build platform for .NET and Visual Studio
+long_description        The Microsoft Build Engine is a platform for building applications.
+
+# see msbuild_download_url in file eng/cibuild_bootstrapped_msbuild.sh
+# see global.json
+set bootstrap_msbuild   mono_msbuild_xplat-master-3c930fa8
+
+# msbuild requires msbuild to build
+master_sites-append     https://github.com/mono/msbuild/releases/download/0.06/:bootstrap
+distfiles-append        ${bootstrap_msbuild}.zip:bootstrap
+
+checksums               ${distname}${extract.suffix} \
+                        rmd160  cd94c92f7b2dbf705c21ebe261ef4f166ead5639 \
+                        sha256  43929581d5f1556d6c6b047361774269d21e25400b3059652ac8a3a6a6208f5c \
+                        size    15354569 \
+                        ${bootstrap_msbuild}.zip \
+                        rmd160  5806a472faeb46fd77fb2020671bc6bc660af09c \
+                        sha256  281b8ae3f31c44290a3521becb7d824cb2f8957d2190417942b841a0db0ef284 \
+                        size    20073670
+
+extract.only            ${distname}${extract.suffix}
+
+post-extract {
+    # replicate the code in function DownloadMSBuildForMono found in file eng/cibuild_bootstrapped_msbuild.sh
+    xinstall -d -m 0755 ${worksrcpath}/artifacts
+    set unzip [findBinary unzip ${portutil::autoconf::unzip_path}]
+    system -W ${worksrcpath}/artifacts "${unzip} -q ${distpath}/${bootstrap_msbuild}.zip -d ${worksrcpath}/artifacts"
+    move ${worksrcpath}/artifacts/msbuild ${worksrcpath}/artifacts/mono-msbuild
+    system "chmod +x ${worksrcpath}/artifacts/mono-msbuild/MSBuild.dll"
+}
+
+depends_lib             port:mono
+
+use_configure           no
+
+build.target            all-mono
+
+destroot {
+    # see https://github.com/mono/mono/blob/mono-${mono_version}/packaging/MacSDK/msbuild.py
+    system -W ${worksrcpath} "./artifacts/mono-msbuild/msbuild mono/build/install.proj /p:MonoInstallPrefix=${destroot}${prefix} /p:Configuration=Release-MONO"
+    reinplace "s|${destroot}||g" ${destroot}${prefix}/bin/msbuild
+}
+
+# TODO: fix
+notes "
+Warning: ${subport} downloads files during the build phase.
+This is contrary to standard MacPorts practices, but it seems to be a fundamental part of msbuild.
+"
+
+# keep synchronized with https://github.com/mono/mono/blob/mono-${mono_version}/packaging/MacSDK/msbuild.py
+livecheck.type none

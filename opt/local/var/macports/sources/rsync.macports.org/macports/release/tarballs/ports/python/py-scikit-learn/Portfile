@@ -1,0 +1,70 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-scikit-learn
+version             0.21.3
+revision            0
+categories-append   science
+platforms           darwin
+license             BSD
+
+python.versions     27 34 35 36 37 38
+
+maintainers         {stromnov @stromnov} openmaintainer
+
+description         Easy-to-use and general-purpose machine learning in Python
+
+long_description    Scikit-learn integrates machine learning algorithms \
+                    in the tightly-knit scientific Python world, building upon \
+                    numpy, scipy, and matplotlib. As a machine-learning module, \
+                    it provides versatile tools for data mining and analysis \
+                    in any field of science and engineering.
+
+homepage            https://scikit-learn.org/
+master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
+
+distname            ${python.rootname}-${version}
+
+checksums           rmd160  79de51e6c377ef43684b1d333803ae233e4d8cc1 \
+                    sha256  eb9b8ebf59eddd8b96366428238ab27d05a19e89c5516ce294abc35cea75d003 \
+                    size    12245919
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                        port:py${python.version}-setuptools \
+                        port:py${python.version}-cython
+    depends_lib-append  port:py${python.version}-numpy \
+                        port:py${python.version}-scipy
+
+    if {${python.version} <= 34} {
+        version             0.20.3
+        revision            0
+        distname            ${python.rootname}-${version}
+        checksums           rmd160  83e04bc34d4adf8836a562550e4ad1405f53fc68 \
+                            sha256  c503802a81de18b8b4d40d069f5e363795ee44b1605f38bc104160ca3bfe2c41 \
+                            size    11818490
+    } else {
+        depends_lib-append  port:libomp
+        depends_run-append  port:py${python.version}-joblib
+
+        # force cythonize
+        patchfiles-append   patch-sklearn__build_utils___init__.py.diff
+
+        python.add_archflags no
+
+        build.env-append    "CPPFLAGS=${configure.cppflags} -I${prefix}/include/libomp -Xpreprocessor -fopenmp" \
+                            "CFLAGS=${configure.cc_archflags} -I${prefix}/include/libomp" \
+                            "CXXFLAGS=${configure.cxx_archflags} -I${prefix}/include/libomp" \
+                            "LDFLAGS=${configure.ld_archflags} -L${prefix}/lib/libomp -lomp" \
+                            DYLD_LIBRARY_PATH=${prefix}/lib/libomp
+        destroot.env-append "CPPFLAGS=${configure.cppflags} -I${prefix}/include/libomp -Xpreprocessor -fopenmp" \
+                            "CFLAGS=${configure.cc_archflags} -I${prefix}/include/libomp" \
+                            "CXXFLAGS=${configure.cxx_archflags} -I${prefix}/include/libomp" \
+                            "LDFLAGS=${configure.ld_archflags} -L${prefix}/lib/libomp -lomp" \
+                            DYLD_LIBRARY_PATH=${prefix}/lib/libomp
+    }
+
+    livecheck.type      none
+}

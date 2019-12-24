@@ -1,0 +1,20 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         MP3-Tag 1.15
+platforms           darwin
+maintainers         nomaintainer
+supported_archs     noarch
+license             Artistic-1
+
+description         MP3::Tag - Module for reading tags of MP3 audio files
+long_description    ${description}
+
+use_zip             yes
+
+checksums           sha256  aaac48f4637edca408fd79381bc0bff0f9b11bd8e1e94de059dae993365f56d1 \
+                    rmd160  ec23f95902dc7ae6aba387cbe04e93c8e1a12d4d \
+                    size    321983

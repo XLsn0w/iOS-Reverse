@@ -1,0 +1,38 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           gobject_introspection 1.0
+
+name                amtk
+version             5.0.1
+license             GPL-2.1+
+set branch          [join [lrange [split ${version} .] 0 1] .]
+description         ${name} is a companion library to GLib and Gtk+.
+long_description    ${description} Amtk is an acronym for Actions, Menus \
+                    and Toolbars Kit. It is a basic GtkUIManager replacement \
+                    based on GAction. It is suitable for both a traditional UI \
+                    or a modern UI with a GtkHeaderBar.
+
+maintainers         {devans @dbevans} openmaintainer
+categories          gnome
+platforms           darwin
+homepage            https://gitlab.gnome.org/GNOME/${name}
+master_sites        gnome:sources/${name}/${branch}/
+
+use_xz              yes
+
+checksums           rmd160  ab90cc65eba9000b54ccebfbc7e44bd76ad7c300 \
+                    sha256  2d1cf4a4468655f93c90a2dde2e08b1ea0b3960c0aee04eb206c201d7849de27 \
+                    size    369192
+
+depends_build       port:pkgconfig
+
+depends_lib         port:gtk3
+
+gobject_introspection yes
+
+configure.args-append \
+                    --disable-dependency-tracking \
+                    --disable-silent-rules
+
+livecheck.type      gnome

@@ -1,0 +1,116 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           compiler_blacklist_versions 1.0
+
+name                gnome-terminal
+version             3.26.2
+set branch          [join [lrange [split ${version} .] 0 1] .]
+description         Terminal component for the GNOME 3 Desktop
+long_description    ${description}
+maintainers         {devans @dbevans} openmaintainer
+categories          gnome
+license             GPL-3+
+platforms           darwin
+homepage            https://wiki.gnome.org/Apps/Terminal
+master_sites        gnome:sources/${name}/${branch}/
+
+use_xz              yes
+
+checksums           rmd160  c13b970f15c5acef5fd110d13aa8ebdcf9042445 \
+                    sha256  3a9ba414a814569476515275ad303d8056f296b2669234447712559aa97005b0
+
+depends_build       port:pkgconfig \
+                    port:intltool \
+                    port:itstool \
+                    port:yelp-tools \
+                    port:appstream-glib \
+                    port:libxml2 \
+                    port:gnome-common \
+                    port:autoconf \
+                    port:automake \
+                    port:libtool
+
+depends_lib         port:desktop-file-utils \
+                    port:gsettings-desktop-schemas \
+                    port:gnutls \
+                    port:gtk3 \
+                    port:vte \
+                    port:dbus \
+                    port:dconf \
+                    port:pcre2 \
+                    port:xorg-libX11
+
+depends_run         port:adwaita-icon-theme \
+                    port:yelp
+
+patchfiles          patch-src-Makefile.am.diff \
+                    patch-src-terminal-screen.c.diff \
+                    patch-src-server.c.diff \
+                    patch-strchrnul.diff
+
+post-patch {
+    # reconfigure using upstream autogen.sh for intltool 0.51 compatibility
+    xinstall -m 755 ${filespath}/autogen.sh ${worksrcpath}
+
+    # build fails with ossp-uuid active
+    # force use of system uuid even if ossp-uuid is installed
+    reinplace "s|^#include <uuid.h>|#include <uuid/uuid.h>|" \
+        ${worksrcpath}/src/terminal-prefs.c \
+        ${worksrcpath}/src/terminal-profiles-list.c \
+        ${worksrcpath}/src/terminal-screen.c \
+        ${worksrcpath}/src/terminal-settings-list.c \
+        ${worksrcpath}/src/terminal-window.c
+}
+
+# The driver driver trips over gterminal.c for some reason
+# clang-77 (Xcode 3.2.6) hits an assertion failure: "UNREACHABLE executed!"
+compiler.blacklist  *gcc-4* {clang < 100}
+
+configure.cmd       ./autogen.sh
+
+configure.args      --with-gtk=3.0 \
+                    --with-nautilus-extension=no \
+                    --enable-debug \
+                    --disable-migration \
+                    --disable-search-provider \
+                    --disable-silent-rules \
+                    --disable-schemas-compile
+
+configure.cflags-append \
+                    -iwithsysroot ${configure.sdkroot}/usr/include
+
+variant nautilus description {Build optional nautilus extension} {
+    configure.args-replace  --with-nautilus-extension=no --with-nautilus-extension=yes
+    depends_lib-append      port:nautilus
+}
+
+variant migration description {Enable prefs migration from GConf to GSettings} {
+    configure.args-delete   --disable-migration
+    depends_lib-append      port:gconf
+}
+
+platform darwin {
+    if {${configure.cxx_stdlib} eq "libstdc++"} {
+        # vte 0.43.1+ build fails on platforms supporting libstdc++ (#50492)
+        # gnome-terminal 3.20.0+ requires vte 0.44.0
+        epoch               1
+        version             3.18.3
+        set branch          [join [lrange [split ${version} .] 0 1] .]
+        master_sites        gnome:sources/${name}/${branch}/
+        checksums           rmd160  e73ec1c44f4d0c27e3f921706b7a58305dc64af7 \
+                            sha256  14c2fce1c6a80a3fb0cc8666d7752228adcb60d199634ab69150de32e3c17d56
+        patchfiles-append   patch-configure.ac-3.18.3.diff
+        livecheck.type      none
+    } else {
+        patchfiles-append   patch-configure.ac.diff
+        livecheck.type      gnome
+    }
+}
+
+post-activate   {
+    system "${prefix}/bin/update-desktop-database ${prefix}/share/applications"
+    system "${prefix}/bin/glib-compile-schemas ${prefix}/share/glib-2.0/schemas"
+}
+
+livecheck.type      gnome

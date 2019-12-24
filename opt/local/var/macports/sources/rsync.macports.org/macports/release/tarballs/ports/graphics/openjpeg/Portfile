@@ -1,0 +1,52 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           cmake 1.0
+PortGroup           github 1.0
+
+# see #47197
+cmake.out_of_source yes
+
+github.setup        uclouvain openjpeg 2.3.1 v
+categories          graphics
+platforms           darwin
+license             BSD
+
+maintainers         {mcalhoun @MarcusCalhoun-Lopez} openmaintainer
+
+description         Library for manipulating JPEG-2000 images
+
+long_description    The OpenJPEG library is an open-source JPEG 2000 codec. \
+                    It has been developed in order to promote the use of JPEG \
+                    2000, the new still-image compression standard from the \
+                    Joint Photographic Experts Group (JPEG).
+
+homepage            http://www.openjpeg.org/
+
+checksums           rmd160  44b0347b240ecaf0b7683c9ef99c83e0d2987b94 \
+                    sha256  63a8b061476ea938a777772660f4e9855223da099260cb93e7decc5bcc37ac21 \
+                    size    2215126
+
+depends_build-append \
+                    port:pkgconfig
+
+depends_lib         port:libpng \
+                    port:tiff \
+                    port:lcms2 \
+                    port:zlib \
+                    port:jbigkit
+
+configure.cppflags-replace -I${prefix}/include -isystem${prefix}/include
+
+pre-activate {
+    # openjpeg < 1.5.0 accidentally installed items directly into
+    # ${prefix}/share/man bypassing ${destroot}; remove them if found.
+    foreach m {man1/image_to_j2k.1.gz man1/j2k_dump.1.gz man1/j2k_to_image.1.gz man3/libopenjpeg.3.gz} {
+        set filepath ${prefix}/share/man/${m}
+        if {[file exists ${filepath}] && [registry_file_registered ${filepath}] == "0"} {
+            if {[catch {delete ${filepath}}]} {
+                ui_warn "Cannot delete ${filepath}; please remove it manually"
+            }
+        }
+    }
+}

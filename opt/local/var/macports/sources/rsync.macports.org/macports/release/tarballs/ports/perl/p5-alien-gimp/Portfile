@@ -1,0 +1,33 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Alien-Gimp 0.08
+license             {Artistic-1 GPL}
+maintainers         {devans @dbevans} openmaintainer
+description         Alien::Gimp - Encapsulate install info for GIMP
+long_description    ${description}
+
+platforms           darwin
+
+checksums           rmd160  da3c10bb083f31a3f05d3a09673635ce8c7892f6 \
+                    sha256  2f4389558883284ee63f9e0c2e16cde06cbf152e03916fd35d2f0334fca6bf79 \
+                    size    2987
+
+if {${perl5.major} != ""} {
+    depends_build-append \
+                    port:p${perl5.major}-extutils-depends \
+                    port:p${perl5.major}-extutils-pkgconfig \
+                    port:p${perl5.major}-inline \
+                    port:p${perl5.major}-inline-c \
+                    port:p${perl5.major}-io-all
+
+    depends_lib-append \
+                    path:lib/libgimpbase-2.0.dylib:gimp2
+
+    patchfiles      patch-common.pl.diff
+
+    supported_archs noarch
+}

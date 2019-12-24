@@ -1,0 +1,43 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+PortGroup               golang 1.0
+
+go.setup                github.com/git-lfs/git-lfs 2.9.0 v
+maintainers             {raimue @raimue} \
+                        openmaintainer
+platforms               darwin
+categories              devel
+supported_archs         noarch
+
+description             Git Large File Storage
+long_description        ${description} is an extension for versioning large files
+homepage                https://git-lfs.github.com/
+license                 MIT
+
+checksums               rmd160  9374f0b32fa30d16aec69448813647cf0192fb38 \
+                        sha256  cdf2fe82aaf57a094df26c4240fd42f0c00fa1f6c8260deb02d0d69e42584eb9 \
+                        size    2493649
+
+depends_build-append    port:rb19-ronn
+depends_run             port:git
+
+use_configure no
+
+build.cmd               make
+build.target            bin/git-lfs man
+build.args              RONN=${prefix}/bin/ronn-1.9
+
+destroot {
+    set bindir ${destroot}${prefix}/bin
+    xinstall -m 755 ${worksrcpath}/bin/git-lfs ${bindir}
+
+    set mandir ${destroot}${prefix}/share/man/man1
+    set manfiles [glob ${worksrcpath}/man/*.1]
+    xinstall -m 644 {*}${manfiles} ${mandir}
+
+    set docdir ${destroot}${prefix}/share/doc/${subport}
+    xinstall -d ${docdir}
+    set docfiles [glob ${worksrcpath}/man/*.html]
+    xinstall -m 644 {*}${docfiles} ${docdir}
+}

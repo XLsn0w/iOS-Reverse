@@ -1,0 +1,113 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           wxWidgets 1.0
+wxWidgets.use       wxWidgets-3.2
+PortGroup           cxx11   1.1
+
+name                saga
+categories          gis
+license             GPL
+version             7.3.0
+revision            0
+#set branch          [join [lrange [split ${version} .] 0 1] .]
+platforms           darwin
+maintainers         {vince @Veence} openmaintainer
+
+description         SAGA is a GIS oriented towards statistics and analysis
+
+long_description    SAGA is yet another open source GIS targeted towards\
+                    spatial analysis and statistics. It uses wxWidgets as\
+                    a GUI.
+
+homepage            http://www.saga-gis.org/en/index.html
+master_sites        sourceforge:project/saga-gis/SAGA%20-%207/SAGA%20-%20${version}
+
+checksums           rmd160  62dc55a24e32f4accb75222d83eb70a0c7135cb1 \
+                    sha256  f3c0f805bd48c3afbad56a35b6b0aa40e8e92799ed0ef0d682aea275fa36fbbc \
+                    size    4742356
+
+patchfiles          patch-configure.diff
+
+depends_build       port:autoconf \
+                    port:automake \
+                    port:libtool
+
+depends_lib         port:geos \
+                    port:gdal \
+                    port:proj6 \
+                    port:liblas \
+                    port:jasper \
+                    port:fftw-3 \
+                    port:unixODBC \
+                    port:qhull
+
+depends_lib-append  port:${wxWidgets.port}
+
+post-patch {
+    fs-traverse f ${worksrcpath} {
+        if {[file isfile ${f}]} {
+            switch [file tail ${f}] {
+                configure -
+                Makefile.in {
+                    reinplace -E -q "s|wx-config|${wxWidgets.wxconfig}|" ${f}
+                }
+            }
+        }
+    }
+}
+
+configure.cppflags-append   -I${prefix}/lib/proj6/include
+configure.cxxflags-append   -std=c++11
+configure.ldflags-append    -L${prefix}/lib/proj6/lib
+
+configure.args      --disable-openmp \
+                    --enable-debug \
+                    --disable-triangle \
+                    --disable-libfire \
+                    --disable-gui
+
+variant gui description "build the GUI interface" {
+
+    configure.args-delete   --disable-gui
+}
+
+variant python27 description "build Python 2.7 bindings" {
+    depends_lib-append      port:python27\
+                            port:swig-python
+
+    configure.args-append   --enable-python
+    configure.env-append    PYTHON=${prefix}/bin/python2.7
+    configure.env-append    PYTHON_VERSION=2.7
+}
+
+variant libfire {
+    configure.args-delete   --disable-libfire
+}
+
+variant postgresql11 conflicts postgresql10 {
+    depends_lib-append      port:postgresql11
+    configure.args-append   --with-postgresql=${prefix}/lib/postgresql11/bin/pg_config
+}
+
+variant postgresql10 conflicts postgresql11 {
+    depends_lib-append      port:postgresql10
+    configure.args-append   --with-postgresql=${prefix}/lib/postgresql10/bin/pg_config
+}
+
+if {![variant_isset postgresql11] && ![variant_isset postgresql10]} {
+    default_variants    +postgresql11
+}
+
+post-destroot {
+    if {[variant_isset python27]} {
+        file mkdir ${destroot}${frameworks_dir}/Python.framework/Versions/2.7/lib/python2.7
+        file rename ${destroot}${prefix}/lib/python2.7/site-packages \
+        ${destroot}${frameworks_dir}/Python.framework/Versions/2.7/lib/python2.7/site-packages
+    }
+}
+
+configure.ldflags-append    -gdwarf-3
+configure.cxxflags-append   -gdwarf-3
+
+livecheck.regex             ${name}_(\[0-9a-z.\]+)${extract.suffix}

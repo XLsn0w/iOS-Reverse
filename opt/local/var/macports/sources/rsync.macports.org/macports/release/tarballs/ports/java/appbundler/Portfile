@@ -1,0 +1,38 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           java 1.0
+PortGroup           github 1.0
+
+github.setup        TheInfiniteKind appbundler 96d579d80af05d6a84f5810c84e82ddba87c94cb
+name                appbundler
+version             20190805
+categories          java
+platforms           darwin
+license             GPL-2+
+maintainers         {nicos @NicosPavlov} openmaintainer
+
+description         Packages a Java application as a Mac app bundle.
+long_description    ${description} Oracle's Java Application Bundler is compatible \
+                    with Java 7 or 8.
+
+homepage            https://github.com/TheInfiniteKind/appbundler/
+
+checksums           rmd160  2376476f66d78cc442b89579b61b7e46dbf72921 \
+                    sha256  55b3b1c177db2281fb9fa281f864cca9c72d8afee4c3c6ea26ba991d33c86948 \
+                    size    154940
+
+depends_build       port:apache-ant
+
+use_configure       no
+
+build.cmd           ant
+build.target        compile package
+destroot.target     
+
+destroot {
+    xinstall -d ${destroot}${prefix}/share/java
+    file copy ${worksrcpath}/appbundler/bin/appbundler-1.0ea.jar \
+        ${destroot}${prefix}/share/java/appbundler-1.0ea.jar
+}
+

@@ -1,0 +1,44 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8::et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+set realName        unidecode
+name                py-$realName
+version             1.0.23
+categories-append   textproc
+platforms           darwin
+supported_archs     noarch
+license             GPL-2+
+maintainers         {phas.ubc.ca:jfcaron @jfcaron3} {gmail.com:esafak @esafak} openmaintainer
+
+description         ASCII transliterations of Unicode text
+long_description    Unidecode takes Unicode data and tries to \
+                    represent it in ASCII characters (i.e., the \
+                    universally displayable characters between 0x00 \
+                    and 0x7F), where the compromises taken when \
+                    mapping between two character sets are chosen to \
+                    be near what a human with a US keyboard would \
+                    choose. This is a Python port of Text::Unidecode \
+                    Perl module by Sean M. Burke.
+homepage            https://pypi.python.org/pypi/$realName/
+
+master_sites        pypi:u/$realName
+distname            Unidecode-${version}
+checksums           rmd160  60d50eae7fc8c4da28073113aaefb0951c3c6d54 \
+                    sha256  8b85354be8fd0c0e10adbf0675f6dc2310e56fda43fa8fe049123b6c475e52fb \
+                    size    210727
+
+python.versions     27 35 36 37
+
+if {${subport} ne ${name}} {
+    livecheck.type          none
+    depends_build-append	\
+    				port:py${python.version}-setuptools
+} else {
+    livecheck.type          regex
+    # The usual URL to use here would be the master site, but for some
+    # reason PyPi isn't serving anything at that URL.
+    livecheck.url           ${homepage}
+    livecheck.regex         $realName (\\d+(\\.\\d+)+)
+}

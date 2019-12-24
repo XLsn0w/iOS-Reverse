@@ -1,0 +1,33 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         File-Find-Object-Rule 0.0311
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         File::Find::Object::Rule - Alternative interface to File::Find::Object
+long_description    ${description}
+
+platforms           darwin
+
+supported_archs     noarch
+
+checksums           rmd160  91db109db8ecf2b86f31d16eb60ccb1171a4dcbf \
+                    sha256  038a92e4380920448d5627ec98fc9990dbc3223eb93bb554c9b09eef4a735f3e \
+                    size    38072
+
+if {${perl5.major} != ""} {
+    depends_test-append \
+                    port:p${perl5.major}-test-pod \
+                    port:p${perl5.major}-test-pod-coverage
+
+    depends_lib-append \
+                    port:p${perl5.major}-class-xsaccessor \
+                    port:p${perl5.major}-file-find-object \
+                    port:p${perl5.major}-number-compare \
+                    port:p${perl5.major}-text-glob
+
+    perl5.use_module_build
+}

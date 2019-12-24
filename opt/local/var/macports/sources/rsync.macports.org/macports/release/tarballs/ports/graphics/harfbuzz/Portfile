@@ -1,0 +1,124 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+# https://github.com/harfbuzz/harfbuzz/issues/1642
+PortGroup           cxx11 1.1
+
+# https://github.com/harfbuzz/harfbuzz/issues/1651#issuecomment-484051395
+PortGroup           compiler_blacklist_versions 1.0
+compiler.blacklist-append {clang < 700}
+
+name                harfbuzz
+version             2.6.3
+checksums           rmd160  d522500a12174860609e470acd35172f8f1b316f \
+                    sha256  b0b3e68e5fcb332ac7c2f0ce3455b33ff244ed2c5271d31f2f7d4b0d8c34e958 \
+                    size    5811320
+
+categories          graphics
+platforms           darwin
+maintainers         {ryandesign @ryandesign} openmaintainer
+license             MIT
+
+description         OpenType text shaping engine
+
+long_description    HarfBuzz is an ${description}.
+
+homepage            https://www.freedesktop.org/wiki/Software/HarfBuzz/
+master_sites        https://www.freedesktop.org/software/harfbuzz/release/
+use_xz              yes
+
+depends_build       port:pkgconfig
+
+configure.args      --disable-silent-rules \
+                    ac_cv_prog_AWK=/usr/bin/awk
+
+# Do not use -Werror. New compilers may have new warnings; we don't want users
+# to encounter build failures because of that.
+configure.cflags-append     -DHB_NO_PRAGMA_GCC_DIAGNOSTIC_ERROR
+configure.cxxflags-append   -DHB_NO_PRAGMA_GCC_DIAGNOSTIC_ERROR
+
+if {${name} eq ${subport}} {
+    revision        0
+    
+    depends_lib-append \
+                    path:lib/pkgconfig/cairo.pc:cairo \
+                    port:freetype \
+                    path:lib/pkgconfig/glib-2.0.pc:glib2 \
+                    port:graphite2
+    
+    configure.args-append \
+                    --with-cairo \
+                    --with-freetype \
+                    --with-glib \
+                    --with-graphite2 \
+                    --without-icu
+    
+    test.run        yes
+    test.target     check
+
+    post-destroot {
+        set docdir ${prefix}/share/doc/${name}
+        xinstall -d ${destroot}${docdir}
+        xinstall -m 0644 -W ${worksrcpath} \
+                    AUTHORS \
+                    COPYING \
+                    ChangeLog \
+                    NEWS \
+                    README \
+                    THANKS \
+                    TODO \
+                    ${destroot}${docdir}
+    }
+    
+    if {${os.platform} eq "darwin" && ${os.major} >= 9} {
+        configure.args-append \
+                    --with-coretext
+    } else {
+        configure.args-append \
+                    --without-coretext
+    }
+
+    if {${os.platform} eq "darwin" && ${os.major} < 10} {
+        depends_test-append \
+                    port:python27
+        test.env-append \
+                    PATH=${frameworks_dir}/Python.framework/Versions/2.7/bin:$env(PATH)
+    }
+
+    livecheck.type  regex
+    livecheck.url   [lindex ${master_sites} 0]
+    livecheck.regex ${name}-(\[0-9.\]+)${extract.suffix}
+} else {
+    livecheck.type  none
+}
+
+subport harfbuzz-icu {
+    revision        0
+    
+    description     HarfBuzz ICU support library
+    
+    long_description This library adds support for ICU (the International Components for Unicode) to HarfBuzz.
+    
+    depends_lib-append \
+                    port:harfbuzz \
+                    port:icu
+    
+    # Generate a newer libtool that passes -stdlib when linking C++ dylibs.
+    use_autoreconf  yes
+    autoreconf.args-append --force
+
+    configure.args-append \
+                    --without-cairo \
+                    --without-freetype \
+                    --without-glib \
+                    --without-graphite2 \
+                    --with-icu
+    
+    destroot.dir    ${worksrcpath}/src
+    destroot.args   cmake_DATA= \
+                    lib_LTLIBRARIES=libharfbuzz-icu.la \
+                    nodist_pkginclude_HEADERS= \
+                    pkgconfig_DATA=harfbuzz-icu.pc \
+                    pkginclude_HEADERS=hb-icu.h
+}

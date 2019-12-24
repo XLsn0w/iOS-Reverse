@@ -1,0 +1,59 @@
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           python 1.0
+
+github.setup        volatilityfoundation volatility 2.5
+categories          security
+platforms           darwin
+maintainers         nomaintainer
+license             GPL-2+
+
+description         collection of tools for the extraction of digital \
+                    artifacts from volatile memory (RAM) samples
+
+long_description    The Volatility Framework is a completely open collection \
+                    of tools for the extraction of digital artifacts from \
+                    volatile memory (RAM) samples. The extraction techniques \
+                    are performed completely independent of the system being \
+                    investigated but offer unprecedented visibilty into the \
+                    runtime state of the system. The framework is intended \
+                    to introduce people to the techniques and complexities \
+                    associated with extracting digital artifacts from \
+                    volatile memory samples and provide a platform for \
+                    further work into this exciting area of research.
+
+homepage            http://www.volatilityfoundation.org/
+
+checksums           rmd160  54262bb1957fef98e0c6776aee753c4231b21d5d \
+                    sha256  b341518a3828806679cf1d68a5f0f32eb3dd7934be7a721e9a883d5be728fd23
+
+supported_archs     noarch
+
+python.default_version  27
+
+depends_build-append    port:py${python.version}-setuptools
+depends_lib-append      port:py${python.version}-crypto \
+                        port:py${python.version}-distorm
+depends_run-append      port:yara
+
+post-patch {
+    reinplace "s|import sys|import sys\\\nsys.path.append('${python.pkgd}')|" \
+        ${worksrcpath}/volatility
+    reinplace "s|^#!c:\\\\python\\\\python.exe|#!${python.bin}|" \
+        ${worksrcpath}/volatility
+}
+
+post-destroot {
+
+    xinstall -d ${destroot}${prefix}/share/doc/${name}
+    xinstall -m 644 -W ${worksrcpath} \
+        AUTHORS.txt \
+        CHANGELOG.txt \
+        CREDITS.txt \
+        LEGAL.txt \
+        LICENSE.txt \
+        README.txt \
+        ${destroot}${prefix}/share/doc/${name}
+
+    xinstall -d ${destroot}${prefix}/share/examples/${name}
+}

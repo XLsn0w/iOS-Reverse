@@ -1,0 +1,26 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Archive-Extract 0.80
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         Archive::Extract - A generic archive extracting mechanism
+long_description    ${description}
+
+platforms           darwin
+
+checksums           rmd160  5d232bc5bafc9566945d3d6068128a0020f167e9 \
+                    sha256  25cbc2d5626c14d39a0b5e4fe8383941e085c9a7e0aa873d86e81b6e709025f4
+
+if {${perl5.major} != ""} {
+    depends_lib-append \
+                    port:p${perl5.major}-ipc-cmd \
+                    port:p${perl5.major}-locale-maketext-simple \
+                    port:p${perl5.major}-module-load-conditional \
+                    port:p${perl5.major}-params-check
+
+    supported_archs noarch
+}

@@ -1,0 +1,23 @@
+PortSystem 1.0
+
+name             dnsa
+version          0.5-beta
+categories       net security
+license          GPL-2
+maintainers      nomaintainer
+description      DNS Auditing tool
+long_description \
+	DNS tool featuring DNS ID spoofing, DNS sniffing, \
+	and DNS cache poisoning.
+homepage         http://www.packetfactory.net/projects/dnsa/
+platforms        darwin
+master_sites     ${homepage}
+checksums        md5 86f96250911dd08f8d782801cfe8e9e1
+worksrcdir       ${distname}/sources
+
+depends_lib      port:libnet11
+
+patchfiles       patch-dnsspoof.c \
+                 patch-main.c \
+                 patch-poisoning.c \
+                 patch-sniffid.c

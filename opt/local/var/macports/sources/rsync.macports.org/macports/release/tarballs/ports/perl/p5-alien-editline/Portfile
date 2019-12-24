@@ -1,0 +1,30 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Alien-Editline 0.08
+revision            1
+
+license             {Artistic-1 GPL}
+maintainers         {devans @dbevans} openmaintainer
+description         Make available Editline (libedit)
+long_description    ${description}
+
+platforms           darwin
+
+checksums           rmd160  17fa7bfac8bba534255b2739ac11745a2198e783 \
+                    sha256  3e9ccf4ff42c915249c65ec00a0c3e69e7443aceceb8fd52d82ead1b724077c7
+
+if {${perl5.major} != ""} {
+    depends_build-append \
+                    port:pkgconfig \
+                    port:p${perl5.major}-test2-suite
+
+    depends_lib-append \
+                    port:p${perl5.major}-alien-build \
+                    port:libedit
+
+    supported_archs noarch
+}

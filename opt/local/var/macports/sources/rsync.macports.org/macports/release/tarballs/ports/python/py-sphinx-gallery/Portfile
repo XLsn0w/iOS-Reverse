@@ -1,0 +1,37 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+PortGroup           github 1.0
+
+github.setup        sphinx-gallery sphinx-gallery 0.4.0 v
+revision            0
+name                py-sphinx-gallery
+platforms           darwin
+supported_archs     noarch
+license             BSD
+maintainers         nomaintainer
+
+description         Extension for automatic generation of an example gallery
+long_description    ${description}
+
+checksums           rmd160  dfc05aaa3695cadaf45c4592374256ef152e03f5 \
+                    sha256  56a370df236defee839f6e37e0d8d1553e412bf1f8d844dcba51a14f802f4fe6 \
+                    size    392841
+
+python.versions     27 36 37
+
+if {${subport} ne ${name}} {
+    depends_build-append \
+                    port:py${python.version}-setuptools \
+                    port:py${python.version}-pytest-runner
+
+    post-destroot {
+        set DOCDIR ${prefix}/share/doc/${subport}
+        xinstall -d ${destroot}${DOCDIR}
+        xinstall -m 0644 -W ${worksrcpath} LICENSE README.rst \
+            CHANGES.rst ${destroot}${DOCDIR}
+    }
+
+    livecheck.type      none
+}

@@ -1,0 +1,61 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           compiler_blacklist_versions 1.0
+PortGroup           python 1.0
+
+name                py-pyicu
+version             2.3.1
+revision            1
+categories-append   textproc
+platforms           darwin
+maintainers         nomaintainer
+license             MIT
+
+description         Python extension wrapping the ICU C++ API
+long_description    ${description}
+
+homepage            https://github.com/ovalhub/pyicu
+master_sites        pypi:P/PyICU/
+distname            PyICU-${version}
+
+checksums           rmd160  82f80a3db2f2ef574361413363753c9ddec85268 \
+                    sha256  ddb2b453853b4c25db382bc5e8c4cde09b3f4696ef1e1494f8294e174f459cf4 \
+                    size    214761
+
+python.versions     27 34 35 36 37 38
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                        port:py${python.version}-setuptools
+
+    depends_lib-append  port:icu
+
+    # attempt to define nullptr for gcc < 4.8 fails on 10.6 (and probably earlier)
+    # In file included from _icu.cpp:27:
+    # common.h:38: error: ISO C++ forbids declaration of ‘decltype’ with no type
+    # common.h:38: error: typedef ‘std::decltype’ is initialized (use __typeof__ instead)
+    # common.h:38: error: ‘nullptr’ was not declared in this scope
+    # error: command '/usr/bin/gcc-4.2' failed with exit status 1
+    compiler.blacklist-append  *gcc-3.* *gcc-4.* {clang < 300}
+
+    pre-test {
+        test.env    PYTHONPATH=[glob -nocomplain ${worksrcpath}/build/lib*]
+    }
+    depends_test-append port:py${python.version}-pytest \
+                        port:py${python.version}-six
+    test.run            yes
+    test.cmd            py.test-${python.branch}
+    test.target
+
+    post-destroot {
+        set docdir ${prefix}/share/doc/${subport}
+        xinstall -d ${destroot}${docdir}
+        xinstall -m 0644 -W ${worksrcpath} LICENSE CREDITS \
+            README.md CHANGES ${destroot}${docdir}
+    }
+
+    livecheck.type      none
+} else {
+    livecheck.name      PyICU
+}

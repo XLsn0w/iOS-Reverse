@@ -1,0 +1,59 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                pstoedit
+version             3.74
+revision            0
+categories          graphics
+platforms           darwin
+maintainers         nomaintainer
+license             GPL-2+
+
+description         Translate PostScript and PDF to other vector formats
+
+long_description    pstoedit converts PostScript™ and PDF files to other \
+                    vector graphic formats so that they can be edited \
+                    graphically.
+
+homepage            http://www.pstoedit.net/
+master_sites        sourceforge:project/pstoedit/pstoedit/${version}
+
+checksums           rmd160  af3e15af911e26cccad1bcc6f66cd4ad6af1a98f \
+                    sha256  353242fa4a3a73c3c856d1122a4d258a12be869707629603807e27137566990c \
+                    size    1286928
+
+depends_build       port:pkgconfig \
+                    bin:latex2man:texlive-bin-extra \
+                    bin:pdflatex:texlive-latex
+
+depends_lib         port:ImageMagick \
+                    port:libzip \
+                    port:plotutils
+
+depends_run         port:ghostscript
+
+patchfiles          patch-config-pstoedit.pc.in.diff \
+                    patch-configure.ac.diff \
+                    patch-src-dxfacad.h.diff \
+                    patch-src-cppcomp.h.diff
+
+use_autoreconf      yes
+
+configure.args      --without-emf \
+                    --without-swf
+
+configure.cppflags-append   -Wno-long-long
+compiler.cxx_standard   2011
+configure.cxxflags-append   -std=c++11
+
+use_parallel_build  no
+
+post-destroot {
+    xinstall -m 755 -d ${destroot}${prefix}/share/man/man1 \
+        ${destroot}${prefix}/share/doc/${name}
+    xinstall -m 644 -W ${worksrcpath}/doc pstoedit.1 \
+        ${destroot}${prefix}/share/man/man1
+    xinstall -m 644 {*}[glob -directory ${worksrcpath}/doc *.htm *.tex *.txt] \
+        ${destroot}${prefix}/share/doc/${name}
+}

@@ -1,0 +1,35 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-ipaddress
+version             1.0.23
+revision            0
+categories-append   devel
+platforms           darwin
+license             PSF
+supported_archs     noarch
+
+python.versions     27 34 35 36
+
+maintainers         {stromnov @stromnov} openmaintainer
+
+description         IPv4/IPv6 manipulation library
+long_description    ${description}
+
+homepage            https://github.com/phihag/ipaddress
+master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
+
+distname            ${python.rootname}-${version}
+
+checksums           rmd160  500a7b9a17545ff9d9d27e653c11bce238a08f9c \
+                    sha256  b7f8e0369580bb4a24d5ba1d7cc29660a4a6987763faf1d8a8046830e020e7e2 \
+                    size    32958
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                        port:py${python.version}-setuptools
+
+    livecheck.type      none
+}

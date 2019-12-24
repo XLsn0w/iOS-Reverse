@@ -1,0 +1,28 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Apache-Test 1.42
+platforms           darwin
+license             Apache-2
+maintainers         nomaintainer
+supported_archs     noarch
+
+description         Facilitates testing of Apache::* modules
+
+long_description    ${description}
+
+checksums           rmd160  798571ae4dd4673f2b999678f77cc015a40418c5 \
+                    sha256  0681f07d7d8a9429d0edf8a8c5ad6a655be7fe81ada142670b2b8e776b3bb3eb \
+                    size    153621
+
+if {${perl5.major} != ""} {
+
+# depend on p5-cgi, removed from perl core in 5.21+ (#44586).
+
+    depends_build-append \
+                    port:p${perl5.major}-cgi \
+                    port:p${perl5.major}-libwww-perl
+}

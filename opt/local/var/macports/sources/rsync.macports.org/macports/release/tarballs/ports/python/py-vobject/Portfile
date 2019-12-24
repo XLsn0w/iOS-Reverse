@@ -1,0 +1,52 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+PortGroup           github 1.0
+
+github.setup        eventable vobject 0.9.6.1
+revision            0
+name                py-vobject
+license             Apache-2
+platforms           darwin
+maintainers         nomaintainer
+supported_archs     noarch
+
+description         Python package for parsing and generating vCard and \
+                    vCalendar files.
+long_description    vObject is intended to be a full featured Python package \
+                    for parsing and generating vCard and vCalendar files. It \
+                    is being developed in concert with the Open Source \
+                    Application Foundation`s Chandler project.
+
+homepage            https://eventable.github.io/vobject/
+
+checksums           rmd160  3f07a57c17c8f0d4031082e267df186d65f1268a \
+                    sha256  6a88ae77ef4ea8b5fcb966032a8deb04c17ed7e4a8b3c236bc86a92442429bc1 \
+                    size    216594
+
+python.versions     27 34 35 36 37
+
+if {${name} ne ${subport}} {
+    depends_lib-append  port:py${python.version}-dateutil \
+                        port:py${python.version}-setuptools \
+                        port:py${python.version}-six
+
+    test.run            yes
+    test.cmd            ${python.bin} tests.py
+    test.target
+    test.env            PYTHONPATH=${worksrcpath}/build/lib
+
+    post-destroot   {
+        set docdir ${prefix}/share/doc/${subport}
+        xinstall -d ${destroot}${docdir}
+        xinstall -m 0644 -W ${worksrcpath} \
+            ACKNOWLEDGEMENTS.txt \
+            LICENSE-2.0.txt \
+            MANIFEST.in \
+            README.md \
+            ${destroot}${docdir}
+    }
+
+    livecheck.type      none
+}

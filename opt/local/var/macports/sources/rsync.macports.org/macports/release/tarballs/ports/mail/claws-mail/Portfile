@@ -1,0 +1,93 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem      1.0
+PortGroup       active_variants 1.1
+
+# as of 3.17.4 litehtml_viewer plugin requires C++11
+PortGroup       cxx11 1.1
+
+name            claws-mail
+version         3.17.4
+revision        3
+categories      mail news
+platforms       darwin
+license         GPL-3+
+maintainers     {pmetzger @pmetzger} openmaintainer
+
+description     A lightweight and very featureful GTK+ based e-mail and news client
+
+long_description Currently, many features are supported in Claws Mail \
+                including POP3, IMAP, NNTP, multiple accounts, \
+                threading, filtering, MIME attachments, APOP, SMTP \
+                AUTH, SSL, IPv6, GnuPG, internalization, plugins, \
+                a filtering/processing mechanism, extra folder \
+                properties and much more.
+
+homepage        http://www.claws-mail.org/
+master_sites    ${homepage}releases/
+
+checksums       rmd160  420a0b1f6ff3efac9218478e0a1c60677eac0927 \
+                sha256  590ed1131e51b3a627e75c3b256068f5176a498628e1c8f3315b9bc09482ae02 \
+                size    6280252
+
+use_xz          yes
+
+use_autoreconf  yes
+autoreconf.args -fvi
+depends_build-append    port:pkgconfig
+
+depends_lib     port:gtk2 \
+                port:libetpan \
+                port:gpgme \
+                port:compface \
+                port:gtkspell2 \
+                port:aspell \
+                port:gnutls \
+                port:libgcrypt \
+                port:libarchive \
+                port:libgdata \
+                port:librsvg \
+                port:libical \
+                port:enchant \
+                port:poppler \
+                port:ghostscript \
+                port:bogofilter \
+                port:gumbo-parser
+
+# claws uses gdk/gdkx.h, which is not installed by gtk2 +quartz.
+require_active_variants \
+                gtk2 x11
+
+if {${os.platform} eq "darwin" && ${os.version} < 12} {
+    # the ld on older systems doesn't understand the -export_dynamic flag
+    # see https://trac.macports.org/ticket/57673
+    patchfiles  patch-claws-mail-no-export-dynamic-on-older-ld-versions.diff
+}
+
+# override faulty check for C++ compiler
+configure.env-append \
+                REAL_CXX=${configure.cxx}
+
+configure.args  --disable-jpilot \
+                --disable-acpi_notifier-plugin \
+                --disable-bsfilter-plugin \
+                --disable-clamd-plugin \
+                --disable-fancy-plugin \
+                --disable-notification-plugin \
+                --disable-perl-plugin \
+                --disable-python-plugin \
+                --disable-spamassassin-plugin \
+                --disable-spam_report-plugin \
+                --disable-startup-notification \
+                --disable-tnef_parse-plugin \
+                --enable-manual \
+                --enable-ipv6 \
+                --enable-crash-dialog
+
+variant fancy description {Build fancy plugin using deprecated webkit-gtk-1.0} {
+    depends_lib-append \
+                port:webkit-gtk
+    configure.args-delete \
+                --disable-fancy-plugin
+}
+livecheck.regex ${name}-(\[0-9.\]+)${extract.suffix}

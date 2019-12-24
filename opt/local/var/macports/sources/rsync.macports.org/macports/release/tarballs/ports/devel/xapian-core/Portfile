@@ -1,0 +1,224 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           cxx11 1.1
+
+name                xapian-core
+version             1.4.13
+categories          devel
+platforms           darwin
+maintainers         {ryandesign @ryandesign} openmaintainer
+license             GPL-2+
+
+description         Xapian search library
+long_description    Xapian is a highly adaptable toolkit which allows \
+                    developers to easily add advanced indexing and search \
+                    facilities to their own applications. It supports the \
+                    Probabilistic Information Retrieval model and also \
+                    supports a rich set of boolean query operators.
+
+homepage            https://xapian.org
+master_sites        https://oligarchy.co.uk/xapian/${version}/
+dist_subdir         xapian
+use_xz              yes
+
+if {${subport} eq ${name}} {
+    revision                    0
+
+    # version.h does not get generated properly when there are multiple -arch flags
+    PortGroup                   muniversal 1.0
+
+    checksums                   rmd160  409398b7374d166ddc3749c2d98366727ad8a7d9 \
+                                sha256  93f8ffffa80c5e6036befbf356f34456cc18c2f745cef85e9b4cfc254042137c \
+                                size    2985532
+
+    # TODO: Fix xapian-config to not require the .la file
+    # /opt/local/bin/xapian-config --ltlibs --cxxflags
+    # /opt/local/bin/xapian-config: Can't find libxapian.la to link against.
+    destroot.delete_la_files    no
+
+    depends_lib                 port:zlib
+
+    if {[variant_exists universal] && [variant_isset universal]} {
+        post-build {
+            foreach arch ${universal_archs_to_use} {
+                # xapian-config records build directory, which interferes with universal merge
+                reinplace "s|${worksrcpath}-${arch}|${worksrcpath}|g" ${worksrcpath}-${arch}/xapian-config
+            }
+        }
+    }
+
+    livecheck.type              regex
+    livecheck.url               ${homepage}/download
+    livecheck.regex             ${name}-(\[0-9\]+\\.\[0-9\]*\[02468\](\\.\[0-9\]+)*)${extract.suffix}
+} else {
+    livecheck.type              none
+}
+
+subport xapian-omega {
+    revision                    0
+    checksums                   rmd160  e18903f1a0f424c7f42ec85ec9a0cace1a5a693b \
+                                sha256  c26ec4a99a210c26ce64ec08bc7dbb9cca78d82d9266351d498751f6575e8906 \
+                                size    540216
+
+    description                 web application using the Xapian library
+    long_description            Xapian Omega is an application built on the \
+                                Xapian library, consisting of indexers and a \
+                                CGI search frontend.
+
+    homepage                    ${homepage}/docs/omega/overview.html
+
+    distname                    xapian-omega-${version}
+
+    depends_lib                 port:libiconv \
+                                port:libmagic \
+                                port:pcre \
+                                port:xapian-core \
+                                port:zlib
+
+    configure.args              --with-iconv
+}
+
+if [string match {xapian-bindings-*} ${subport}] {
+    checksums                   rmd160  1d91642bae3ba0bec4aae54eace763366d05840a \
+                                sha256  7a5a5d2712159ed0a5174a8aabedfc01452a69ebd6e2147d97e497122baa5892 \
+                                size    1132592
+
+    homepage                    ${homepage}/docs/bindings/
+
+    distname                    xapian-bindings-${version}
+
+    depends_lib                 port:xapian-core
+
+    configure.args              --without-csharp \
+                                --without-java \
+                                --without-lua \
+                                --without-perl \
+                                --without-python \
+                                --without-python3 \
+                                --without-php \
+                                --without-php7 \
+                                --without-ruby \
+                                --without-tcl
+}
+
+# Java
+subport xapian-bindings-java {
+    PortGroup                   java 1.0
+
+    revision                    0
+
+    description                 Xapian bindings for Java
+    long_description            ${description}
+
+    # Required java version
+    java.version                6+
+    # JDK port to install if required java not found
+    java.fallback               openjdk11
+
+    configure.args-replace      --without-java --with-java
+
+    # jni destination violates the mtree layout
+    destroot.violate_mtree  yes
+
+    # https://trac.xapian.org/ticket/774
+    post-destroot {
+        file mkdir ${destroot}/Library/Java/Extensions
+        move ${destroot}/${worksrcpath}/java/built/libxapian_jni.jnilib \
+            ${destroot}/Library/Java/Extensions/libxapian_jni.jnilib
+    }
+}
+
+# Perl
+foreach v {5.26 5.28} {
+    subport xapian-bindings-perl${v} "
+        revision                0
+
+        description             Xapian bindings for Perl ${v}
+        long_description        \${description}
+
+        depends_lib-append      port:perl${v}
+
+        configure.env-append    PERL=${prefix}/bin/perl${v}
+        configure.args-replace  --without-perl --with-perl
+
+        post-destroot {
+            move ${destroot}${prefix}/share/doc/xapian-bindings/perl ${destroot}${prefix}/share/doc/xapian-bindings/perl${v}
+        }
+    "
+}
+
+# PHP
+foreach v {5.5 5.6 7.0 7.1 7.2 7.3} {
+    set v_no_dot [string map {. {}} ${v}]
+    if {[vercmp ${v} 7] >= 0} {
+        set suffix 7
+        set dirsuffix {}
+    } else {
+        set suffix {}
+        set dirsuffix 5
+    }
+    subport xapian-bindings-php${v_no_dot} "
+        revision                0
+
+        description             Xapian bindings for PHP ${v}
+        long_description        \${description}
+
+        depends_lib-append      port:php${v_no_dot}
+
+        configure.env-append    PHP_CONFIG${suffix}=${prefix}/bin/php-config${v_no_dot}
+        configure.args-replace  --without-php${suffix} --with-php${suffix}
+
+        post-destroot {
+            move ${destroot}${prefix}/share/doc/xapian-bindings/php ${destroot}${prefix}/share/doc/xapian-bindings/php${v_no_dot}
+            move ${destroot}${prefix}/share/php${dirsuffix} ${destroot}${prefix}/share/php${v_no_dot}
+        }
+    "
+}
+
+# Python
+foreach v {2.7 3.4 3.5 3.6 3.7} {
+    set v_no_dot [string map {. {}} ${v}]
+    if {[vercmp ${v} 3] >= 0} {
+        set suffix 3
+    } else {
+        set suffix {}
+    }
+    subport xapian-bindings-python${v_no_dot} "
+        revision                0
+
+        description             Xapian bindings for Python ${v}
+        long_description        \${description}
+
+        depends_build-append    port:py${v_no_dot}-sphinx
+
+        depends_lib-append      port:python${v_no_dot}
+
+        configure.env-append    PYTHON${suffix}=${prefix}/bin/python${v}
+        configure.args-replace  --without-python${suffix} --with-python${suffix}
+
+        post-destroot {
+            move ${destroot}${prefix}/share/doc/xapian-bindings/python${suffix} ${destroot}${prefix}/share/doc/xapian-bindings/python${v_no_dot}
+        }
+    "
+}
+
+# Ruby
+foreach v {2.1 2.2 2.3 2.4 2.5 2.6} {
+    set v_no_dot [string map {. {}} ${v}]
+    subport xapian-bindings-ruby${v_no_dot} "
+        revision                0
+
+        description             Xapian bindings for Ruby ${v}
+        long_description        \${description}
+
+        depends_lib-append      port:ruby${v_no_dot}
+
+        configure.env-append    RUBY=${prefix}/bin/ruby${v}
+        configure.args-replace  --without-ruby --with-ruby
+
+        post-destroot {
+            move ${destroot}${prefix}/share/doc/xapian-bindings/ruby ${destroot}${prefix}/share/doc/xapian-bindings/ruby${v_no_dot}
+        }
+    "
+}

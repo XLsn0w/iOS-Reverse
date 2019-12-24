@@ -1,0 +1,62 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                iverilog
+version             10.1.1
+revision            2
+# Depending on ftp folder name, may need either of these (v0.9 v10)
+set branch          [lrange [split ${version} .] 0 1]
+#set branch          [join [lrange [split ${version} .] 0 1] .]
+categories          science
+license             GPL-2+
+platforms           darwin
+maintainers         keeh.net:paf openmaintainer
+
+description         Icarus Verilog
+
+long_description    Icarus Verilog is a Verilog simulation and synthesis tool. \
+                    It operates as a compiler, compiling source code writen in \
+                    Verilog (IEEE-1364) into some target format. For batch \
+                    simulation, the compiler can generate C++ code that is \
+                    compiled and linked with a run time library (called \
+                    \"vvm\") then executed as a command to run the simulation. \
+                    For synthesis, the compiler generates netlists in the \
+                    desired format.
+
+homepage            http://iverilog.icarus.com/
+master_sites        ftp://ftp.icarus.com/pub/eda/verilog/v${branch}/
+distname            verilog-${version}
+
+checksums           rmd160  77c933b712ab027b13a81e3eead7ee4f565741b7 \
+                    sha256  fdaa75dfe7c58cbc471fc12710ee49b3f32fd6cc055d9181b5190cbcbbd6cada
+
+depends_lib         port:bzip2 \
+                    port:readline \
+                    port:zlib
+
+test.run            yes
+test.target         check
+
+destroot.destdir    prefix=${destroot}${prefix}
+
+post-destroot {
+    set docdir ${destroot}${prefix}/share/doc/${name}
+    xinstall -d ${docdir}
+    copy ${worksrcpath}/examples ${docdir}
+    xinstall -m 644 {*}[glob ${worksrcpath}/*.txt] ${docdir}
+    xinstall -d ${docdir}/vvp
+    xinstall -m 644 {*}[glob ${worksrcpath}/vvp/*.txt] ${docdir}/vvp
+    xinstall -m 644 -W ${worksrcpath} cadpli/cadpli.txt ivlpp/ivlpp.txt \
+        ${docdir}
+}
+
+platform darwin 8 {
+    depends_build-append    port:bison
+}
+
+# g++-4.2: -E, -S, -save-temps and -M options are not allowed with multiple -arch flags
+universal_variant   no
+
+# Need to find a valid check - they don't allow ftp listing
+livecheck.type      none

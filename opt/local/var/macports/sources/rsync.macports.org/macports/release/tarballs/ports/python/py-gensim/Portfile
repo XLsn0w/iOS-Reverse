@@ -1,0 +1,54 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+PortGroup           github 1.0
+
+github.setup        RaRe-Technologies gensim 3.8.1
+name                py-gensim
+categories-append   textproc
+platforms           darwin
+license             LGPL-2+
+
+python.versions     36 37
+
+maintainers         {stromnov @stromnov} openmaintainer
+
+description         Python framework for fast Vector Space Modelling
+
+long_description    Gensim is a Python library for topic modelling, document \
+                    indexing and similarity retrieval with large corpora. \
+                    Target audience is the natural language processing (NLP) and \
+                    information retrieval (IR) community.
+
+homepage            http://radimrehurek.com/gensim/
+
+checksums           rmd160  18356fc225bc8230734af3f7a8a8f99cc7534020 \
+                    sha256  b6be5c4ef062371f57afb547dcf414597f97d810a6bfaf7b85597cdbec43a90c \
+                    size    43363240
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                        port:py${python.version}-setuptools
+    depends_lib-append  port:py${python.version}-numpy \
+                        port:py${python.version}-scipy \
+                        port:py${python.version}-six \
+                        port:py${python.version}-smart_open
+
+    post-destroot {
+        set docdir ${prefix}/share/doc/${subport}
+        xinstall -d ${destroot}${docdir}
+        xinstall -m 644 -W ${worksrcpath} \
+            CHANGELOG.md COPYING README.md \
+            ${destroot}${docdir}
+    }
+
+    livecheck.type      none
+}
+
+foreach {old new} {27 37 34 36 35 36} {
+    subport py${old}-${python.rootname} "
+        replaced_by py${new}-${python.rootname}
+        PortGroup obsolete 1.0
+    "
+}

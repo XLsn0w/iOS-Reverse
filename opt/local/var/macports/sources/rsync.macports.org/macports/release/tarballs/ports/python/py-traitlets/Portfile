@@ -1,0 +1,40 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim: fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-traitlets
+version             4.3.3
+revision            0
+categories-append   devel
+platforms           darwin
+license             BSD
+supported_archs     noarch
+
+python.versions     27 34 35 36 37 38
+
+maintainers         {stromnov @stromnov} openmaintainer
+
+description         Traitlets Python config system.
+long_description    ${description}
+
+homepage            http://ipython.org
+master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
+
+distname            ${python.rootname}-${version}
+
+checksums           rmd160  10275bb52f8ada23aa771d27f7ba8282bb364cdb \
+                    sha256  d023ee369ddd2763310e4c3eae1ff649689440d4ae59d7485eb4cfbbe3e359f7 \
+                    size    89838
+
+if {${name} ne ${subport}} {
+    depends_lib-append  port:py${python.version}-ipython_genutils \
+                        port:py${python.version}-decorator \
+                        port:py${python.version}-six
+
+    if {${python.version} == 27} {
+        depends_lib-append  port:py${python.version}-enum34
+    }
+
+    livecheck.type      none
+}

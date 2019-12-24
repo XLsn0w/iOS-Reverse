@@ -1,0 +1,26 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Curses 1.36
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         terminal screen handling and optimization
+long_description    Curses is the interface between Perl and your system's curses(3) library.\
+                    For descriptions on the usage of a given function, variable, or constant,\
+                    consult your system's documentation, as such information invariably varies\
+                    (:-) between different curses(3) libraries and operating systems.
+
+checksums           rmd160  4e1cad194f5ea984ee5eaeb2aeb1665f19f1be9a \
+                    sha256  a414795ba031c5918c70279fe534fee594a96ec4b0c78f44ce453090796add64
+
+platforms           darwin
+if {${perl5.major} != ""} {
+    depends_lib-append  port:ncurses
+    pre-configure {
+        copy ${worksrcpath}/hints/c-freebsd.ncurses.h ${worksrcpath}/c-config.h
+    }
+    configure.pre_args-append PANELS MENUS FORMS
+}

@@ -1,0 +1,30 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           ocaml 1.1
+
+name                ocaml-num
+github.setup        ocaml num 1.2 v
+
+categories          ocaml devel
+maintainers         {pmetzger @pmetzger} openmaintainer
+license             LGPL-2
+platforms           darwin
+
+description         Legacy OCaml arbitrary-precision integer library
+long_description    ${description}
+
+checksums           rmd160  08e7bfb75455a05827cbbce7f734c9af4811f606 \
+                    sha256  0e9eeb14f2a7c03a4e9b1ab86e3be00f1a1f36ebdd0ae0488b6ed8fa045115b1 \
+                    size    65336
+
+ocaml.use_findlib   yes
+
+use_configure       no
+
+destroot.target     findlib-install
+
+test.run            yes
+test.cmd            make
+test.target         test

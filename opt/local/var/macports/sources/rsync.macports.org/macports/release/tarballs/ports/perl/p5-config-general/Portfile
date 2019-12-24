@@ -1,0 +1,18 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Config-General 2.63
+maintainers         nomaintainer
+license             {Artistic-1 GPL}
+description         Generic Config Module
+long_description    ${description}
+
+platforms           darwin
+
+checksums           rmd160  b0f55608c2e0c568353615dc17d1e3df9f5930d7 \
+                    sha256  0a9bf977b8aabe76343e88095d2296c8a422410fd2a05a1901f2b20e2e1f6fad
+
+supported_archs     noarch

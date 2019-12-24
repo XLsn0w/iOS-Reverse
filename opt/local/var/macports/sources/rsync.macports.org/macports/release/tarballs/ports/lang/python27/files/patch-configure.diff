@@ -1,0 +1,13 @@
+Index: configure
+===================================================================
+--- configure.orig
++++ configure
+@@ -3149,6 +3149,8 @@ if test "${enable_framework+set}" = set;
+ 			;;
+ 		esac
+ 
++		FRAMEWORKINSTALLAPPSPREFIX="@@APPLICATIONS_DIR@@"
++
+ 		prefix=$PYTHONFRAMEWORKINSTALLDIR/Versions/$VERSION
+ 
+ 		# Add files for Mac specific code to the list of output

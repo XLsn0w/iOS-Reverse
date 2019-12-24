@@ -1,0 +1,38 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-packaging
+version             19.2
+revision            0
+platforms           darwin
+supported_archs     noarch
+maintainers         nomaintainer
+license             {BSD Apache-2}
+
+description         Core utilities for Python packages
+
+long_description    $description
+
+homepage            https://pypi.python.org/pypi/packaging/
+master_sites        pypi:p/packaging
+distname            ${python.rootname}-${version}
+
+checksums           rmd160  30b0253aea8753bc2c3ce664fe839fe26dc8f27e \
+                    sha256  28b924174df7a2fa32c1953825ff29c61e2f5e082343165438812f00d3a7fc47 \
+                    size    59110
+
+python.versions     27 34 35 36 37 38
+
+if {$subport ne $name} {
+    depends_lib-append  port:py${python.version}-attrs \
+                        port:py${python.version}-parsing \
+                        port:py${python.version}-six
+    post-destroot {
+        set docdir ${prefix}/share/doc/${subport}
+        xinstall -d ${destroot}${docdir}
+        xinstall -m 644 -W ${worksrcpath} CHANGELOG.rst LICENSE LICENSE.APACHE LICENSE.BSD README.rst \
+           ${destroot}${docdir}
+    }
+}

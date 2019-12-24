@@ -1,0 +1,83 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           gobject_introspection 1.0
+
+name                gnome-maps
+version             3.28.2
+license             GPL-2
+set branch          [join [lrange [split ${version} .] 0 1] .]
+description         Map application for GNOME 3.
+long_description    Maps is a map application for GNOME that allows you to view maps in \
+                    different zoom levels, search for places, etc.
+
+maintainers         {devans @dbevans} openmaintainer
+categories          gnome
+platforms           darwin
+homepage            https://wiki.gnome.org/Apps/Maps
+master_sites        gnome:sources/${name}/${branch}/
+
+use_xz              yes
+
+checksums           rmd160  ead613ad5df157ef73b192965dfd1cfb2866b875 \
+                    sha256  e787d92bb151314e5234156c2819f6f0c18ee9c7e00baa1fbdd284911402f1fb \
+                    size    1195508
+
+depends_build       port:pkgconfig \
+                    port:intltool \
+                    port:gnome-common \
+                    port:autoconf \
+                    port:automake \
+                    port:libtool
+
+depends_lib         port:desktop-file-utils \
+                    port:gsettings-desktop-schemas \
+                    port:gdk-pixbuf2 \
+                    port:geoclue2 \
+                    port:gfbgraph \
+                    port:gjs \
+                    port:gtk3 \
+                    port:folks \
+                    port:geocode-glib \
+                    port:libchamplain \
+                    port:libgee \
+                    port:libgweather \
+                    port:libxml2 \
+                    port:rest
+
+depends_run         port:adwaita-icon-theme \
+                    port:yelp
+
+gobject_introspection yes
+
+# reconfigure using upstream autogen.sh for intltool 0.51 compatibility
+
+post-patch {
+    xinstall -m 755 ${filespath}/autogen.sh ${worksrcpath}
+}
+
+configure.cmd       ./autogen.sh
+
+configure.args      --disable-silent-rules
+
+platform darwin {
+    if {${configure.cxx_stdlib} eq "libstdc++"} {
+        version     3.18.4
+        set branch  [join [lrange [split ${version} .] 0 1] .]
+        master_sites gnome:sources/${name}/${branch}/
+        checksums   rmd160  8e7dbaea863239d139e3f21776ea4baf66636d92 \
+                    sha256  76a3e49867a474afbe3835ce4f2d49472567ad610e839d0c6808ce1d11ccf2b5
+        livecheck.regex "LATEST-IS-(${branch}(?:\\.\\d+)*)"
+    } else {
+        depends_lib-append  path:lib/pkgconfig/webkit2gtk-4.0.pc:webkit2-gtk
+    }
+}
+
+# port installs desktop application file, icons, and gschemas
+post-activate {
+    system "${prefix}/bin/update-desktop-database ${prefix}/share/applications"
+    system "${prefix}/bin/gtk-update-icon-cache-3.0 -f -t ${prefix}/share/icons/hicolor"
+    system "${prefix}/bin/glib-compile-schemas ${prefix}/share/glib-2.0/schemas"
+}
+
+livecheck.type      gnome

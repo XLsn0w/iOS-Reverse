@@ -1,0 +1,57 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+PortGroup           select 1.0
+
+name                py-codestyle
+python.rootname     pycodestyle
+
+# CAUTION: Updates tend to break port `py-flake8` due to strict version caps.
+# Please DO NOT update without cross-checking version compatibility and
+# perform updates in a coordinated way.
+
+version             2.5.0
+categories-append   devel
+platforms           darwin
+supported_archs     noarch
+license             MIT
+maintainers         {petr @petrrr} openmaintainer
+
+description         Python style guide checker (formally called pep8)
+long_description    \
+    ${python.rootname} is a tool to check your Python code against some of the style \
+    conventions in PEP 8 (https://www.python.org/dev/peps/pep-0008/). \
+    This package used to be called pep8, but was renamed.
+
+homepage            https://pycodestyle.readthedocs.io
+
+master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}/
+distname            ${python.rootname}-${version}
+
+checksums           rmd160  aa9a73b35c6bd921be4eb8c3a5bcd3cd09e20fd8 \
+                    sha256  e40a936c9a450ad81df37f549d676d127b1b66000a6c500caa2b085bc0ca976c \
+                    size    98802
+
+python.versions     27 34 35 36 37 38
+
+if {${name} ne ${subport}} {
+    depends_lib-append      port:py${python.version}-setuptools
+
+    depends_run-append      port:${python.rootname}_select
+
+    select.group            ${python.rootname}
+    select.file             ${filespath}/pycodestyle-py${python.version}
+    notes "
+To make the Python ${python.branch} version of ${python.rootname} the one that is run\
+when you execute the commands without a version suffix, e.g. '${python.rootname}', run:
+
+port select --set ${select.group} [file tail ${select.file}]
+"
+
+    test.run        yes
+    test.cmd        ${python.bin} setup.py
+    test.target     test
+
+    livecheck.type  none
+}

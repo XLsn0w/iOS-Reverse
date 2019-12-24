@@ -1,0 +1,101 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+name                gtk-doc
+version             1.32
+categories          gnome devel
+license             GPL-2+
+installs_libs       no
+platforms           darwin freebsd linux
+supported_archs     noarch
+installs_libs       no
+maintainers         {devans @dbevans} openmaintainer
+description         GTK+/GNOME API documentation generator
+
+long_description    GTK-Doc generates API documentation from comments added to C code. \
+                    It is typically used to document the public API of GTK+  and GNOME \
+                    libraries, but it can also be used to document application code.
+
+homepage            http://www.gtk.org/gtk-doc/
+master_sites        gnome:sources/${name}/${version}/
+
+use_xz              yes
+
+checksums           rmd160  1e4d3d5c850743460629d50a729f29ff2efc9a00 \
+                    sha256  de0ef034fb17cb21ab0c635ec730d19746bce52984a6706e7bbec6fb5e0b907c \
+                    size    762000
+
+depends_build       port:pkgconfig \
+                    path:lib/pkgconfig/glib-2.0.pc:glib2
+
+depends_lib         port:libxml2 \
+                    port:libxslt \
+                    port:perl${perl5.major} \
+                    port:docbook-xml \
+                    port:docbook-xsl-nons \
+                    port:itstool
+
+variant pdf description {Build with PDF output support} {
+    depends_lib-append \
+                    port:dblatex
+}
+
+if {![variant_isset pdf]} {
+    patchfiles-append \
+                    disable-pdf.patch
+}
+
+# use default MacPorts perl branch
+configure.perl      ${perl5.bin}
+
+configure.env-append XSLTPROC=${prefix}/bin/xsltproc
+configure.args      --with-xml-catalog=${prefix}/etc/xml/catalog \
+                    --disable-silent-rules
+
+variant python36 conflicts python37 description {Build using Python 3.6} {
+    depends_lib-append \
+        port:python36 \
+        port:py36-anytree \
+        port:py36-lxml \
+        port:py36-pygments
+
+    depends_test        port:py36-mock
+
+    configure.python    ${prefix}/bin/python3.6
+}
+
+variant python37 conflicts python36 description {Build using Python 3.7} {
+    depends_lib-append \
+        port:python37 \
+        port:py37-anytree \
+        port:py37-lxml \
+        port:py37-pygments
+
+    depends_test        port:py37-mock
+
+    configure.python    ${prefix}/bin/python3.7
+}
+
+if {![variant_isset python36]} {
+     default_variants +python37
+}
+
+if {![variant_isset python36] && ![variant_isset python37]} {
+    ui_error "You must select one of the python variants"
+    return -code error "No python variant selected."
+}
+
+post-configure {
+    reinplace "s|^#!.*|#!${perl5.bin} -w|" \
+        ${worksrcpath}/tools/docpercentages.pl
+}
+
+# some tests are known to fail in gtk-doc 1.29+
+# see https://gitlab.gnome.org/GNOME/gtk-doc/blob/7db567e83fe5d2d0659560c6dfb25ee27b338140/NEWS
+test.run            yes
+test.dir            ${worksrcpath}/tests
+test.target         check
+
+livecheck.type      gnome-with-unstable

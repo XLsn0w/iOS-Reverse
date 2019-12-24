@@ -1,0 +1,25 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+PortGroup           github 1.0
+
+github.setup        ReFirmLabs binwalk 2.2.0 v
+revision            0
+
+categories          cross
+platforms           darwin
+license             MIT
+supported_archs     noarch
+maintainers         {stromnov @stromnov} openmaintainer
+description         Binwalk is a fast, easy to use tool for analyzing, reverse engineering, and extracting firmware images
+long_description    ${description}
+
+checksums           rmd160  68677d4d97ba5dbcd765c17cd37689c270161112 \
+                    sha256  a88a2f81563278e9f341a9adc2adaa4b620d1d1a7c7e00e00f8da8ba5674e425 \
+                    size    39595170
+
+python.default_version  37
+
+depends_lib-append  port:py${python.default_version}-setuptools \
+    port:py${python.default_version}-pylzma

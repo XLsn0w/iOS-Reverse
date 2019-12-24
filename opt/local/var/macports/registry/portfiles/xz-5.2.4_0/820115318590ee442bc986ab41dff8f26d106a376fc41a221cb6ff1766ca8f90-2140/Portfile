@@ -1,0 +1,58 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem      1.0
+PortGroup       clang_dependency 1.0
+
+name            xz
+version         5.2.4
+categories      archivers
+# some executables are GPL, libs and everything else are public domain
+license         {public-domain GPL-2+}
+platforms       darwin
+maintainers     {ryandesign @ryandesign} openmaintainer
+
+description     XZ Utils
+
+long_description \
+XZ utils consist of a few relatively separate submodules: \
+* LZMA/XZ encoder/decoder command line tool similar to gzip/bzip2 \
+* Scripts to ease grepping, diffing and viewing (lz*grep, lzdiff/lzcmp, lzmore/lzless)
+
+homepage        https://tukaani.org/xz/
+master_sites    sourceforge:project/lzmautils
+use_bzip2       yes
+
+checksums       rmd160  0c5a6ffd47d657fed0c7192f413422e503b79c69 \
+                sha256  3313fd2a95f43d88e44264e6b015e7d03053e681860b0d5d3f9baca79c57b7bf \
+                size    1287922
+
+depends_lib     port:libiconv port:gettext
+
+# This port is used by clang-3.4 to bootstrap libcxx
+subport ${name}-bootstrap {
+    prefix      ${prefix}/libexec/libcxx-bootstrap
+    depends_lib-replace     port:libiconv port:libiconv-bootstrap \
+                            port:gettext port:gettext-bootstrap
+    # Avoid macports-clang dep (doesn't use C++ anyway)
+    configure.cxx_stdlib
+    compiler.whitelist      clang llvm-gcc-4.2 gcc-4.2 apple-gcc-4.2
+}
+
+if {${os.platform} eq "darwin" && ${os.major} < 11 && ${cxx_stdlib} eq "libc++"} {
+    # This port is in the dependency chain for clang 3.7 and later
+    clang_dependency.extra_versions 3.7
+}
+
+patchfiles      c89.patch
+
+configure.args  --with-libiconv-prefix=${prefix} --with-libintl-prefix=${prefix}
+
+# document that we always need legacy symlinks now that "lzmautils" refers here
+configure.args-append --enable-lzma-links
+
+# the internal "check.h" header conflicts with port check's <check.h>
+configure.cppflags -I${worksrcpath}/src/liblzma/check -I${prefix}/include
+
+livecheck.url   ${homepage}
+livecheck.regex xz-(\[0-9.a-z\]*)${extract.suffix}
+livecheck.type  regexm

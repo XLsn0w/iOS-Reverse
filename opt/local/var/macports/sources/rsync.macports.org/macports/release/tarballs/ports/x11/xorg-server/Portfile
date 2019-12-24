@@ -1,0 +1,170 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem      1.0
+PortGroup       compiler_blacklist_versions 1.0
+
+name            xorg-server
+conflicts       xorg-server-devel xorg-server-1.18
+version         1.20.5
+revision        0
+categories      x11 devel
+license         X11
+maintainers     {jeremyhu @jeremyhu} openmaintainer
+description     The X.org / Xquartz X server.
+homepage        https://www.x.org
+platforms       darwin macosx
+long_description The X.org X server allows you to run X11 applications on your computer.
+
+master_sites    https://xorg.freedesktop.org/archive/individual/xserver/
+#master_sites    xorg:individual/xserver/
+
+distname        xorg-server-${version}
+
+checksums       rmd160  4b8c60978045bff8974524180e59b070fb1f1dec \
+                sha256  a81d8243f37e75a03d4f8c55f96d0bc25802be6ec45c3bfa5cb614c6d01bac9d \
+                size    6126757
+
+use_bzip2       yes
+use_parallel_build yes
+
+# Yes, mesa is a *BUILD* dependency
+depends_build \
+        port:pkgconfig \
+        port:mesa \
+        port:xorg-xorgproto \
+        port:xorg-xtrans
+
+# This xinit dependency needs to be port: not bin: because we specifically run ${prefix}/bin/startx from bundle-main.c
+depends_run \
+        port:xinit \
+        port:quartz-wm \
+        port:xorg-fonts \
+        port:xkeyboard-config
+
+depends_lib \
+        path:lib/pkgconfig/pixman-1.pc:libpixman \
+        port:xorg-libxkbfile \
+        port:xorg-libXfont \
+        port:xorg-libXt \
+        port:xorg-libAppleWM \
+        port:xorg-libXfixes \
+        port:xorg-libXfont2
+
+# https://trac.macports.org/ticket/36055
+# https://llvm.org/bugs/show_bug.cgi?id=30346
+# https://trac.macports.org/ticket/53910
+compiler.blacklist gcc-4.0 macports-clang-devel {clang >= 802 < 900}
+
+configure.args --with-apple-applications-dir=${applications_dir} \
+        --with-bundle-id-prefix=org.macports \
+        --without-dtrace \
+        --without-doxygen \
+        --without-fop \
+        --without-xmlto \
+        --disable-devel-docs \
+        --with-sha1=CommonCrypto \
+        --disable-dri2 \
+        --disable-dri3
+
+# GL/internal/dri_interface.h is missing in prefix (provided by libdrm for the xorg DDX... not helpful for us)
+configure.cppflags-append -I/usr/include -I${filespath}/dri -F${configure.sdkroot}/System/Library/Frameworks/ApplicationServices.framework/Frameworks
+
+configure.env-append \
+        RAWCPP=${configure.cpp}
+
+patchfiles \
+        0001-os-connection-Improve-abstraction-for-launchd-secure.patch \
+        0002-randr-Initialize-RandR-even-if-there-are-currently-n.patch \
+        0003-glx-Initialize-glx-even-if-there-are-currently-no-sc.patch \
+        5000-sdksyms.sh-Use-CPPFLAGS-not-CFLAGS.patch \
+        5001-Revert-dix-Restore-PaintWindow-screen-hook.patch \
+        5002-Workaround-the-GC-clipping-problem-in-miPaintWindow-.patch \
+        5003-Use-old-miTrapezoids-and-miTriangles-routines.patch \
+        5004-fb-Revert-fb-changes-that-broke-XQuartz.patch \
+        5005-fb-Revert-fb-changes-that-broke-XQuartz.patch
+
+# the following two patches avoid redefinition errors on pre-C11 compilers
+# https://trac.macports.org/ticket/57333
+# another approach would be to update the port to build with gcc6+
+# patches to do that are in the above noted ticket/57333.
+# Edit: 5007 patch no longer needed with xorgproto 2019.1
+patchfiles-append \
+        5006-patch-xorg-server-dont-redefine-GLXscreen.diff
+
+# Fixes what appears to be a mis-match in the way
+# hw/xquartz/GL/visualConfigs.c allocates __GLXconfig
+# objects with a single calloc call to the way
+# they are released in glxscreens.c with a loop and a
+# free call to each struct. The patch below fixes
+# this by individually allocating each
+# https://bugzilla.freedesktop.org/show_bug.cgi?id=107555
+patchfiles-append 5008-fix-calloc-free-mis-match-bug.patch
+
+# enables the automake option "subdir-objects" so that automake
+# doesn't complain about subdirectory *.in replacement files usage.
+patchfiles-append 2001-enable-automake-subdir-objects.patch
+
+# Workaround for Darwin19+
+# :info:build X11Application.m:431:17: error: use of undeclared identifier '_appFlags'
+# :info:build                 _appFlags._active = YES;
+# :info:build                 ^
+patchfiles-append Darwin19-Remove-AppFlags-Active-Hack.patch
+
+patch.pre_args -p1
+
+platform darwin 8 {
+    configure.args-append --disable-dependency-tracking
+}
+
+use_autoreconf yes
+autoreconf.args -fvi
+
+build.args V=1
+
+depends_build-append \
+        port:xorg-util-macros \
+        port:xorg-font-util
+
+post-destroot {
+        ln -s Xquartz ${destroot}${prefix}/bin/X
+}
+
+platform macosx {
+        if { ${os.major} < 10 } {
+                # Xplugin.h is missing on Tiger and incorrect on Leopard
+                configure.cppflags-append -I${filespath}/include
+        }
+}
+
+variant docs description "Install extra documentation" {
+        depends_build-append \
+                port:doxygen \
+                port:fop \
+                port:xmlto \
+                port:xorg-sgml-doctools
+
+        depends_skip_archcheck-append \
+                doxygen \
+                xmlto
+
+        configure.args-delete \
+                --without-doxygen \
+                --without-fop \
+                --without-xmlto \
+                --disable-devel-docs 
+
+        configure.args-append \
+                --with-doxygen \
+                --with-fop \
+                --with-xmlto \
+                --enable-devel-docs
+
+        configure.env-append \
+                DOXYGEN=${prefix}/bin/doxygen \
+                FOP=${prefix}/bin/fop \
+                XMLTO=${prefix}/bin/xmlto
+}
+
+livecheck.type  regex
+livecheck.url   https://xorg.freedesktop.org/archive/individual/xserver/?C=M&O=D
+livecheck.regex ${name}-(\\d+\\.\\d+\\.\\d+)\\.tar

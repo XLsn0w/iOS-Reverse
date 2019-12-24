@@ -1,0 +1,41 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem      1.0
+PortGroup       gobject_introspection 1.0
+
+name            libsecret
+version         0.18.8
+set branch      [join [lrange [split ${version} .] 0 1] .]
+maintainers     nomaintainer
+categories      gnome
+platforms       darwin
+license         LGPL-2.1
+description     libsecret is a library for storing and retrieving passwords and other secrets
+
+long_description \
+    libsecrets is a client for the Secret Service DBus API. The Secret \
+    Service allows storage of passwords in a common way on the desktop. \
+    Supported by gnome-keyring and ksecretservice.
+
+homepage        https://wiki.gnome.org/Projects/Libsecret
+master_sites    gnome:sources/${name}/${branch}/
+use_xz          yes
+
+checksums       rmd160  0b1d68d70962906e0eac24fc053095b939df8134 \
+                sha256  3bfa889d260e0dbabcf5b9967f2aae12edcd2ddc9adc365de7a5cc840c311d15 \
+                size    509432
+
+depends_build   port:pkgconfig \
+                port:docbook-xsl-nons \
+                port:libxslt \
+                port:gsed
+
+depends_lib     path:lib/pkgconfig/glib-2.0.pc:glib2 \
+                port:vala \
+                port:libgcrypt
+
+gobject_introspection yes
+
+configure.args  --disable-silent-rules
+
+livecheck.type  gnome

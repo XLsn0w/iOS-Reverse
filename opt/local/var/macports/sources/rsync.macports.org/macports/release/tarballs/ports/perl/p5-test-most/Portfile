@@ -1,0 +1,30 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Test-Most 0.35
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         Test::Most - Most commonly needed test functions and features.
+long_description    ${description}
+
+platforms           darwin
+
+checksums           rmd160  8db7982856202af932c8be3f275030e8843605ce \
+                    sha256  9897a6f4d751598d2ed1047e01c1554b01d0f8c96c45e7e845229782bf6f657f
+
+if {${perl5.major} != ""} {
+# requires Test::More from Test::Simple 1.302047+, perl5.24 core version is 1.001014
+    depends_lib-append \
+                    port:p${perl5.major}-data-dumper-names \
+                    port:p${perl5.major}-exception-class \
+                    port:p${perl5.major}-test-deep \
+                    port:p${perl5.major}-test-differences \
+                    port:p${perl5.major}-test-exception \
+                    port:p${perl5.major}-test-simple \
+                    port:p${perl5.major}-test-warn
+
+    supported_archs noarch
+}

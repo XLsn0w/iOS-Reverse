@@ -1,0 +1,89 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           cmake 1.1
+PortGroup           github 1.0
+
+github.setup        mongodb mongo-c-driver 1.15.1
+checksums           rmd160  568f30d4b906e38f7d8d1f22ba0289577b9ace12 \
+                    sha256  4ee47c146ff0059d15ab547a0c2a87f7113f063e1c625e51f8c5174853b07765 \
+                    size    6699867
+
+categories          devel
+platforms           darwin
+maintainers         {ryandesign @ryandesign} openmaintainer
+license             Apache-2
+
+github.tarball_from releases
+
+configure.args-append \
+                    -DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF \
+                    -DENABLE_EXAMPLES=OFF \
+                    -DENABLE_TESTS=OFF \
+                    -DENABLE_UNINSTALL=OFF
+
+if {${subport} eq ${name}} {
+    revision        1
+
+    categories-append \
+                    databases
+
+    homepage        http://mongoc.org/libmongoc/${version}/
+
+    description     library for using mongodb from C code
+
+    long_description \
+                    ${subport} provides libmongoc, a ${description}.
+
+    depends_build-append \
+                    port:pkgconfig
+
+    depends_lib-append \
+                    port:cyrus-sasl2 \
+                    port:icu \
+                    port:libbson \
+                    port:snappy \
+                    port:zlib
+
+    configure.args-append \
+                    -DENABLE_BSON=SYSTEM \
+                    -DENABLE_ICU=ON \
+                    -DENABLE_MONGOC=ON \
+                    -DENABLE_SASL=CYRUS \
+                    -DENABLE_SNAPPY=ON \
+                    -DENABLE_ZLIB=SYSTEM
+
+    if {${os.platform} eq "darwin" && ${os.major} > 11} {
+        configure.args-append \
+                    -DENABLE_SSL=DARWIN
+    } else {
+        depends_lib-append \
+                    path:lib/libssl.dylib:openssl
+        configure.args-append \
+                    -DENABLE_SSL=OPENSSL
+    }
+
+    github.livecheck.regex \
+                    {([0-9.]+)}
+} else {
+    livecheck.type  none
+}
+
+subport libbson {
+    revision        0
+
+    homepage        http://mongoc.org/${subport}/${version}/
+
+    description     library for using BSON documents
+
+    long_description \
+                    ${subport} is a library providing useful routines related \
+                    to building, parsing, and iterating BSON documents.
+
+    patchfiles-append \
+                    libbson.patch
+
+    configure.args-append \
+                    -DENABLE_BSON=ON \
+                    -DENABLE_MONGOC=OFF
+}

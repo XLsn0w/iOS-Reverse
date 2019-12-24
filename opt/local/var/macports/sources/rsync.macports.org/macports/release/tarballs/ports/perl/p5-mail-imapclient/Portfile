@@ -1,0 +1,29 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Mail-IMAPClient 3.42
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+
+description         Perl 5 module to talk to an IMAP server.
+long_description    This module provides perl routines that simplify a sockets \
+                    connection to and an IMAP conversation with an IMAP server.
+
+checksums           rmd160  14acb8b2b8ed44268a10d086825377ffaa2fbfaf \
+                    sha256  1c2264d50c54c839a3e38ce2f8edda3d24f30cc607940d7574beab19cb00ce7e \
+                    size    192320
+
+platforms           darwin
+supported_archs     noarch
+
+if {${perl5.major} != ""} {
+    depends_lib-append \
+                    port:p${perl5.major}-authen-sasl \
+                    port:p${perl5.major}-digest-hmac \
+                    port:p${perl5.major}-io-socket-ssl \
+                    port:p${perl5.major}-ntlm \
+                    port:p${perl5.major}-parse-recdescent
+}

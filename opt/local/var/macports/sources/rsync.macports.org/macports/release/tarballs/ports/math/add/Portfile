@@ -1,0 +1,31 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                add
+version             20180701
+revision            0
+categories          math
+platforms           darwin
+license             BSD
+maintainers         nomaintainer
+
+description         Fixed-point, full screen calculator.
+long_description    add is a fixed-point calculator that operates as a full-screen editor. \
+                    It is designed for use as a checkbook or expense-account balancing tool.
+
+homepage            https://invisible-island.net/add/
+master_sites        ftp://ftp.invisible-island.net/pub/add/
+extract.suffix      .tgz
+
+checksums           rmd160  b24d4eec3e800a4689e779e31687bebf0a1a9f65 \
+                    sha256  cfacdaa158770a63ef95956b26f592f3af36d857ff93b87d26a4b0fa76914b92 \
+                    size    163226
+
+depends_lib         port:ncurses
+
+configure.args      --mandir=${prefix}/share/man --datadir=${prefix}/share/doc/${name}
+
+livecheck.type      regex
+livecheck.url       ${master_sites}
+livecheck.regex     "${name}-(\\d+(?:\\.\\d+)*)${extract.suffix}"

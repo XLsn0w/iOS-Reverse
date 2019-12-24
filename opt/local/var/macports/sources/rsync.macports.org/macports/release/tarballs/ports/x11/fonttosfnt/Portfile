@@ -1,0 +1,33 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                fonttosfnt
+version             1.0.5
+revision            2
+categories          x11 graphics
+maintainers         {jeremyhu @jeremyhu} openmaintainer
+license             X11
+description         Wrap a bitmap font in a sfnt (TrueType) wrapper
+long_description \
+   Wrap a bitmap font or a set of bitmap fonts in a sfnt (TrueType or \
+   OpenType) wrapper.
+
+platforms           darwin
+
+homepage            https://www.x.org/
+master_sites        xorg:individual/app/
+use_bzip2           yes
+
+checksums           rmd160  0f8d356814b4df375e5dc4be80b53002f85fd116 \
+                    sha256  c80a5ff516aa06da2e90df044b8e28715f7d9e451feac8030951d9ff828d8503 \
+                    size    141446
+
+depends_build       port:pkgconfig \
+                    port:xorg-xorgproto
+
+depends_lib         port:xorg-libfontenc port:freetype
+
+livecheck.type      regex
+livecheck.regex     ${name}-(\[\\d.\]+)${extract.suffix}
+livecheck.url       https://xorg.freedesktop.org/archive/individual/app/?C=M&O=D

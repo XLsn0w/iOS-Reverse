@@ -1,0 +1,22 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem      1.0
+
+name		xarchiver
+version		0.5.4
+categories	x11
+platforms	darwin
+maintainers	nomaintainer
+description	Xarchiver is a desktop-agnostic GTK+2 frontend to \
+		various command line archiving tools
+long_description ${description}
+homepage	http://xarchiver.xfce.org/
+master_sites	sourceforge:xarchiver
+use_bzip2	yes
+
+checksums       rmd160  af130364d48678ee74a818eccfc8c7de34294e20 \
+                sha256  e63fa73979fcc56efe8cca9095fd915d31a1714ce9676246b8626f164e452ef4 \
+                size    1003045
+
+depends_build	port:pkgconfig
+depends_lib	port:gtk2

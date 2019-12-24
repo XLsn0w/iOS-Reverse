@@ -1,0 +1,46 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+PortGroup               python 1.0
+PortGroup               bitbucket 1.0
+
+bitbucket.setup         durin42 hgsubversion 1.9.3
+name                    py-hgsubversion
+
+categories-append       devel
+platforms               darwin
+maintainers             nomaintainer
+supported_archs         noarch
+license                 GPL-2+
+
+description             hgsubversion is a Mercurial extension for \
+                        working with Subversion (svn) repositories.
+long_description        ${description}
+
+checksums               rmd160  08f1be76912ae81a56c8eb49e96d12bd47916742 \
+                        sha256  daec4abab484ec63956964e18af36f401ba5f5b12981ffd2858b8466aac5e7ab \
+                        size    306205
+
+# can't set python.versions before adding custom subports
+subport py-hgsubversion-devel {}
+subport py27-hgsubversion-devel {}
+
+# obsolete 20190301
+if {[string match "*-devel" $subport]} {
+    replaced_by         ${name}
+    PortGroup           obsolete 1.0
+}
+
+python.versions         27
+
+if {${name} ne ${subport}} {
+    depends_lib-append  port:mercurial \
+                        port:subversion-python${python.version}bindings
+
+    notes               "
+To enable hgsubversion, add the following to your ~/.hgrc:
+
+\[extensions\]
+hgsubversion =
+"
+}

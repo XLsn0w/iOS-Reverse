@@ -1,0 +1,48 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-natsort
+version             6.0.0
+revision            0
+platforms           darwin
+supported_archs     noarch
+license             MIT
+maintainers         {phas.ubc.ca:jfcaron @jfcaron3} openmaintainer
+
+description         Natural sorting for Python
+long_description    When you try to sort a list of strings that \
+                    contain numbers, the normal Python sort algorithm \
+                    sorts lexicographically, so you might not get the \
+                    results that you expect. `natsort` provides \
+                    a function `natsorted` that helps sort lists \
+                    'naturally', either as real numbers (i.e. \
+                    signed/unsigned floats or ints), or as versions.
+homepage            https://github.com/SethMMorton/${python.rootname}
+
+master_sites        pypi:n/${python.rootname}
+distname            ${python.rootname}-${version}
+
+checksums           rmd160  bc57ebaf0994b8c2c5286a2442173dd9506627db \
+                    sha256  ff3effb5618232866de8d26e5af4081a4daa9bb0dfed49ac65170e28e45f2776 \
+                    size    140718
+
+python.versions     27 34 35 36 37
+
+if {${subport} ne ${name}} {
+    depends_lib-append \
+                    port:py${python.version}-setuptools
+
+    depends_run-append \
+                    port:py${python.version}-pyicu
+
+    post-destroot {
+        set docdir ${prefix}/share/doc/${subport}
+        xinstall -d ${destroot}${docdir}
+        xinstall -m 0644 -W ${worksrcpath} README.rst LICENSE \
+            CHANGELOG.rst ${destroot}${docdir}
+    }
+
+    livecheck.type  none
+}

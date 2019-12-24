@@ -1,0 +1,77 @@
+PortSystem 1.0
+PortGroup python 1.0
+
+name			trac
+version			1.4
+categories		devel python
+platforms		darwin
+maintainers		{geeklair.net:dluke @danielluke}
+description		Wiki and issue tracking system.
+# modified BSD, see http://trac.edgewall.org/wiki/TracLicense
+license			BSD
+
+long_description	Trac is an enhanced wiki and issue tracking system for \
+			software development projects. Trac uses a minimalistic approach to \
+			web-based software project management.
+
+supported_archs		noarch
+
+homepage	https://trac.edgewall.org/
+master_sites	https://download.edgewall.org/trac/ \
+		https://ftp.edgewall.org/pub/trac/
+distname	Trac-${version}
+
+checksums	md5	9984fd689f3e6243aa70a32070dafd80     \
+		sha1	24b7650fc093966431b270f89b42675f86d3db88 \
+		rmd160	201f59c7659b67527d198d6d005b2f10ee575f92 \
+		sha256	a1ef354488d77bbce2aea016996fb71c76faf5f848d8c787703bad0d5e0ee5b1 \
+		size	5443966
+
+variant python27 description {Use Python 2.7} {}
+
+default_variants +python27
+python.default_version 27
+
+depends_lib	port:py${python.version}-pygments \
+		port:py${python.version}-genshi \
+		port:py${python.version}-jinja2 \
+		port:py${python.version}-babel \
+		port:py${python.version}-docutils \
+		port:py${python.version}-pygments \
+		port:py${python.version}-textile \
+		port:py${python.version}-tz \
+		port:py${python.version}-sqlite
+
+notes		"See http://projects.edgewall.com/trac/wiki/TracInstall for information on setting up a new trac environment."
+
+variant postgres description {Build with postgresql support instead of sqlite} {
+				depends_lib-delete port:py${python.version}-sqlite
+				depends_lib-append port:py${python.version}-psycopg2
+			}
+
+variant mysql description {Build with mysql support instead of sqlite} {
+				depends_lib-delete port:py${python.version}-sqlite
+				depends_lib-append port:py${python.version}-pymysq
+
+				ui_msg "Warning: Trac supports the MySQL database backend, although there are a couple of KnowIssues."
+				ui_msg "See http://trac.edgewall.org/wiki/MySqlDb for more detailed information."
+			}
+
+variant subversion description {Build with subversion support} {
+				depends_lib-append port:subversion-python${python.version}bindings
+			}
+
+default_variants-append +subversion
+
+post-destroot	{
+			file mkdir ${destroot}${prefix}/share/trac/
+			file copy ${worksrcpath}/contrib \
+				${destroot}${prefix}/share/trac/contrib
+			system "ln -sf ${python.prefix}/bin/trac-admin \
+				${destroot}${prefix}/bin/trac-admin"
+			system "ln -sf ${python.prefix}/bin/tracd \
+				${destroot}${prefix}/bin/tracd"
+		}
+
+livecheck.url	http://trac.edgewall.org/wiki/TracDownload 
+livecheck.regex	"(?!Trac).*Trac-((?!${extract.suffix}).*)${extract.suffix}"

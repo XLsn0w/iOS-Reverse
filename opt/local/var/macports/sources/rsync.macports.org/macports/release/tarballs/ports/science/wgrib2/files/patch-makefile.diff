@@ -1,0 +1,77 @@
+--- makefile.orig	2017-12-30 00:14:43.000000000 +0900
++++ makefile	2018-04-08 13:16:45.000000000 +0900
+@@ -107,21 +107,21 @@
+ 
+ 
+ # Warning do not set both USE_NETCDF3 and USE_NETCDF4 to one
+-USE_NETCDF3=1
+-USE_NETCDF4=0
++USE_NETCDF3=0
++USE_NETCDF4=1
+ USE_REGEX=1
+ USE_TIGGE=1
+ USE_MYSQL=0
+ USE_IPOLATES=1
+ USE_UDF=0
+ USE_OPENMP=1
+-USE_PROJ4=0
++USE_PROJ4=1
+ USE_WMO_VALIDATION=0
+ DISABLE_TIMEZONE=0
+ MAKE_FTN_API=1
+ DISABLE_ALARM=0
+ 
+-USE_G2CLIB=0
++USE_G2CLIB=1
+ USE_PNG=1
+ USE_JASPER=1
+ USE_AEC=1
+@@ -417,8 +417,8 @@
+ # gctpc library
+ gctpcdir:=${cwd}/gctpc
+ gctpcsrc:=gctpc20a.tgz
+-gctpclib:=${lib}/libgeo.a
+-wLDFLAGS+=-lgeo
++gctpclib:=${lib}/libgctpc.a
++wLDFLAGS+=-lgctpc
+ # wCPPFLAGS+=-I${gctpc}/source
+ 
+ # proj4 library
+@@ -566,11 +566,10 @@
+ w=wgrib2
+ prog=$w/wgrib2
+ 
+-all:	${netcdf4src} ${hdf5src} ${prog} aux_progs/gmerge aux_progs/smallest_grib2 aux_progs/smallest_4
++all:	${prog} aux_progs/gmerge aux_progs/smallest_grib2 aux_progs/smallest_4
+ 
+-
+-${prog}:        $w/*.c $w/*.h ${jlib} ${aeclib} ${netcdf3lib} ${pnglib} ${hdf5lib} ${g2clib} ${netcdf4lib} ${iplib} ${gctpclib} ${proj4lib}
+-	cd "$w" && export LDFLAGS="${wLDFLAGS}" && export CPPFLAGS="${wCPPFLAGS}" && ${MAKE}
++${prog}:        $w/*.c $w/*.h  ${g2clib} ${iplib}
++	cd "$w" && ${MAKE} LDFLAGS="${LDFLAGS} ${wLDFLAGS}" CPPFLAGS="-I${g2cdir} ${CPPFLAGS}"
+ 
+ fast:        $w/*.c $w/*.h ${jlib} ${aeclib} ${netcdf3lib} ${pnglib} ${hdf5lib} ${g2clib} ${netcdf4lib} ${iplib} ${gctpclib} ${proj4lib}
+ 	cd "$w" && export LDFLAGS="${wLDFLAGS}" && export CPPFLAGS="${wCPPFLAGS}" && ${MAKE} fast
+@@ -626,8 +625,11 @@
+ ${zlib}:	${zdir}
+ 	cd ${zdir} && export CFLAGS="${wCPPFLAGS}" && ./configure --prefix=${cwd} --static && ${MAKE} install
+ 
+-${g2clib}:	${jlib} ${pnglib} ${zlib}
+-	cd "$g2cdir" && export CPPFLAGS="${wCPPFLAGS}" && ${MAKE} && cp libgrib2c.a ${lib}
++${g2clib}:
++	touch ${g2clib}
++	rm ${g2clib}
++	cd "${g2cdir}" && ${MAKE} && cp libgrib2c.a ${lib}
++	ranlib ${g2clib}
+ 
+ ${gctpcdir}/source/makefile.gctpc:
+ 	cp ${gctpcsrc} tmpgctpc.tar.gz
+@@ -683,7 +685,7 @@
+ 
+ 
+ ${iplib}:
+-	cd "${ipdir}" && export FFLAGS="${wFFLAGS}" && ${MAKE} && cp libipolate.a ${iplib}
++	cd "${ipdir}" && ${MAKE} && cp libipolate.a ${lib}
+ 
+ aux_progs/gmerge:	aux_progs/gmerge.c		
+ 	cd aux_progs && ${MAKE} -f gmerge.make

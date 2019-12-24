@@ -1,0 +1,33 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         HTML-MasonX-Free 0.006
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         HTML::MasonX::Free - a secret society of HTML::Mason-using throwback modules
+long_description    These modules, together, help make HTML::Mason work more like it always should have.
+
+platforms           darwin
+
+checksums           rmd160  3ae2da78693329d91e27ba81d222e62a29d27cf8 \
+                    sha256  7edc48de9cb894e730259f815c456b96cb980abc00cb0957204c1fc1e251086f
+
+if {${perl5.major} != ""} {
+    depends_build-append \
+                    port:p${perl5.major}-capture-tiny \
+                    port:p${perl5.major}-path-class \
+                    port:p${perl5.major}-test-fatal
+
+    depends_lib-append \
+                    port:p${perl5.major}-html-mason \
+                    port:p${perl5.major}-list-allutils \
+                    port:p${perl5.major}-log-any \
+                    port:p${perl5.major}-moose \
+                    port:p${perl5.major}-namespace-autoclean \
+                    port:p${perl5.major}-params-validate
+
+    supported_archs noarch
+}

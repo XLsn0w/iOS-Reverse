@@ -1,0 +1,28 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Shell-Config-Generate 0.33 ../../authors/id/P/PL/PLICEASE
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         Shell::Config::Generate - Portably generate config for any shell
+long_description    ${description}
+
+platforms           darwin
+
+checksums           rmd160  011e8c3ae1f3ebe4752913d661fda7a3adb9d513 \
+                    sha256  7a2de93aee09ee68dbf7979ced69ed9099086c3de9f96ca401b8c7ee1cb10b06 \
+                    size    28382
+
+if {${perl5.major} != ""} {
+    depends_build-append \
+                    port:p${perl5.major}-test-simple \
+                    port:p${perl5.major}-test2-suite
+                    
+    depends_lib-append \
+                    port:p${perl5.major}-shell-guess
+
+    supported_archs noarch
+}

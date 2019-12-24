@@ -1,0 +1,34 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-cligj
+version             0.5.0
+revision            0
+categories-append   gis
+platforms           darwin
+license             BSD
+
+python.versions     27 34 35 36 37 38
+
+maintainers         {stromnov @stromnov} openmaintainer
+
+description         Click params for commmand line interfaces to GeoJSON
+long_description    ${description}
+
+homepage            https://github.com/mapbox/cligj
+master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
+
+distname            ${python.rootname}-${version}
+
+checksums           rmd160  eef00ce17f4454fe2a679e952ce913b44e9c957a \
+                    sha256  6c7d52d529a78712491974f975c33473f430c0f7beb18c0d7a402a743dcb460a \
+                    size    5457
+
+if {${name} ne ${subport}} {
+    depends_lib-append  port:py${python.version}-setuptools \
+                        port:py${python.version}-click
+
+    livecheck.type      none
+}

@@ -1,0 +1,56 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim: fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           clang_dependency 1.0
+
+github.setup        facebook zstd 1.4.3 v
+
+checksums           rmd160  dbff2048f23e3256ca2c3b6d4bd6257398e23a71 \
+                    sha256  e88ec8d420ff228610b77fba4fbf22b9f8b9d3f223a40ef59c9c075fcdad5767 \
+                    size    1899158
+
+categories          archivers devel
+platforms           darwin
+license             {BSD GPL-2}
+
+maintainers         nomaintainer
+
+description         Zstandard - Fast real-time compression algorithm
+long_description    Zstd, short for Zstandard, is a fast lossless compression \
+                    algorithm, targeting real-time compression scenarios at \
+                    zlib-level and better compression ratios.
+
+github.tarball_from releases
+
+depends_lib         port:lz4 \
+                    port:xz \
+                    port:zlib
+
+# libzstd.dylib links to libSystem.B.dylib only. Dependencies like lz4 are
+# linked by CLI tools in ${prefix}/bin only.
+license_noconflict  lz4 xz zlib
+
+patchfiles          patch-zstd-tiger-no-backtrace.diff
+
+post-patch {
+    reinplace -W ${worksrcpath} "s/-Wvla //g" lib/Makefile programs/Makefile tests/Makefile tests/fuzz/Makefile
+}
+
+use_configure       no
+
+variant universal {}
+
+build.target        allmost
+
+build.env-append    CC=${configure.cc} \
+                    "CFLAGS=${configure.cflags} [get_canonical_archflags cc]" \
+                    CXX=${configure.cxx} \
+                    "CXXFLAGS=${configure.cxxflags} [get_canonical_archflags cxx]" \
+                    "LDFLAGS=${configure.ldflags} [get_canonical_archflags ld]" \
+                    PREFIX=${prefix}
+
+test.run            yes
+test.env-append     {*}${build.env}
+
+destroot.env-append {*}${build.env}

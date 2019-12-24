@@ -1,0 +1,51 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           texlive 1.0
+
+name                texlive-context
+version             50709
+revision            0
+
+categories          tex
+maintainers         {dports @drkp}
+license             Copyleft Permissive
+description         TeX Live: ConTeXt and packages
+long_description    Hans Hagen's powerful ConTeXt system, http://pragma-ade.com. Also includes third-party ConTeXt packages.
+
+checksums           texlive-context-50709-run.tar.xz \
+                    rmd160  2fa4338b810d2969c9fadf9c99846b1a792c5e6c \
+                    sha256  199953d4f4372f81a6b0751ff6beaaff8038ddc8bfd223656df621ec51c85690 \
+                    texlive-context-50709-doc.tar.xz \
+                    rmd160  a3f7dea33192e76a3aeed3490da1ca7521db1b70 \
+                    sha256  143cdf914d5d63737544d753702c5fa55cf1fd0242cf6502ffeb3441a83fa82e \
+                    texlive-context-50709-src.tar.xz \
+                    rmd160  d10ee92173743729c2dcc39d3d1fdc18f7f561f7 \
+                    sha256  abe8068123e3ec03b917379790a17152c0b1e56e47bf4bf589e128cef163d257
+
+depends_lib         port:texlive-basic
+
+texlive.formats      \
+    {1 cont-en pdftex cont-usr.tex {-8bit *cont-en.mkii}} \
+    {1 cont-en xetex cont-usr.tex {-8bit *cont-en.mkii}} \
+    {0 cont-fr pdftex cont-usr.tex {-8bit *cont-fr.mkii}} \
+    {0 cont-it pdftex cont-usr.tex {-8bit *cont-it.mkii}} \
+    {0 cont-nl pdftex cont-usr.tex {-8bit *cont-nl.mkii}} \
+    {0 cont-ro pdftex cont-usr.tex {-8bit *cont-ro.mkii}}
+
+texlive.maps      \
+    {Map original-context-symbol.map}
+
+texlive.binaries    context contextjit luatools mtxrun mtxrunjit texexec texmfstart
+
+depends_lib-append  port:texlive-latex \
+                    port:texlive-metapost \
+                    port:texlive-xetex \
+                    port:texlive-fonts-recommended \
+                    port:texlive-math-science
+
+post-deactivate {
+    delete ${texlive_texmfsysvar}/luatex-cache
+}
+
+texlive.texmfport

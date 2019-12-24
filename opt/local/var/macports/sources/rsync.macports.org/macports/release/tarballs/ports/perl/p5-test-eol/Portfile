@@ -1,0 +1,18 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Test-EOL 2.00
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         Test::EOL - Check the correct line endings in your project
+long_description    ${description}
+
+platforms           darwin
+
+checksums           rmd160  788c8d9f5bdc3a7fcfaf43cc2d6a38941aa81b85 \
+                    sha256  8e7f7e5d07d3be0f1d7d51bcda8af0962767eb2897fd48994df274c0f5ed6b50
+
+supported_archs     noarch

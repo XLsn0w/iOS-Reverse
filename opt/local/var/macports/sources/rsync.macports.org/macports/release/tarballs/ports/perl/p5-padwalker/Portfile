@@ -1,0 +1,18 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         PadWalker 2.3 ../by-authors/id/R/RO/ROBIN/
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         play with other peoples' lexical variables
+long_description    PadWalker is a module which allows you to inspect \
+                    (and even change!) lexical variables in any subroutine \
+                    which called you.
+
+platforms           darwin
+
+checksums           rmd160  3fa0aedb3bcb38a79a060c2f5ce0acc063d824e5 \
+                    sha256  2a6c44fb600861e54568e74081a8d1f121f0060076069ceab34b1ae89d6588cf

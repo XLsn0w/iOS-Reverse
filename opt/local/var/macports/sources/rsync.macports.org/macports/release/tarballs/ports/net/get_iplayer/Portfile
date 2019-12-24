@@ -1,0 +1,61 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+PortGroup           github 1.0
+
+github.setup        get-iplayer get_iplayer 3.22 v
+categories          net multimedia
+platforms           darwin
+maintainers         {gmail.com:davide.liessi @dliessi} openmaintainer
+supported_archs     noarch
+license             GPL-3+
+
+description         A utility for downloading TV and radio from BBC iPlayer
+long_description    ${description}. \
+                    \nThis port does not install the Web PVR Manager (get_iplayer.cgi).
+
+checksums           rmd160  011a63971723bb3597ea7c30f4118d7c05616952 \
+                    sha256  0c7721124f424bfc0ba1bbbc5d4965382ef1d473c307c60b2c273e65c9284e65 \
+                    size    146353
+
+depends_run         port:perl${perl5.major} \
+                    port:p${perl5.major}-libwww-perl \
+                    port:p${perl5.major}-mojolicious \
+                    port:p${perl5.major}-xml-libxml \
+                    port:atomicparsley \
+                    path:bin/ffmpeg:ffmpeg
+
+post-patch {
+    reinplace "s|#!/usr/bin/env perl|#!${perl5.bin}|g" \
+        ${worksrcpath}/get_iplayer
+    reinplace "s|/etc|${prefix}/etc|g" \
+        ${worksrcpath}/get_iplayer
+}
+
+use_configure       no
+build {}
+
+destroot {
+    xinstall -d ${destroot}${prefix}/bin
+    xinstall -m 755 ${worksrcpath}/get_iplayer ${destroot}${prefix}/bin
+
+    xinstall -d ${destroot}${prefix}/share/man/man1
+    xinstall -m 644 ${worksrcpath}/get_iplayer.1 ${destroot}${prefix}/share/man/man1
+
+    xinstall -d ${destroot}${prefix}/share/doc/${name}
+    xinstall -m 644 -W ${worksrcpath} \
+        CHANGELOG.md \
+        CONTRIBUTORS \
+        LICENSE.txt \
+        README.md \
+        ${destroot}${prefix}/share/doc/${name}
+}
+
+notes-append \
+"Use of get_iplayer outside the UK is not supported,\
+with the exception of downloading lower-quality (96k and 48k)\
+radio programmes that are available to international users.
+
+See http://iplayerhelp.external.bbc.co.uk/tv/outsideuk\
+for more details."

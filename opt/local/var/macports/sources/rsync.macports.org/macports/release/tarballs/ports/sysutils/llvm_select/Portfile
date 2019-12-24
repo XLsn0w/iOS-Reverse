@@ -1,0 +1,34 @@
+PortSystem 1.0
+PortGroup select 1.0
+
+name			llvm_select
+version			2
+categories		sysutils
+platforms		darwin
+license		BSD
+maintainers		{jeremyhu @jeremyhu}
+supported_archs		noarch
+description		common files for selecting default llvm version
+long_description	llvm_select installs files that allow 'port select' to \
+			switch the default version of llvm. \
+			It symlinks the standard llvm executables \
+			in the MacPorts prefix to the selected version.
+
+homepage		https://www.macports.org/
+distfiles
+
+use_configure           no
+build                   {}
+
+destroot {
+    select::install llvm ${filespath}/base
+    select::install llvm ${filespath}/none
+}
+
+livecheck.type	none
+
+if {${os.platform} eq "darwin" && ${os.major} < 11} {
+    # Having the stdlib set to libc++ on 10.6 causes a dependency on a
+    # macports-clang compiler to be added, which would be a dep cycle.
+    configure.cxx_stdlib
+}

@@ -1,0 +1,64 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                ntfs-3g
+version             2017.3.23
+revision            1
+categories          fuse
+platforms           darwin
+maintainers         nomaintainer
+license             GPL-2+ LGPL-2
+description         Safe read/write NTFS driver for FUSE
+long_description    The NTFS-3G driver is an open source, freely available \
+                    NTFS driver for FUSE with read and write support. It \
+                    provides safe and fast handling of the Windows XP, Windows \
+                    Server 2003, Windows 2000 and Windows Vista file systems. \
+                    Most POSIX file system operations are supported, with the \
+                    exception of full file ownership and access right support. \
+                    Also included are ntfsprogs, a set of utilities to create \
+                    and manipulate NTFS file systems.
+
+homepage            http://www.tuxera.com/community/ntfs-3g-download/
+distname            ntfs-3g_ntfsprogs-${version}
+extract.suffix      .tgz
+
+master_sites        http://tuxera.com/opensource/
+
+checksums           rmd160  aae0cd7a2560ad87ba41832f1b34af5aaaa38739 \
+                    sha256  3e5a021d7b761261836dcb305370af299793eedbded731df3d6943802e1262d5
+
+livecheck.type      regex
+livecheck.regex     {stable version</span></b> is <a href="https://tuxera.com/opensource/ntfs-3g_ntfsprogs-(.+?)\.tgz"}
+
+depends_build       port:pkgconfig
+
+depends_lib         path:lib/pkgconfig/fuse.pc:osxfuse \
+                    port:ossp-uuid
+
+# osxfuse is not universal
+universal_variant   no
+
+# Use default PKG_CONFIG_PATH to avoid picking up a FUSE installation
+# in /usr/local (see #30537)
+patchfiles          patch-configure.diff \
+                    libntfs-3g_Makefile.in.patch \
+                    patch-CVE-2019-9755.diff
+
+configure.args      --exec-prefix=${prefix} --with-fuse=external
+# do not try to use this function in macOS 10.13 to avoid compilation error
+# (older versions don't have this function)
+configure.env       ac_cv_func_utimensat=no
+
+platform darwin {
+    depends_lib-append          port:gettext
+    configure.ldflags-append    -framework CoreFoundation -lintl
+}
+
+pre-destroot {
+    file mkdir ${destroot}/sbin
+}
+
+notes "
+To make this port work in the Finder, see this link: <https://trac.macports.org/wiki/howto/Ntfs3gFinder>
+"

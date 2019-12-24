@@ -1,0 +1,72 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem            1.0
+
+name                  varnish
+epoch                 20110709
+version               4.1.9
+categories            www
+platforms             darwin
+maintainers           {wohner.eu:normen @Gminfly} openmaintainer
+license               BSD
+
+description           Varnish is a state-of-the-art, high-performance HTTP accelerator
+long_description      Varnish was written from the ground up to be a high \
+                      performance caching reverse proxy.
+
+homepage              https://varnish-cache.org/
+master_sites          ${homepage}_downloads/
+extract.suffix        .tgz
+
+checksums             rmd160  b4bd7bae346c5ae187dfbad646d0c1f9087d70ae \
+                      sha256  22d884aad87e585ce5f3b4a6d33442e3a855162f27e48358c7c93af1b5f2fc87
+
+depends_build         port:pkgconfig \
+                      port:py27-docutils
+
+depends_lib           port:pcre
+
+configure.args-append --with-rst2man=${prefix}/bin/rst2man-2.7.py
+
+startupitem.create    yes
+startupitem.pidfile   auto "${prefix}/var/run/${name}/${name}.pid"
+startupitem.start     "${prefix}/share/${name}/varnish.init start"
+startupitem.stop      "${prefix}/share/${name}/varnish.init stop"
+startupitem.restart   "${prefix}/share/${name}/varnish.init restart"
+
+post-destroot {
+    # create dir
+    xinstall -d -m 755 ${destroot}${prefix}/etc/${name}
+
+    # copy files
+    xinstall -m 644 ${filespath}/varnish.conf.in ${destroot}${prefix}/etc/${name}/varnish.conf.default
+    xinstall -m 755 ${filespath}/varnish.init.in ${destroot}${prefix}/share/${name}/${name}.init
+    xinstall -m 755 ${filespath}/varnish-vcl-reload.in ${destroot}${prefix}/sbin/varnish-vcl-reload
+
+    # replace @PREFIX@ to ${prefix}
+    reinplace "s|@PREFIX@|${prefix}|g" \
+        ${destroot}${prefix}/etc/${name}/varnish.conf.default \
+        ${destroot}${prefix}/share/${name}/${name}.init \
+        ${destroot}${prefix}/sbin/varnish-vcl-reload
+
+    copy ${destroot}${prefix}/share/doc/${name}/example.vcl ${destroot}${prefix}/etc/${name}/default.vcl.default
+}
+
+post-activate {
+    if {![file exists ${prefix}/etc/${name}/default.vcl]} {
+        file copy ${prefix}/etc/${name}/default.vcl.default \
+            ${prefix}/etc/${name}/default.vcl
+    }
+    if {![file exists ${prefix}/etc/${name}/varnish.conf]} {
+        file copy ${prefix}/etc/${name}/varnish.conf.default \
+            ${prefix}/etc/${name}/varnish.conf
+    }
+
+    # dirs nedded to run varnish
+    xinstall -d -m 755 -o nobody -g nobody ${prefix}/var/${name}
+    xinstall -d -m 755 -o nobody -g nobody ${prefix}/var/run/${name}
+}
+
+livecheck.url         ${homepage}releases/index.html
+livecheck.type        regex
+livecheck.regex       ${name}-(\\d+\\.\\d+\\.\\d+)${extract.suffix}

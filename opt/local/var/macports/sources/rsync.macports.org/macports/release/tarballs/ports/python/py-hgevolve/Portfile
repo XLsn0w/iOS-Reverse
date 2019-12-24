@@ -1,0 +1,52 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+PortGroup               python 1.0
+PortGroup               bitbucket 1.0
+
+bitbucket.setup         marmoute mutable-history 9.2.0
+name                    py-hgevolve
+
+categories-append       devel
+platforms               darwin
+license                 GPL-2+
+maintainers             {lbschenkel @lbschenkel} openmaintainer
+supported_archs         noarch
+
+description             Mutable history for mercurial
+long_description        This extension provides several commands to mutate history \
+                        and deal with issues it may raise.
+
+checksums               rmd160  2cf0ccc4688ab7d54c8de069db7bb6f534b493f4 \
+                        sha256  5083f22d8d17822a3817984cfb18c46d10b168b81dc24194f58ed2c5aa62d463 \
+                        size    785901
+
+# can't set python.versions before adding custom subports
+subport py-hgevolve-devel {}
+subport py27-hgevolve-devel {}
+
+# obsolete 20190301
+if {[string match "*-devel" $subport]} {
+    replaced_by         ${name}
+    PortGroup           obsolete 1.0
+}
+
+python.versions         27
+
+if {${name} ne ${subport}} {
+    depends_lib         port:mercurial
+
+    post-destroot {
+        file delete ${destroot}${python.pkgd}/hgext3rd/__init__.py
+        file delete ${destroot}${python.pkgd}/hgext3rd/__init__.pyc
+        file delete -force -- ${destroot}${python.pkgd}/hgext3rd/topic
+    }
+
+    notes               "
+To enable hgevolve, add the following to your ~/.hgrc:
+
+\[extensions\]
+rebase =
+evolve =
+"
+}

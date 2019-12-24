@@ -1,0 +1,133 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem       1.0
+PortGroup        github 1.0
+PortGroup        legacysupport 1.0
+PortGroup        clang_dependency 1.0
+
+name             libuv
+categories       devel
+platforms        darwin
+maintainers      {michaelld @michaelld} \
+                 openmaintainer
+license          {MIT BSD}
+
+description      Cross-platform asychronous I/O
+
+long_description libuv is a multi-platform support library with a \
+                 focus on cross-platform asynchronous I/O.
+
+platform darwin {
+
+    # which port version depends on which OS version
+    if { ${os.major} == 8 } {
+        # peg at version 1.30.0 with patches for 10.4 Tiger, updated occasionally
+        github.setup libuv libuv 1.30.0 v
+        checksums rmd160 cb73c5f0681bb47606abf8e58f8fad3b75640862 \
+                  sha256 97cf47b87f20532e58f4912cfa2f68de1e2fd7c31b35b836e80e1942f2fd76e3 \
+                  size   1228472
+        revision  0
+
+        maintainers-prepend {kencu @kencu}
+        long_description ${long_description} This version is pegged for Tiger and is updated occasionally. \
+                         Improvements are welcome if you can improve the test suite success (a few tests fail).
+
+        configure.cppflags-append -D__DARWIN_UNIX03
+        # prevent conflicting opentransport header from being pulled in
+        configure.cppflags-append -D__OPENTRANSPORTPROVIDERS__
+
+        # this patch has been sent upstream (same as Leopard/SnowLeopard)
+        patchfiles-append patch-libuv-unix-core-close-nocancel.diff
+
+        # Tiger unified patch
+        patchfiles-append patch-libuv-1-23-2-tiger.diff
+
+        # Tiger has no libutil
+        patchfiles-append patch-makefile-am-no-libutil-on-Tiger.diff
+
+        # deprecate the devel port, if installed
+        # can be removed after 20201010
+        subport libuv-devel {
+            PortGroup   obsolete 1.0
+            replaced_by libuv
+            version     1.24.0
+            revision    1
+            depends_build
+            depends_lib
+        }
+    } elseif { ${os.major} == 9 || ${os.major} == 10 } {
+        # peg at version 1.30.0, updated occasionally
+        # see https://trac.macports.org/ticket/57926
+        github.setup libuv libuv 1.30.0 v
+        checksums rmd160 cb73c5f0681bb47606abf8e58f8fad3b75640862 \
+                  sha256 97cf47b87f20532e58f4912cfa2f68de1e2fd7c31b35b836e80e1942f2fd76e3 \
+                  size   1228472
+        revision  0
+
+        # needed for the tests to compile correctly on Leopard
+        configure.cppflags-append -D__DARWIN_64_BIT_INO_T
+
+        patchfiles-append patch-libuv-unix-core-close-nocancel.diff
+
+        # deprecate the devel port, if installed
+        # can be removed after 20201010
+        subport libuv-devel {
+            PortGroup   obsolete 1.0
+            replaced_by libuv
+            version     1.28.0
+            revision    0
+            depends_build
+            depends_lib
+        }
+
+    } else {
+
+        # 10.7 Lion and newer use the current, with a devel version also!
+        if {${subport} eq ${name}} {
+
+            github.setup libuv libuv 1.33.1 v
+            checksums rmd160 72fa6fbcdbb09d31374eee9b1d77d67dd64b7a3e \
+                      sha256 7ba5720f058a732b48f4ed7c728795bb4ccbf13326ed09595bfe3d46277243bf \
+                      size   1251686
+            revision  0
+
+            conflicts libuv-devel
+
+        }
+
+        subport libuv-devel {
+
+            github.setup libuv libuv 747a0f34d7ed62f78103a444ef657db866dff3fd
+            version   20191019-[string range ${github.version} 0 7]
+            checksums rmd160 4ec17fe30c6341369d4e21122a63a4a8ff760680 \
+                      sha256 e86679d36e4739a17cb05a69ca95c427643f748fe8156084549495a5079a4352 \
+                      size   1251712
+            revision  0
+
+            long_description ${long_description} \
+                This port is kept up with the libuv GIT 'v1.x' branch, is typically updated weekly to monthly.
+            conflicts libuv
+
+            github.livecheck.branch v1.x
+
+        }
+
+        patchfiles-append patch-libuv-unix-core-close-nocancel.diff
+
+    }
+}
+
+test.run         yes
+test.target      check
+
+homepage         http://libuv.org/
+
+use_autoconf     yes
+autoconf.cmd     ./autogen.sh
+
+configure.args   --disable-silent-rules
+
+depends_build    port:automake \
+                 port:autoconf \
+                 port:libtool \
+                 port:pkgconfig

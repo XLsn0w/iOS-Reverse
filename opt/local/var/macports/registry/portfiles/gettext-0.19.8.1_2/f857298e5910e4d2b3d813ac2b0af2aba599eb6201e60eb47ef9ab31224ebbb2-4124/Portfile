@@ -1,0 +1,116 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+PortGroup               compiler_blacklist_versions 1.0
+PortGroup               muniversal 1.0
+PortGroup               clang_dependency 1.0
+
+name                    gettext
+epoch                   2
+version                 0.19.8.1
+revision                2
+categories              devel
+maintainers             {ryandesign @ryandesign}
+# libs are LGPL and executables are GPL
+license                 {LGPL-2.1+ GPL-3+}
+homepage                https://www.gnu.org/software/gettext/
+master_sites            gnu
+platforms               darwin freebsd linux
+use_parallel_build      yes
+
+description             GNU internationalization (i18n) and localization (l10n) library
+
+long_description        ${name} is the ${description}, used for writing multilingual programs.
+
+checksums               rmd160  29a5f29d186fe2aece5c450fd1a743b819c02c5b \
+                        sha256  ff942af0e438ced4a8b0ea4b0b6e0d6d657157c5e2364de57baa279c1c125c43
+
+# https://trac.macports.org/ticket/58323
+patchfiles              write-java.c.patch
+
+# https://trac.macports.org/ticket/31167
+compiler.blacklist-append   {clang < 211.10.1}
+
+set localbindir         ${workpath}/bin
+
+post-patch {
+    file mkdir ${localbindir}
+
+    # Don't find any Java programs.
+    foreach prog {gcj java javac jikes} {
+        set fp [open ${localbindir}/${prog} w]
+        puts ${fp} {#!/bin/sh}
+        puts ${fp} {exit 1}
+        close ${fp}
+        file attributes ${localbindir}/${prog} -permissions a+x
+    }
+}
+
+depends_lib             port:libiconv \
+                        port:ncurses
+
+# This port is used by clang-3.4 to bootstrap libcxx
+subport ${name}-bootstrap {
+    prefix      ${prefix}/libexec/libcxx-bootstrap
+    depends_lib-replace     port:libiconv port:libiconv-bootstrap \
+                            port:ncurses port:ncurses-bootstrap
+    configure.cxx_stdlib    libstdc++
+    compiler.whitelist      clang llvm-gcc-4.2 gcc-4.2 apple-gcc-4.2
+}
+# Also needed by later clangs.
+if {${os.platform} eq "darwin" && ${os.major} < 11 && ${cxx_stdlib} eq "libc++"} {
+    clang_dependency.extra_versions 3.7
+}
+
+configure.env-append    PATH=${localbindir}:$env(PATH)
+
+configure.cppflags      -no-cpp-precomp
+
+configure.args          ac_cv_prog_AWK=/usr/bin/awk \
+                        ac_cv_path_GREP=/usr/bin/grep \
+                        ac_cv_path_SED=/usr/bin/sed \
+                        --disable-csharp \
+                        --disable-java \
+                        --disable-native-java \
+                        --disable-openmp \
+                        --without-emacs \
+                        --with-included-gettext \
+                        --with-included-glib \
+                        --with-included-libcroco \
+                        --with-included-libunistring \
+                        --with-included-libxml
+
+# Don't use possibly installed cvs or git to create the autopoint archive
+# because the archives they create for each architecture under muniversal
+# will differ and cannot be merged. Don't use xz either because then xz would
+# be required by various ports that just want to use gettext.
+configure.args-append   --without-cvs \
+                        --without-git \
+                        --without-xz
+
+test.run                yes
+test.target             check
+
+post-destroot {
+    if {[file exists ${destroot}${prefix}/lib/charset.alias]} {
+        delete ${destroot}${prefix}/lib/charset.alias
+    }
+    if {[file exists ${destroot}${prefix}/share/locale/locale.alias]} {
+        delete ${destroot}${prefix}/share/locale/locale.alias
+    }
+    xinstall -m 644 -W ${worksrcpath} \
+        AUTHORS \
+        COPYING \
+        ChangeLog \
+        ChangeLog.0 \
+        DEPENDENCIES \
+        HACKING \
+        NEWS \
+        README \
+        THANKS \
+        ${destroot}${prefix}/share/doc/${name}
+}
+
+livecheck.type          regex
+livecheck.url           https://ftp.gnu.org/gnu/gettext/?C=M&O=D
+livecheck.regex         ${name}-(\[0-9.\]+)\\.tar

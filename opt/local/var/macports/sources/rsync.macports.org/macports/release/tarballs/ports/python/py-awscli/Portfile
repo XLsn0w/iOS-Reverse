@@ -1,0 +1,74 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+PortGroup           select 1.0
+
+
+name                py-awscli
+version             1.16.266
+revision            0
+platforms           darwin
+supported_archs     noarch
+license             Apache-2
+maintainers         nomaintainer
+
+description         Universal Command Line Environment for AWS.
+long_description    ${description}
+
+homepage            https://aws.amazon.com/cli/
+master_sites        pypi:a/awscli
+distname            awscli-${version}
+
+checksums           rmd160  ec4467e0fbbc6af3e0cb978de2ab1bf7a61a3b61 \
+                    sha256  9c59a5ca805f467669d471b29550ecafafb9b380a4a6926a9f8866f71cd4f7be \
+                    size    986685
+
+python.versions     27 35 36 37
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                        port:py${python.version}-setuptools
+    depends_lib-append \
+                        port:py${python.version}-botocore \
+                        port:py${python.version}-colorama \
+                        port:py${python.version}-docutils \
+                        port:py${python.version}-rsa \
+                        port:py${python.version}-s3transfer \
+                        port:py${python.version}-yaml
+
+    depends_run-append  port:awscli_select
+
+    select.group        awscli
+    select.file         ${worksrcpath}/${subport}
+
+    post-extract {
+        copy -force ${filespath}/awscli ${worksrcpath}/${subport}
+    }
+
+    post-patch {
+        reinplace \
+            "s,@PYTHON_BRANCH@,${python.branch},g" \
+             ${worksrcpath}/${subport}
+    }
+
+    post-destroot {
+        # bash completion
+        set bash_compl_path ${prefix}/etc/bash_completion.d
+        xinstall -d ${destroot}${bash_compl_path}
+        xinstall -m 0644 ${worksrcpath}/bin/aws_bash_completer \
+            ${destroot}${bash_compl_path}/aws_bash_completer-${python.branch}
+    }
+
+    variant zsh_completion {
+        post-destroot {
+            set zsh_compl_path ${prefix}/share/zsh/site-functions
+            xinstall -d ${destroot}${zsh_compl_path}
+            xinstall -m 0644 ${worksrcpath}/bin/aws_zsh_completer.sh \
+                ${filespath}/_aws \
+                ${destroot}${zsh_compl_path}
+        }
+    }
+
+    livecheck.type      none
+}

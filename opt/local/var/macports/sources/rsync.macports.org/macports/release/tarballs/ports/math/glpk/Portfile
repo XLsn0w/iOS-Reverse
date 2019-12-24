@@ -1,0 +1,129 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           muniversal 1.0
+
+name                glpk
+epoch               1
+version             4.65
+license             GPL-3+
+categories          math lang
+platforms           darwin
+maintainers         nomaintainer
+description         GNU Linear Programming Kit
+
+long_description    The GLPK (GNU Linear Programming Kit) package is intended for \
+                    solving large-scale linear programming (LP), mixed integer \
+                    programming (MIP), and other related problems. It is a set of \
+                    routines written in ANSI C and organized in the form of a \
+                    callable library.
+
+homepage            https://www.gnu.org/software/${name}/
+master_sites        gnu
+
+checksums           rmd160  eec545719baf2d691f12ded2822bde1ea7185c26 \
+                    sha256  4281e29b628864dfe48d393a7bedd781e5b475387c20d8b0158f329994721a10
+
+depends_lib         port:gmp
+configure.args      --with-gmp
+
+if { [variant_isset odbc] || [variant_isset iodbc] || [variant_isset mysql5] || [variant_isset mysql56] } {
+    depends_lib-append      port:libtool
+    configure.args-append   --enable-dl
+    patchfiles-append       patch-configure.diff
+}
+
+if { ${os.major} <= 10 } {
+    configure.args-append   --disable-reentrant
+}
+
+use_parallel_build  yes
+
+test.run            yes
+test.target         check
+
+set docdir          ${prefix}/share/doc/${name}
+
+post-destroot {
+    xinstall -d ${destroot}${docdir}
+    xinstall -m 644 -W ${worksrcpath} AUTHORS COPYING ChangeLog NEWS README \
+        doc/glpk.pdf doc/gmpl.pdf doc/cnfsat.pdf doc/gmpl_es.pdf doc/graphs.pdf \
+        ${destroot}${docdir}
+
+    set examplesdir ${prefix}/share/examples/${name}
+    xinstall -d ${destroot}${examplesdir}
+    xinstall -m 644 \
+        {*}[glob -directory ${worksrcpath}/examples *.{c,mod,lp,mps,dat}] \
+        ${destroot}${examplesdir}
+
+    xinstall -d ${destroot}${examplesdir}/sql
+    xinstall -m 644 \
+        {*}[glob -directory ${worksrcpath}/examples/sql *.{mod,sql}] \
+        ${destroot}${examplesdir}/sql
+}
+
+variant odbc conflicts iodbc description {enable MathProg ODBC support using unixODBC} {
+    depends_lib-append      port:unixODBC
+    configure.args-append   --enable-odbc=unix
+
+    post-patch {
+        reinplace \
+            "s|__MACPORTS__ODBC__LIB__|${prefix}/lib|g" \
+            ${worksrcpath}/configure
+    }
+}
+
+variant iodbc description {enable MathProg ODBC support using iODBC} {
+    depends_lib-append      port:libiodbc
+    configure.args-append   --enable-odbc
+
+    post-patch {
+        reinplace \
+            "s|__MACPORTS__IODBC__LIB__|${prefix}/lib|g" \
+            ${worksrcpath}/configure
+    }
+}
+
+variant mysql requires mysql5 description {legacy variant, use +mysql5 instead} {}
+
+variant mysql5 conflicts mysql56 mysql8 description {enable MathProg MySQL support using MySQL 5.1} {
+    depends_lib-append      path:bin/mysql_config5:mysql5
+    configure.args-append   --enable-mysql
+
+    post-patch {
+        reinplace \
+            "s|__MACPORTS__MYSQL__INCLUDE__|${prefix}/include/mysql5/mysql|g" \
+            ${worksrcpath}/configure
+        reinplace \
+            "s|__MACPORTS__MYSQL__LIB__|${prefix}/lib/mysql5/mysql|g" \
+            ${worksrcpath}/configure
+    }
+}
+
+variant mysql56 conflicts mysql5 mysql8 description {enable MathProg MySQL support using MySQL 5.6} {
+    depends_lib-append      port:mysql56
+    configure.args-append   --enable-mysql
+
+    post-patch {
+        reinplace \
+            "s|__MACPORTS__MYSQL__INCLUDE__|${prefix}/include/mysql56/mysql|g" \
+            ${worksrcpath}/configure
+        reinplace \
+            "s|__MACPORTS__MYSQL__LIB__|${prefix}/lib/mysql56/mysql|g" \
+            ${worksrcpath}/configure
+    }
+}
+
+variant mysql8 conflicts mysql5 mysql56 description {enable MathProg MySQL support using MySQL 8} {
+    depends_lib-append      port:mysql8
+    configure.args-append   --enable-mysql
+
+    post-patch {
+        reinplace \
+            "s|__MACPORTS__MYSQL__INCLUDE__|${prefix}/include/mysql8/mysql|g" \
+            ${worksrcpath}/configure
+        reinplace \
+            "s|__MACPORTS__MYSQL__LIB__|${prefix}/lib/mysql8/mysql|g" \
+            ${worksrcpath}/configure
+    }
+}

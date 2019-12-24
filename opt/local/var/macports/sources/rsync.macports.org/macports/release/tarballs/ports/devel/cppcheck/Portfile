@@ -1,0 +1,66 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem                  1.0
+PortGroup                   github 1.0
+
+github.setup                danmar cppcheck 1.88
+name                        cppcheck
+categories                  devel
+license                     GPL-3
+platforms                   darwin
+maintainers                 nomaintainer
+
+description                 Static analysis of C and C++ code.
+
+long_description            Cppcheck is an analysis tool for C and C++ code. Unlike \
+                            compilers and many other analysis tools, we do not detect \
+                            syntax errors. Cppcheck only detects the types of bugs that \
+                            the compilers normally fail to detect. The goal is no false \
+                            positives.
+
+checksums                   rmd160  22b8e09d2ef9d926386aca989526197e1d242d8a \
+                            sha256  8eee8575dde055537f2890de9bdadec3024a18132e4b154878c08d4ae5f5e3af \
+                            size    2364178
+
+depends_build               port:libxslt \
+                            port:docbook-xsl-nons \
+                            port:docbook-xml-4.5
+
+depends_lib                 port:pcre
+
+compiler.cxx_standard       2011
+
+use_configure               no
+
+variant universal {}
+
+build.args                  CXX="${configure.cxx} [get_canonical_archflags cxx]" \
+                            HAVE_RULES=yes CFGDIR=${prefix}/share/cppcheck \
+                            DB2MAN=${prefix}/share/xsl/docbook-xsl-nons/manpages/docbook.xsl
+build.target                all man
+
+test.run                    yes
+test.target                 test
+
+destroot.args               PREFIX=${prefix}
+
+notes                       "If you've updated cppcheck from a previous version," \
+                            "you may want to replace the included config files:" \
+                            "sudo find ${prefix}/share/cppcheck -type f -name \"*.dist\" -exec bash -c 'f=\"\{\}\"; cp \"\$f\" \"\$\{f%.dist\}\"' \\;"
+
+post-destroot {
+    xinstall -m 444 ${worksrcpath}/cppcheck.1 ${destroot}${prefix}/share/man/man1
+    xinstall -d ${destroot}${prefix}/share/cppcheck
+
+    foreach f [glob -tails -directory ${worksrcpath}/cfg *] {
+        copy ${worksrcpath}/cfg/${f} ${destroot}${prefix}/share/cppcheck/${f}.dist
+    }
+}
+
+post-activate {
+    foreach f [glob -directory ${prefix}/share/cppcheck *.dist] {
+        if {![file exists [file rootname ${f}]]} {
+        copy ${f} [file rootname ${f}]
+        }
+    }
+}

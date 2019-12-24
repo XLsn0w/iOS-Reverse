@@ -1,0 +1,47 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem 1.0
+name            watch
+version         3.3.15
+categories      sysutils
+platforms       darwin
+license         GPL-2
+maintainers     nomaintainer
+description     watch executes a program periodically, showing output fullscreen
+long_description \
+    watch is like "top" for arbitrary commands. It runs command repeatedly, \
+    displaying its output (the first screen full). This  allows you to watch \
+    the program output change over time. This is part of the linux "procps" \
+    package.
+
+homepage        http://sourceforge.net/projects/procps-ng/
+master_sites    sourceforge:procps-ng
+distname        procps-ng-${version}
+use_xz yes
+
+checksums       rmd160  cf1f4099d4d304eb4461a88e68d45a901464213f \
+                sha256  10bd744ffcb3de2d591d2f6acf1a54a7ba070fdcc432a855931a5057149f0465 \
+                size    904416
+
+depends_lib     port:ncurses
+
+# Disable gettext due to linking problems
+# and we are not going to install any catalogs anyway
+configure.args  --disable-nls
+
+variant universal {}
+
+build.target    watch
+# LDADD is set to libprocps, which isn't needed for watch and fails to build on Darwin
+build.args      CC="${configure.cc} [get_canonical_archflags cc]" \
+                LDFLAGS="${configure.ldflags}" \
+                AM_LDFLAGS="" \
+                LDADD=""
+
+destroot {
+        xinstall -m 0755 ${worksrcpath}/watch ${destroot}${prefix}/bin
+        xinstall -m 0644 ${worksrcpath}/watch.1 \
+                ${destroot}${prefix}/share/man/man1
+}
+
+livecheck.regex procps-ng-(\[0-9.\]*)${extract.suffix}

@@ -1,0 +1,21 @@
+--- AIO.xs.orig	2019-01-13 10:13:51.000000000 -0800
++++ AIO.xs	2019-03-05 01:41:23.000000000 -0800
+@@ -21,6 +21,18 @@
+ #include <fcntl.h>
+ #include <sched.h>
+ 
++#ifndef MAP_GROWSDOWN
++#define MAP_GROWSDOWN 0
++#endif
++
++#ifndef MAP_32BIT
++#define MAP_32BIT 0
++#endif
++
++#ifndef MAP_STACK
++#define MAP_STACK 0
++#endif
++
+ /* the incompetent fool that created musl keeps __linux__, refuses
+  * to implement any linux standard apis, and also has no way to test
+  * for his broken iplementation. don't complain to me if this fails

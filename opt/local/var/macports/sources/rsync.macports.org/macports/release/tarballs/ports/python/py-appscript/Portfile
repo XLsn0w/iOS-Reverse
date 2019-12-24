@@ -1,0 +1,44 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+PortGroup           deprecated 1.0
+
+name                py-appscript
+version             1.1.0
+revision            0
+
+platforms           darwin
+license             public-domain
+maintainers         nomaintainer
+description         High-level application scripting package for Python
+long_description    Appscript is a high-level, user-friendly MacPython to \
+                    Apple event bridge that allows you to control scriptable \
+                    Mac OS X applications using ordinary Python scripts. \
+                    Appscript makes MacPython a serious alternative to Apple's \
+                    own AppleScript language for automating your Mac.
+
+homepage            http://appscript.sourceforge.net/
+master_sites        pypi:a/${python.rootname}
+distname            ${python.rootname}-${version}
+
+checksums           rmd160  fc2e459c4a2b7135f71f4c7a95dcd29b7c6692a1 \
+                    sha256  35c2ba2894348413a29daa19008d5f1c349a832206eccc97ded50cee3ad852e5 \
+                    size    583045
+
+deprecated.upstream_support no
+python.versions     27 35 36 37
+
+if {${name} ne ${subport}} {
+    depends_build-append    port:py${python.version}-setuptools
+
+    post-destroot {
+        set subdir appscript_[string index ${python.version} 0]x
+        xinstall -m 0755 -d ${destroot}${prefix}/share/doc/${subport}/${subdir}
+        file copy ${worksrcpath}/${subdir}/sample \
+            ${destroot}${prefix}/share/doc/${subport}/${subdir}/sample
+        file copy ${worksrcpath}/${subdir}/doc \
+            ${destroot}${prefix}/share/doc/${subport}/${subdir}/doc
+    }
+    livecheck.type  none
+}

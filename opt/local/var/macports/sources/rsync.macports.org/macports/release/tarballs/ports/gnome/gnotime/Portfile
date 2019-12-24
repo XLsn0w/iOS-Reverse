@@ -1,0 +1,72 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           active_variants 1.1
+
+name                gnotime
+version             2.4.0
+description         A GNOME project manager.
+long_description    GnoTime is a combination stop-watch, diary, \
+                    consultant billing system and project manager. \
+                    You can measure the amount of time you spend on a \
+                    task, associate a memo with it, set a billing rate, \
+                    print an invoice, as well as track that status of \
+                    other projects.
+maintainers         nomaintainer
+categories          gnome
+license             GPL-2+
+platforms           darwin
+homepage            http://gttr.sourceforge.net/
+master_sites        sourceforge:gttr
+
+checksums           rmd160  a0963cad9547c9b25f2ee6280c211a7fcb87e4d2 \
+                    sha256  a1bf1389829e5795016cc49810c8be80f9bbccb5d56e97f00efb0718559a539b
+
+depends_build       port:pkgconfig \
+                    port:intltool \
+                    port:gnome-common \
+                    port:autoconf \
+                    port:automake \
+                    port:libtool
+
+depends_lib         port:desktop-file-utils \
+                    port:gconf \
+                    port:gtk2 \
+                    port:guile \
+                    port:libglade2 \
+                    port:libgnome \
+                    port:libgnomeui \
+                    port:libgtkhtml3 \
+                    port:libxml2 \
+                    port:qof \
+                    port:rarian \
+                    port:xorg-libX11 \
+                    port:xorg-libXScrnSaver
+
+depends_run         port:yelp
+
+patchfiles          patch-configure.in.diff \
+                    patch-src-main.c.diff
+
+# only builds with X11
+
+require_active_variants gtk2 x11
+
+# reconfigure using distributed autogen.sh for intltool 0.51 compatibility
+
+configure.cmd       ./autogen.sh
+
+configure.args      --enable-compile-warnings=minimum \
+                    --disable-silent-rules \
+                    --x-includes=${prefix}/include \
+                    --x-libraries=${prefix}/lib
+
+post-activate {
+    system "${prefix}/bin/scrollkeeper-update"
+    system "${prefix}/bin/update-desktop-database ${prefix}/share/applications"
+    system "export GCONF_CONFIG_SOURCE=`gconftool-2 --get-default-source` && \
+        gconftool-2 --makefile-install-rule ${prefix}/etc/gconf/schemas/*.schemas"
+}
+
+livecheck.url       http://sourceforge.net/projects/gttr/files/
+livecheck.regex     "${name}-(\\d+(?:\\.\\d+)*)${extract.suffix}"

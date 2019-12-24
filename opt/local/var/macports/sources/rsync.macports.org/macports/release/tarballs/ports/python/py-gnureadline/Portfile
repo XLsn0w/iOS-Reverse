@@ -1,0 +1,46 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim: fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-gnureadline
+version             8.0.0
+platforms           darwin
+license             GPL-3+ PSF
+
+python.versions     27 34 35 36 37 38
+
+maintainers         {stromnov @stromnov} openmaintainer
+
+description         Python readline extension.
+long_description    ${description}
+
+homepage            https://github.com/ludwigschwardt/python-gnureadline
+master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
+
+distname            ${python.rootname}-${version}
+
+checksums           rmd160  29724774580c982f2f5ad076f5ecaf79f4183f8c \
+                    sha256  61eef72ed02dad415ede49752e972a1d2bd8c35c1e4464565d7effd806c99476 \
+                    size    3056344
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                        port:py${python.version}-setuptools
+    depends_lib-append  port:ncurses
+
+    patchfiles          build.sh.patch \
+                        setup.py.patch
+
+    post-patch {
+        reinplace "s|__OPTFLAGS__|${configure.optflags}|" ${worksrcpath}/rl/build.sh
+    }
+
+    post-destroot {
+        copy -force ${filespath}/readline.pth ${filespath}/readline_path.py \
+            ${destroot}${python.pkgd}
+        reinplace "s|__LIBDIR__|${python.libdir}|" ${destroot}${python.pkgd}/readline_path.py
+    }
+
+    livecheck.type      none
+}

@@ -1,0 +1,46 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-jsonschema
+version             3.1.1
+revision            1
+categories-append   devel
+platforms           darwin
+license             MIT
+supported_archs     noarch
+
+python.versions     27 34 35 36 37 38
+
+maintainers         {stromnov @stromnov} openmaintainer
+
+description         An implementation of JSON Schema validation for Python.
+long_description    ${description}
+
+homepage            https://github.com/Julian/jsonschema
+master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
+
+distname            ${python.rootname}-${version}
+
+checksums           rmd160  a0a00e623dc2b4ac1aec882eb55f3014dbf01dcd \
+                    sha256  2fa0684276b6333ff3c0b1b27081f4b2305f0a36cf702a23db50edb141893c3f \
+                    size    150179
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                        port:py${python.version}-setuptools_scm
+
+    # CLI depends on pkg_resources.py from setuptools
+    depends_lib-append  port:py${python.version}-attrs \
+                        port:py${python.version}-importlib-metadata \
+                        port:py${python.version}-pyrsistent \
+                        port:py${python.version}-setuptools \
+                        port:py${python.version}-six
+
+    if {${python.version} < 32} {
+        depends_lib-append  port:py${python.version}-functools32
+    }
+
+    livecheck.type      none
+}

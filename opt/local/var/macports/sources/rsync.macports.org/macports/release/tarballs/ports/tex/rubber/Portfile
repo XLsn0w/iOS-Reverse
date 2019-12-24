@@ -1,0 +1,39 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem      1.0
+PortGroup       python 1.0
+
+name            rubber
+version         1.5.1
+revision        0
+categories      tex print
+maintainers     nomaintainer
+license         GPL-2
+description     An automated system for building LaTeX documents
+long_description    This is a building system for LaTeX documents.\
+    It is based on a routine that runs just as many compilations as\
+    necessary.  The module system provides a great flexibility that\
+    virtually allows support for any package with no user intervention,\
+    as well as pre- and post-processing of the document. The standard\
+    modules currently provide support for bibtex, dvips, dvipdfm,\
+    pdftex, makeindex.  A good number of standard packages are supported,\
+    including graphics/graphicx (with automatic conversion between\
+    various formats and Metapost compilation).
+
+platforms       darwin freebsd
+homepage        https://launchpad.net/rubber/
+master_sites    https://launchpad.net/rubber/trunk/${version}/+download/
+
+checksums       rmd160  65aab40dbe71019e63fcf34f9d0bc79b53500673 \
+                sha256  37a843dc36a8aa256f9a66de130a031a0406346e663e1c257e45fd0a6eae0d9d \
+                size    111812
+
+python.default_version 37
+
+depends_build   port:texinfo
+
+depends_lib-append     port:texlive
+
+livecheck.type  regex
+livecheck.url   https://launchpad.net/rubber/+download
+livecheck.regex ${name}-(\\d+(?:\\.\\d+)+)\\.tar

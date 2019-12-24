@@ -1,0 +1,30 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-ropemode
+version             0.4
+revision            0
+platforms           darwin
+supported_archs     noarch
+license             GPL-2+
+maintainers         nomaintainer
+description         ropemode, a helper for using rope refactoring library in IDEs
+long_description    ${description}
+
+homepage            https://github.com/python-rope/ropemode
+master_sites        pypi:r/ropemode/
+distname            ropemode-${version}
+
+checksums           rmd160  ded551d057fb493fc7188b13b823412a6721299a \
+                    sha256  66cdae6bc63baac894f8d26583c193ee86ad48c72b3da59fb4a77d9973cf4393 \
+                    size    12342
+
+python.versions     27
+
+if {${name} ne ${subport}} {
+    depends_lib-append  port:py${python.version}-rope
+
+    livecheck.type      none
+}

@@ -1,0 +1,92 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup python    1.0
+
+name                py-pysvn
+version             1.9.6
+revision            1
+categories-append   devel
+maintainers         nomaintainer
+platforms           darwin
+license             Apache-1.1
+description         Python Subversion Extension (pysvn)
+long_description    The pysvn module is a python interface to the Subversion version \
+                    control system. This API exposes client interfaces for managing a \
+                    working copy, querying a repository, and synchronizing the two.
+
+homepage            http://pysvn.tigris.org/
+
+master_sites        http://pysvn.barrys-emacs.org/source_kits/
+distname            pysvn-${version}
+checksums           rmd160  b4bf58b682408c79e01b50d3f6902dba17814117 \
+                    sha256  1508f63e66fc9d1303f8fd0f49547b59492f6977be4434914c38bc29dc82b2d6 \
+                    size    515394
+
+python.versions     27 36 37
+
+set cxx_stdlibflags {}
+if {[string match *clang* ${configure.cxx}]} {
+    set cxx_stdlibflags -stdlib=${configure.cxx_stdlib}
+}
+
+if {${name} ne ${subport}} {
+    depends_lib-append \
+                    port:subversion
+
+    patch.dir       ${worksrcpath}
+    patchfiles      patch-Source_setup_configure.py.diff \
+                    patch-IndirectPythonInterface.cxx.diff
+
+    worksrcdir      ${worksrcdir}/Source
+
+    use_configure   yes
+    configure.universal_args-delete --disable-dependency-tracking
+
+    pre-configure {
+        reinplace "s|'gcc|'${configure.cc}|g" \
+            ${worksrcpath}/setup_configure.py
+        reinplace "s|'g\+\+|'${configure.cxx} ${cxx_stdlibflags}|g" \
+            ${worksrcpath}/setup_configure.py
+    }
+
+    configure.cmd   ${python.bin} setup.py configure
+    configure.pre_args
+    configure.args  --apr-inc-dir=${prefix}/include/apr-1 \
+                    --apu-inc-dir=${prefix}/include/apr-1 \
+                    --apr-lib-dir=${prefix}/lib \
+                    --svn-bin-dir=${prefix}/bin \
+                    --svn-inc-dir=${prefix}/include/subversion-1 \
+                    --svn-lib-dir=${prefix}/lib \
+                    --link-python-framework-via-dynamic-lookup \
+                    --pycxx-dir=${worksrcpath}/../Import/pycxx-7.0.3
+    configure.universal_args-delete --disable-dependency-tracking
+
+    post-configure {
+        reinplace "s|^\t@|\t|" ${worksrcpath}/Makefile
+    }
+
+    build.cmd       make
+    build.target
+
+    destroot {
+        file mkdir ${destroot}${python.pkgd}
+        file copy ${worksrcpath}/pysvn ${destroot}${python.pkgd}
+
+        file copy {*}[glob ${worksrcpath}/../Examples/*] \
+            ${destroot}${prefix}/share/doc/${subport}/examples
+        file copy {*}[glob ${worksrcpath}/../Docs/*] \
+            ${destroot}${prefix}/share/doc/${subport}
+    }
+
+    test.run        yes
+    test.dir        ${worksrcpath}/../Tests
+    test.cmd        make
+    test.target
+
+    livecheck.type  none
+} else {
+    livecheck.type  regex
+    livecheck.url   http://pysvn.tigris.org/project_downloads.html
+    livecheck.regex >pysvn-(.*?)${extract.suffix}<
+}

@@ -1,0 +1,19 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Test-Time 0.08
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         Test::Time - Overrides the time() and sleep() core functions for testing
+long_description    ${description}
+
+platforms           darwin
+
+checksums           rmd160  de436b8e5464845e40dbd96d00776959c652e45e \
+                    sha256  b8bc3b074bb2247e8588399c1e55d071f049cf6ce1c8b4192c38cf3c24559548 \
+                    size    53848
+
+supported_archs     noarch

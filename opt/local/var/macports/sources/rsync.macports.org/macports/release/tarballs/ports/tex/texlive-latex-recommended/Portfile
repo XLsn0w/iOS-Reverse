@@ -1,0 +1,52 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           texlive 1.0
+
+name                texlive-latex-recommended
+version             50818
+revision            0
+
+categories          tex
+maintainers         {dports @drkp}
+license             Copyleft Permissive
+description         TeX Live: LaTeX recommended packages
+long_description    A collection of recommended add-on packages for LaTeX which have widespread use.
+
+checksums           texlive-latex-recommended-50818-run.tar.xz \
+                    rmd160  5e20aba88795efa42dc0f98b28ab7bb9adb3b346 \
+                    sha256  e98015d3550a0809ca3ca24caee11f38defb667e87994ece937c7abe0a9df2be \
+                    texlive-latex-recommended-50818-doc.tar.xz \
+                    rmd160  3e6eeebd3b8e0fc17fe02d7ef7759fd17077cd4f \
+                    sha256  ba86edb34b54b95af3f39eb70027ae0cbc27bcea67b2d9deaaa38050b055aaea \
+                    texlive-latex-recommended-50818-src.tar.xz \
+                    rmd160  ff2543f7e4f6fe3ccdcadc820dd4eaeeebf5dfb5 \
+                    sha256  3303fde53d3ba443d8b678fb757bfd369dfe803a1b41e226d52502fd85d2b98b
+
+depends_lib         port:texlive-latex
+
+texlive.binaries    lwarpmk thumbpdf
+
+# beamer requires pgf; see #25478
+depends_lib-append port:pgf
+
+pre-activate {
+    # Handle conflicts for TL2018 upgrade
+    if { ![catch {set vers [lindex [registry_active texlive-latex-extra] 0]}]
+         && ([vercmp [lindex $vers 1] 47410] < 0) } {
+        registry_deactivate_composite texlive-latex-extra "" [list ports_nodepcheck 1]
+    }
+    if { ![catch {set vers [lindex [registry_active texlive-luatex] 0]}]
+         && ([vercmp [lindex $vers 1] 47444] < 0) } {
+        registry_deactivate_composite texlive-luatex "" [list ports_nodepcheck 1]
+    }
+
+    # Handle conflicts for TL2019 upgrade
+    if { ![catch {set vers [lindex [registry_active texlive-latex-extra] 0]}]
+         && ([vercmp [lindex $vers 1] 50885] < 0) } {
+        registry_deactivate_composite texlive-latex-extra "" [list ports_nodepcheck 1]
+    }
+}
+
+
+texlive.texmfport

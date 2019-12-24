@@ -1,0 +1,37 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-parsing
+version             2.4.2
+categories-append   lang
+platforms           darwin
+supported_archs     noarch
+maintainers         {snc @nerdling} openmaintainer
+license             MIT
+
+description         alternative approach to creating parsers in python
+
+long_description    The parsing module is an alternative approach to creating \
+                    and executing simple grammars, vs. the traditional \
+                    lex/yacc approach, or the use of regular expressions. The \
+                    parsing module provides a library of classes that client \
+                    code uses to construct the grammar directly in Python code.
+
+homepage            https://github.com/pyparsing/pyparsing/
+master_sites        pypi:p/pyparsing
+distname            pyparsing-${version}
+
+checksums           rmd160  24404a320de32832a3053a929dd1fc884b03c737 \
+                    sha256  6f98a7b9397e206d78cc01df10131398f1c8b8510a2f4d97d9abd82e1aacdd80 \
+                    size    642860
+
+python.versions     27 34 35 36 37 38
+
+if {${name} ne ${subport}} {
+    depends_build   port:py${python.version}-setuptools
+    livecheck.type  none
+} else {
+    livecheck.name  pyparsing
+}

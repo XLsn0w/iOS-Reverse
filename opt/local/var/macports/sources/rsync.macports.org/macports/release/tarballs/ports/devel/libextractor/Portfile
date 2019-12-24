@@ -1,0 +1,70 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                libextractor
+version             1.4
+revision            2
+categories          devel
+license             GPL-3+
+maintainers         {ryandesign @ryandesign} openmaintainer
+
+description         A library for extraction af meta-data.
+
+long_description \
+   libextractor is a library used to extract meta-data from files of \
+   arbitrary type. It is designed to use helper-libraries to perform the \
+   actual extraction, and to be trivially extendable by linking against \
+   external extractors for additional file types.
+
+homepage            https://www.gnu.org/software/libextractor/
+master_sites        gnu
+platforms           darwin
+
+checksums           rmd160  9e72434f395df4e18913bff257c7dba6567771d3 \
+                    sha256  84128170a4a9aa3a19942dd53fdf30ed17b56d7fae79b5f6e7e17a0d65d1f66c \
+                    size    8045312
+
+depends_build       port:pkgconfig
+
+depends_lib         port:bzip2 \
+                    port:exiv2 \
+                    path:lib/libavcodec.dylib:ffmpeg \
+                    port:flac \
+                    port:gettext \
+                    port:giflib \
+                    path:lib/pkgconfig/glib-2.0.pc:glib2 \
+                    port:gtk2 \
+                    port:gstreamer1 \
+                    port:gstreamer1-gst-plugins-base \
+                    port:jpeg \
+                    port:libarchive \
+                    port:libgsf \
+                    port:libiconv \
+                    port:libmagic \
+                    port:libmpeg2 \
+                    port:libogg \
+                    port:libsmf \
+                    port:libtool \
+                    port:libvorbis \
+                    port:mp4v2 \
+                    port:tidy \
+                    port:tiff \
+                    port:zlib
+
+patchfiles          patch-configure.diff \
+                    patch-src-plugins-exiv2_extractor.cc.diff \
+                    patch-src-plugins-html_extractor.c.diff \
+                    patch-ffmpeg-4.0.diff
+
+configure.args      --enable-ffmpeg \
+                    --enable-glib \
+                    --enable-gsf \
+                    --with-gstreamer \
+                    --with-libiconv-prefix=${prefix} \
+                    --with-libintl-prefix=${prefix} \
+                    --with-ltdl=${prefix}
+
+livecheck.type      regex
+livecheck.url       https://ftp.gnu.org/gnu/${name}/
+livecheck.regex     ${name}-(\[0-9.\]+)${extract.suffix}

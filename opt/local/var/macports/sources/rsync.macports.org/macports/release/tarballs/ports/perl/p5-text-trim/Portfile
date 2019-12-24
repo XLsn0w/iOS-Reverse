@@ -1,0 +1,19 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Text-Trim 1.03
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         Text::Trim - remove leading and/or trailing whitespace from strings
+long_description    ${description}
+
+platforms           darwin
+
+checksums           rmd160  56d56673de170112305e767d2f672037a09fe0de \
+                    sha256  a0fcfc1d46dddec41c098820745e83c68b06fd829f7394fa352bb0d4b753494f \
+                    size    13276
+
+supported_archs     noarch

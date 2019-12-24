@@ -1,0 +1,41 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-robotremoteserver
+version             1.1
+revision            0
+
+platforms           darwin
+categories-append   devel
+license             Apache-2
+maintainers         nomaintainer
+
+description         Remote server hosting test libraries
+long_description    Allows hosting test libraries on different processes \
+                    or machines than Robot Framework is running on
+
+homepage            https://github.com/robotframework/PythonRemoteServer
+master_sites        pypi:r/robotremoteserver
+distname            ${python.rootname}-${version}
+
+checksums           rmd160  611030b86beebcbca728ada5584d384b9bc37aa5 \
+                    sha256  b95e75d5de49f4ba5eefb985469ee6dd3604042faed7198d2a77be35e56aea9e \
+                    size    19761
+
+python.versions     27 35 36 37 38
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                    port:py${python.version}-setuptools
+
+    post-destroot {
+        set docdir ${prefix}/share/doc/${subport}
+        xinstall -d ${destroot}${docdir}
+        xinstall -m 0644 -W ${worksrcpath} README.rst LICENSE.txt \
+           COPYRIGHT.txt ${destroot}${docdir}
+    }
+
+    livecheck.type  none
+}

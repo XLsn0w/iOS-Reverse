@@ -1,0 +1,25 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+github.setup        rofl0r proxychains-ng 4.14 v
+maintainers         nomaintainer
+categories          devel
+license             GPL-2
+description         hook preloader
+long_description    ${name} is a ${description} which hooks calls to \
+                    sockets indynamically linked programs and redirects \
+                    it through one or more socks/http proxies.
+
+platforms           darwin
+
+master_sites        ${homepage}/archive/
+distname            ${github.tag_prefix}${version}
+worksrcdir          ${name}-${version}
+
+checksums           rmd160  05cb1de5e7c54ed2008cd4087c27fcf1764d5c94 \
+                    sha256  ab31626af7177cc2669433bb244b99a8f98c08031498233bb3df3bcc9711a9cc \
+                    size    37912
+
+destroot.target-append install-config

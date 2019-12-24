@@ -1,0 +1,68 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+github.setup        github hub 2.12.8 v
+categories          devel
+platforms           darwin
+license             MIT
+maintainers         {grimreaper @grimreaper}
+
+description         git-wrapper for GitHub specific functionality
+long_description    \
+    hub is a command line utility which adds GitHub knowledge to git. \
+    It can be used on its own or as a git wrapper.
+
+homepage            https://hub.github.com/
+
+checksums           rmd160  9836a1a7af2950f16f854f22fb5f2d92a1ad55c7 \
+                    sha256  5dbb1d029393b68665223ddbe14d26e37c310231978408f7d95e5cf6692bd2e2 \
+                    size    1625867
+
+worksrcdir          src/github.com/${github.author}/${name}
+
+depends_build-append \
+                    port:go port:bash
+build.target        man-pages
+build.cmd           make
+build.env-append    GOPATH=${workpath}
+
+use_configure       no
+
+installs_libs       no
+
+post-extract {
+    xinstall -d ${workpath}/src/github.com/${github.author}
+    move ${workpath}/${name}-${github.version} ${workpath}/${name}
+    move ${workpath}/${name} ${worksrcpath}
+}
+
+destroot {
+    xinstall -W ${worksrcpath} bin/hub ${destroot}${prefix}/bin
+    set man-pages ${destroot}${prefix}/share/man/man1
+    xinstall -d ${man-pages}
+    foreach m [glob -directory ${worksrcpath}/share/man/man1 *.1] {
+        xinstall -W ${worksrcpath} ${m} ${man-pages}/
+    }
+    set bash-completions ${destroot}${prefix}/share/bash-completion/completions
+    xinstall -d ${bash-completions}
+    xinstall -W ${worksrcpath} etc/hub.bash_completion.sh ${bash-completions}/hub
+    set site-functions ${destroot}${prefix}/share/zsh/site-functions
+    xinstall -d ${site-functions}
+    xinstall -W ${worksrcpath} etc/hub.zsh_completion ${site-functions}/
+}
+
+notes "
+Using hub feels best when it's aliased as git since
+normal git commands will all work.  hub merely adds some sugar.
+
+hub alias displays instructions for the current shell.
+With the -s flag, it outputs a script suitable for eval.
+
+You could place this command in your shell startup script:
+
+eval \"\$(hub alias -s)\"
+"
+
+github.livecheck.regex  {([^"-]+)}

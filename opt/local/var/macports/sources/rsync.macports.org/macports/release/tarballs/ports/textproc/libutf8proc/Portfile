@@ -1,0 +1,45 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+github.setup        JuliaStrings utf8proc 2.4.0 v
+name                libutf8proc
+categories          textproc
+platforms           darwin
+license             MIT
+maintainers         nomaintainer
+description         library for processing UTF-8 encoded Unicode strings
+long_description    ${description}
+
+homepage            https://julialang.org/utf8proc/
+
+checksums           rmd160  8b39d2a9dcdf6dbaa3a5c1a751a025a156727f39 \
+                    sha256  b92ecaabbd840f0f2361df87e7ae255736f0f133a914efa71f33d2874796eccc \
+                    size    154973
+
+use_configure       no
+
+variant universal   {}
+
+build.args          prefix="${prefix}" \
+                    CC=${configure.cc} \
+                    CFLAGS="${configure.cflags} [get_canonical_archflags cc]" \
+                    LDFLAGS="${configure.ldflags} [get_canonical_archflags ld]"
+
+destroot.args       {*}${build.args}
+
+post-destroot {
+    set docdir ${destroot}${prefix}/share/doc/${name}
+    xinstall -d ${docdir}
+    xinstall -m 644 -W ${worksrcpath} \
+        LICENSE.md \
+        README.md \
+        NEWS.md \
+        ${docdir}
+}
+
+depends_test        bin:curl:curl
+test.run            yes
+test.target         check
+test.args           {*}${build.args}

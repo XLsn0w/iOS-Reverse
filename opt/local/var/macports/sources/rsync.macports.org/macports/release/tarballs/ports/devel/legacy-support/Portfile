@@ -1,0 +1,79 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           clang_dependency 1.0
+
+name                legacy-support
+categories          devel
+platforms           darwin
+
+maintainers         {jonesc @cjones051073} {kencu @kencu} openmaintainer
+license             MIT
+
+description         Installs wrapper headers to add missing functionality to legacy OSX versions.
+long_description    ${description}
+
+subport ${name} {
+    conflicts           ${name}-devel
+    github.setup        macports macports-legacy-support 0.11.1 v
+    revision            0
+    checksums           rmd160  4a072025819439b498cc143441db40c88203bf41 \
+                        sha256  e5f1af5b57dc79a5227d2df2588ad91a276890af845133b29a01d48e32b74216 \
+                        size    31602
+}
+
+subport ${name}-devel {
+    conflicts           ${name}
+    github.setup        macports macports-legacy-support 7356a5ad0e7dfccf1d7bb20ae2d3fd79293e4c13
+    version             20190926
+    revision            0
+    livecheck.type      none
+    checksums           rmd160  ccce7a2641f426169fd9656b76e20af18bc79261 \
+                        sha256  2e74fbce564dab67265a422707eb3b4025c3b0f8df490d157c81b8026d3be535 \
+                        size    31932
+}
+
+use_configure       no
+
+test.run            yes
+test.target         test
+
+variant universal {}
+build.env           CXX=${configure.cxx} \
+                    "CXXFLAGS=${configure.cxxflags} [get_canonical_archflags cxx]" \
+                    CC=${configure.cc} \
+                    "CFLAGS=${configure.cflags} [get_canonical_archflags cc]" \
+                    "LDFLAGS=${configure.ldflags} [get_canonical_archflags ld]" \
+                    PREFIX=${prefix}
+destroot.env        PREFIX=${prefix}
+
+post-destroot {
+  platform darwin 8 {
+    # install Tiger-specific fixes
+
+    # very slightly modified which command to match behaviour of 10.5+
+    copy ${worksrcpath}/tiger_only/bin/which \
+         ${destroot}${prefix}/bin/which
+
+    if { ${subport} eq "${name}-devel" } {
+        #copy ${worksrcpath}/tiger_only/include/libproc.h \
+        #     ${destroot}${prefix}/include/LegacySupport/libproc.h
+
+        #copy ${worksrcpath}/tiger_only/include/sys/proc_info.h \
+        #     ${destroot}${prefix}/include/LegacySupport/sys/proc_info.h
+
+    }
+  }
+}
+
+if {![file exists ${prefix}/libexec/mpstats]} {
+    notes "
+    To help make sure your system continues to be well represented by MacPorts, especially \
+    if your system is not one of the latest macOS releases, please consider installing mpstats. \
+    It will periodically send an anonymous synopsis of your OS settings and installed ports. \
+    The information provided by this is useful to help determine how resources are allocated.
+
+    You can install mpstats like this:    sudo port install mpstats
+    "
+}

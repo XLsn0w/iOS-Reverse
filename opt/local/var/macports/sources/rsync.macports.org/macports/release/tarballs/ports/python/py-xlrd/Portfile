@@ -1,0 +1,27 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-xlrd
+version             1.2.0
+python.versions     27 34 35 36 37 38
+platforms           darwin
+maintainers         {snc @nerdling} openmaintainer
+license             BSD
+homepage            http://www.python-excel.org/
+description         module to extract data from Microsoft Excel spreadsheet files
+long_description    xlrd is a Python module to extract data from Microsoft \
+                    Excel spreadsheet files.
+
+master_sites        pypi:x/xlrd
+distname            xlrd-${version}
+checksums           md5     e5d5b96924d791b22898b622eb3e918e \
+                    rmd160  2b4384ccd88437c2fc878ae7a26f7755b2adea10 \
+                    sha256  546eb36cee8db40c3eaa46c351e67ffee6eeb5fa2650b71bc4c758a29a1b29b2 \
+                    size    554079
+
+if {${name} ne ${subport}} {
+    livecheck.type      none
+    depends_build-append port:py${python.version}-setuptools
+}

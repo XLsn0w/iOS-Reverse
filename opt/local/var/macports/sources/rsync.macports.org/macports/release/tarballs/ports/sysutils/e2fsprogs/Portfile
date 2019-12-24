@@ -1,0 +1,85 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem                  1.0
+
+name                        e2fsprogs
+version                     1.45.4
+checksums                   rmd160  59fe98709b48a3319a125b938cbe749112110434 \
+                            sha256  e69c69839cf80cb55afa18b9a99ed8f2e559db0313e3d15ac5497ed7e1a34c4b \
+                            size    7930961
+
+categories                  sysutils
+platforms                   darwin
+maintainers                 {ryandesign @ryandesign} openmaintainer
+license                     GPL-2 LGPL-2+ MIT BSD
+
+description                 Utilities for use with the ext2, ext3 and ext4 \
+                            filesystems
+
+long_description            Utilities to create, check and manipulate extended 2, \
+                            3 and 4 filesystem (ext2, ext3, ext4) which are \
+                            commonly used on Linux.
+
+homepage                    http://e2fsprogs.sourceforge.net/
+master_sites                sourceforge:project/e2fsprogs/e2fsprogs/v${version}
+
+depends_build               port:pkgconfig
+depends_lib                 port:gettext
+
+# destroot fails without gmkdir
+# Report this bug to the developers
+depends_build-append        port:coreutils
+
+patchfiles                  patch-lib__Makefile.darwin-lib.diff
+
+configure.args-append       --enable-bsd-shlibs
+
+# Enable verbose build messages
+build.args-append           V=1
+
+if {${subport} eq ${name}} {
+    revision                    0
+
+    universal_variant           no
+
+    configure.args-append       --disable-libuuid \
+                                --disable-uuidd
+
+    depends_lib-append          port:ossp-uuid \
+                                port:libcomerr
+
+    patchfiles-append           patch-Makefile.in-remove-included-libcomerr.diff
+
+    pre-build {
+        ln -fs ${prefix}/bin/compile_et ${worksrcpath}/lib/et/compile_et
+        ln -fs ${prefix}/lib/libcom_err.1.1.dylib ${worksrcpath}/lib/libcom_err.dylib
+    }
+
+    destroot.target-append      install-libs
+
+    livecheck.type              regex
+    livecheck.regex             ${name}-(\[0-9.\]+)\\.tar
+} else {
+    livecheck.type              none
+}
+
+subport libcomerr {
+    revision                    0
+
+    description                 common error description library
+    long_description            \
+        libcomerr is an attempt to present a common error-handling mechanism to \
+        manipulate the most common form of error code in a fashion that does \
+        not have the problems identified with mechanisms commonly in use.
+    license                     MIT BSD
+
+    # If we don't force this version of awk, we'd have to add a dependency on
+    # gawk.
+    configure.env-append        AWK=/usr/bin/awk
+
+    build.args-append           -C lib/et
+    destroot.args-append        -C lib/et
+    post-destroot {
+        ln -fs libcom_err.1.1.dylib ${destroot}${prefix}/lib/libcom_err.dylib
+    }
+}

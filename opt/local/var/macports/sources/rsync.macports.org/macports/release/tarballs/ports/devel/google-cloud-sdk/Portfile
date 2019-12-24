@@ -1,0 +1,74 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                google-cloud-sdk
+version             269.0.0
+categories          devel python
+license             Apache-2
+maintainers         {breun.nl:nils @breun} openmaintainer
+description         Command-line interface for Google Cloud Platform products and services
+long_description    Google Cloud SDK is a set of tools for Google Cloud Platform. \
+                    It contains gcloud, gsutil, and bq command-line tools, which you can \
+                    use to access Compute Engine, Cloud Storage, BigQuery, and other \
+                    products and services from the command-line. You can run these tools \
+                    interactively or in your automated scripts.
+
+platforms           darwin
+supported_archs     i386 x86_64
+
+if { ${configure.build_arch} eq "i386" } {
+    distname        ${name}-${version}-darwin-x86
+    checksums       rmd160  8837b1b2c3f29da8ddb2740b323b99d6fcfdfeed \
+                    sha256  f258237e3b074a17005be8b3964992f1d528cc0685584f0c7271b82de84e2938 \
+                    size    22430521
+} elseif { ${configure.build_arch} eq "x86_64" } {
+    distname        ${name}-${version}-darwin-x86_64
+    checksums       rmd160  fc4c55ec11ebf43218f86ba19383392ba17ff041 \
+                    sha256  cb0f4d98e03184831c507f0864c279782ab11a382a3e6e3ff37e37765393604e \
+                    size    22430647
+}
+
+homepage            https://cloud.google.com/sdk/
+master_sites        https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/
+
+worksrcdir          ${name}
+
+python.default_version 27
+
+post-patch {
+    reinplace "s|\"disable_updater\": false|\"disable_updater\": true|" ${worksrcpath}/lib/googlecloudsdk/core/config.json
+}
+
+use_configure       no
+build               {}
+
+destroot {
+    system -W ${worksrcpath} "CLOUDSDK_CONFIG=${worksrcpath}/.config ./install.sh --usage-reporting false --command-completion false --path-update false --quiet"
+    set libexecdir ${destroot}${prefix}/libexec/${name}
+    xinstall -d ${libexecdir}
+    copy \
+        ${worksrcpath}/.install \
+        ${worksrcpath}/bin \
+        ${worksrcpath}/lib \
+        ${worksrcpath}/platform \
+        ${libexecdir}
+    foreach f { bq docker-credential-gcloud gcloud gsutil } {
+        ln -s ../libexec/${name}/bin/${f} ${destroot}${prefix}/bin/${f}
+    }
+    ln -s ../libexec/${name}/bin/git-credential-gcloud.sh ${destroot}${prefix}/bin/git-credential-gcloud
+
+    if {[variant_isset bash_completion]} {
+        # set completions_path ${prefix}/share/bash-completion/completions
+        set completions_path ${prefix}/etc/bash_completion.d
+        xinstall -d ${destroot}${completions_path}
+        xinstall -m 644 ${worksrcpath}/completion.bash.inc ${destroot}${completions_path}/google-cloud-sdk
+    }
+}
+
+variant bash_completion {
+    depends_run-append path:etc/bash_completion:bash-completion
+}
+
+livecheck.url       https://cloud.google.com/sdk/docs/quickstart-macos

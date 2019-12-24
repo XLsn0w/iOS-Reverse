@@ -1,0 +1,29 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           muniversal 1.0
+
+name                mpfi
+version             1.5.3
+license             GPL-2
+categories          math
+platforms           darwin
+maintainers         nomaintainer
+
+description         A multiple precision interval arithmetic library based \
+                    on MPFR
+long_description    ${description}
+
+homepage            http://perso.ens-lyon.fr/nathalie.revol/software.html
+master_sites	    https://gforge.inria.fr/frs/download.php/file/37332/
+
+checksums           rmd160  35972ee2a8152d25bbd9bab099352c8c16194b22 \
+                    sha256  beed2003fdbedf590e8dd6edb4f2321e609e329df99ed4139cd66d7ebbc41240 \
+                    size    578033
+
+depends_lib-append  port:gmp \
+                    port:mpfr
+
+livecheck.type      regex
+livecheck.url       https://gforge.inria.fr/frs/?group_id=157
+livecheck.regex     mpfi-(\\d+(?:\\.\\d+)*)\\.\[tz\]

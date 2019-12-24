@@ -1,0 +1,50 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup github    1.0
+
+github.setup        jedisct1 dnscrypt-proxy 2.0.25
+revision            0
+categories          net
+license             ISC
+maintainers         nomaintainer
+description         A protocol for securing communications between a client and a DNS \
+                    resolver.
+long_description    ${description}
+homepage            https://dnscrypt.org/
+platforms           darwin
+
+depends_build       port:go
+
+checksums           rmd160  4e505a288b1df70441a19312695f4e49169a4fde\
+                    sha256  49de03f4ffa94cae0e2a348bef630a5506085250f1d5d7aa89592faa50abcfbf\
+                    size    2595073
+
+use_configure       no
+
+worksrcdir          ${distname}/${name}
+build.cmd           go build
+build.args          -ldflags="-s -w"
+build.target
+build.env           GOPATH=${workpath}
+
+destroot {
+    xinstall -m 755 ${worksrcpath}/${name} ${destroot}${prefix}/sbin
+    xinstall -m 755 -d ${destroot}${prefix}/share/${name}
+    xinstall -m 640 -W ${worksrcpath} example-blacklist.txt example-cloaking-rules.txt example-dnscrypt-proxy.toml example-forwarding-rules.txt example-whitelist.txt ${destroot}${prefix}/share/${name}
+}
+
+post-activate {
+    if {![file exists ${prefix}/share/${name}/dnscrypt-proxy.toml]} {
+        file copy ${prefix}/share/${name}/example-dnscrypt-proxy.toml ${prefix}/share/${name}/dnscrypt-proxy.toml
+    }
+}
+
+startupitem.create      yes
+startupitem.netchange   yes
+startupitem.executable  ${prefix}/sbin/${name} -config ${prefix}/share/${name}/dnscrypt-proxy.toml
+
+notes "
+You need to update your DNS server settings to point to 127.0.0.1
+(in the Network Preference Pane -> Advanced... -> DNS tab)
+"

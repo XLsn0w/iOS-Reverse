@@ -1,0 +1,1 @@
+../vendor/logos/bin/logos.pl

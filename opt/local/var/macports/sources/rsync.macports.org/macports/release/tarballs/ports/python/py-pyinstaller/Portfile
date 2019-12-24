@@ -1,0 +1,34 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup python    1.0
+PortGroup github    1.0
+
+name                py-pyinstaller
+version             3.5
+revision            0
+
+github.setup        pyinstaller PyInstaller ${version} v
+github.tarball_from releases
+
+checksums           rmd160  55112a2fadd35383521560ad27a620dafe7e6c16 \
+                    sha256  ee7504022d1332a3324250faf2135ea56ac71fdb6309cff8cd235de26b1d0a96 \
+                    size    3518991
+
+platforms           darwin
+supported_archs     noarch
+maintainers         openmaintainer {adfernandes @adfernandes}
+description         converts (packages) Python programs into stand-alone executables
+long_description    ${description} - note that there is a GPL license exception that allows PyInstaller to build and distribute non-free programs, including commercial ones
+license             GPL
+
+homepage            http://www.pyinstaller.org/
+
+python.versions     27 36 37
+
+if {${name} ne ${subport}} {
+
+    depends_build       port:py${python.version}-setuptools
+    livecheck.type      none
+
+}

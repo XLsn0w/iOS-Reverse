@@ -1,0 +1,35 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           texlive 1.0
+
+name                texlive-lang-chinese
+version             50850
+revision            0
+
+categories          tex
+maintainers         {dports @drkp}
+license             Copyleft Permissive
+description         TeX Live: Chinese
+long_description    Support for Chinese\; additional packages in collection-langcjk.
+
+checksums           texlive-lang-chinese-50850-run.tar.xz \
+                    rmd160  e661dda6cc1b1473e344e0e442fff40e541a1b35 \
+                    sha256  4473935a2dc7fff1e77e21585b6ace73d9cc571b03bd7b1e35dbce36ceba42c4 \
+                    texlive-lang-chinese-50850-doc.tar.xz \
+                    rmd160  1d45265cbd631d7c6e6447eac341b5c99c7bf945 \
+                    sha256  3333987f926de267badfa98498a8485b5b4364f86cf73313a5c059937eea4650 \
+                    texlive-lang-chinese-50850-src.tar.xz \
+                    rmd160  c01a75d43c835e1e72f1d913c4fb6fa1851dd2a3 \
+                    sha256  da9faa67410d58b97301b09bdc7124efd616ad6ad736665b004b1cbd0c488150
+
+depends_lib         port:texlive-lang-cjk
+
+texlive.maps      \
+    {Map bkaiu.map} \
+    {Map bsmiu.map} \
+    {Map gbsnu.map} \
+    {Map gkaiu.map}
+
+
+texlive.texmfport

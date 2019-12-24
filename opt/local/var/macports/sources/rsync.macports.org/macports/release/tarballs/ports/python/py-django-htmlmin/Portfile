@@ -1,0 +1,56 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+PortGroup           select 1.0
+PortGroup           github 1.0
+
+github.setup        cobrateam django-htmlmin 0.10.0
+name                py-${name}
+license             BSD
+platforms           darwin
+supported_archs     noarch
+maintainers         {aronnax @lpsinger} openmaintainer
+
+description         html minify for django
+long_description \
+    django-html in an HTML minifier for Python with full support for HTML 5. \
+    It supports Django, Flask and any other Python web framework. It also \
+    provides a command line tool that can be used for static websites or \
+    deployment scripts.
+
+checksums           rmd160  6b0a90fdb8d3591f0273d56211c2d04d1337c145 \
+                    sha256  7f00773ecadb73161f74e12a1ab57d029fbb3ef631a9c62c9655949c84a549b3
+
+python.versions     27 35 36
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                    port:py${python.version}-setuptools
+
+    depends_lib-append \
+                    port:py${python.version}-django \
+                    port:py${python.version}-beautifulsoup4 \
+                    port:py${python.version}-html5lib \
+                    port:py${python.version}-six
+
+    depends_run-append \
+                    port:${github.project}_select
+
+    select.group    ${github.project}
+    select.file     ${filespath}/${select.group}${python.version}
+
+    notes "
+To make the Python ${python.branch} version of django-htmlmin the one that is run\
+when you execute the commands without a version suffix, e.g. 'pyminify', run:
+
+port select --set ${select.group} [file tail ${select.file}]
+"
+
+    livecheck.type  none
+}
+
+subport py34-${python.rootname} {
+    replaced_by py35-${python.rootname}
+    PortGroup obsolete 1.0
+}

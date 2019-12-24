@@ -1,0 +1,19 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Email-Address 1.912
+license             {Artistic-1 GPL}
+maintainers         nomaintainer
+description         Email::Address - RFC 2822 Address Parsing and Creation
+long_description    ${description}
+
+platforms           darwin
+
+checksums           rmd160  5d4713e6868894d338a5f5bc0f54a11b8a1b4159 \
+                    sha256  0fa3785298cc2f6780e63e3a5fb1ca814dcbc360ceb59ed8fa84eb4ffa06f9ef \
+                    size    42390
+
+supported_archs     noarch

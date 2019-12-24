@@ -1,0 +1,44 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           python 1.0
+
+github.setup        nltk nltk 3.4
+name                py-nltk
+categories-append   textproc
+platforms           darwin
+maintainers         {gmail.com:stevenbird1 @stevenbird} openmaintainer
+supported_archs     noarch
+license             Apache-2
+
+description         Natural Language Toolkit
+long_description    NLTK is Python modules for research and development in natural language processing
+homepage            http://www.nltk.org/
+
+python.versions     27 34 35 36 37
+
+if {${name} ne ${subport}} {
+    checksums       rmd160  efe6688551f178b91ecefa44efb96a3544435018 \
+                    sha256  92ac34a8c6975bf7a7796012689c302297c047cecf2d4ec41e5aa77b9b8c45d0 \
+                    size    2809052
+
+    depends_build   port:py${python.version}-setuptools
+    depends_lib     port:py${python.version}-numpy \
+                    port:py${python.version}-yaml \
+                    port:py${python.version}-matplotlib
+
+    post-destroot {
+        set docdir ${prefix}/share/doc/${subport}
+        xinstall -d ${destroot}${docdir}
+        xinstall -m 644 -W ${worksrcpath} \
+            ChangeLog \
+            LICENSE.txt \
+            README.md \
+            ${destroot}${docdir}
+    }
+
+    livecheck.type      none
+} else {
+    github.livecheck.regex  {([\d.]+)}
+}

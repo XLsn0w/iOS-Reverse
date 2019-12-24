@@ -1,0 +1,68 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-pyproj
+version             2.4.0
+revision            0
+categories-append   devel
+platforms           darwin
+license             MIT
+
+python.versions     27 34 35 36 37 38
+
+maintainers         {stromnov @stromnov} openmaintainer
+
+description         Python interfaces to PROJ.4 functions.
+long_description    Pyrex wrapper to provide python interfaces to PROJ.4 \
+                    (http://proj.maptools.org) functions.  Performs \
+                    cartographic transformations and geodetic computations.
+
+homepage            https://pyproj4.github.io/pyproj
+master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
+
+distname            ${python.rootname}-${version}
+
+checksums           rmd160  11467ecbc8d91c13c1e78b2e6298ef868a00b253 \
+                    sha256  8124fe43d81a7caca43df6930110e2bfd2bd3b82b86587eefd6f6d86a81a658e \
+                    size    460171
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                        port:py${python.version}-setuptools \
+                        port:py${python.version}-cython
+
+    if {${python.version} < 35} {
+        version             2.2.2
+        revision            2
+        distname            ${python.rootname}-${version}
+        checksums           rmd160  39ea00d64f1b85f55c254fc4ee75ef37d879fc2d \
+                            sha256  6f129a00afdd817dbb331af5709221f35012bcc11a23b8c83fa09197c1190786 \
+                            size    7220807
+
+        depends_lib-append  port:py${python.version}-aenum
+    }
+
+    depends_lib-append      port:proj6
+    configure.env-append    PROJ_DIR=${prefix}/lib/proj6
+    build.env-append        PROJ_DIR=${prefix}/lib/proj6
+    destroot.env-append     PROJ_DIR=${prefix}/lib/proj6
+
+    patchfiles-append   patch-pyproj_datadir.py.diff
+
+    post-patch {
+        reinplace "s|%%INTERNAL_DATADIR%%|${prefix}/lib/proj6/share/proj|" ${worksrcpath}/pyproj/datadir.py
+
+        # force cython usage
+        file delete ${worksrcpath}/_proj.c
+    }
+
+    post-destroot {
+        xinstall -m 644 -W ${worksrcpath} \
+            README.md PKG-INFO \
+            ${destroot}${prefix}/share/doc/${subport}
+    }
+
+    livecheck.type      none
+}

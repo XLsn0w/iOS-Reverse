@@ -1,0 +1,24 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Data-Dumper 2.173
+maintainers         nomaintainer
+license             {Artistic-1 GPL}
+platforms           darwin
+description         Stringified Perl data structures, suitable for both \
+                    printing and "eval"
+
+long_description    Given a list of scalars or reference variables, writes \
+                    out their contents in Perl syntax. The references can \
+                    also be objects.  The contents of each variable is \
+                    output in a single Perl statement.  Handles \
+                    self-referential structures correctly.  The return value \
+                    can be \"eval\"ed to get back an identical copy of the \
+                    original reference structure.
+
+checksums           rmd160  3b94eaabf6e95d5b0e706f06b729d916c7e293ef \
+                    sha256  697608b39330988e519131be667ff47168aaaaf99f06bd2095d5b46ad05d76fa \
+                    size    110256

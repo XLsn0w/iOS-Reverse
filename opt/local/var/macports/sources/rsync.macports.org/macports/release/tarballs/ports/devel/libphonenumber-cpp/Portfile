@@ -1,0 +1,72 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           cmake 1.1
+PortGroup           github 1.0
+
+github.setup        googlei18n libphonenumber 8.10.21 v
+name                libphonenumber-cpp
+license             Apache-2
+description         Google's C++ library for parsing, formatting, storing \
+                    and validating international phone numbers.
+long_description    ${description}
+maintainers         {devans @dbevans} openmaintainer
+categories          devel
+platforms           darwin
+
+set main_distfile   ${distfiles}
+
+set gtest_version   1.8.1
+set gtest_distfile  release-${gtest_version}.tar.gz
+set gtest_srcdir    ${workpath}/googletest-release-${gtest_version}/googletest
+set gtest_master    https://github.com/google/googletest/archive
+
+distfiles           ${main_distfile}:main \
+                    ${gtest_distfile}:gtest
+
+master_sites        ${github.master_sites}:main \
+                    ${gtest_master}:gtest
+
+checksums           ${main_distfile} \
+                    rmd160  e1ddad3390492280d93ddb5dd90c65feb2298948 \
+                    sha256  1c55721e293dab5d88618df2db74db83022e93d7484e165f2f207c6c03be8e4e \
+                    size    7417137 \
+                    ${gtest_distfile} \
+                    rmd160  ad357c51fa7a1f4f6be069cc1ceae2c722fc28a2 \
+                    sha256  9bf1fe5182a604b4135edc1a425ae356c9ad15e9b23f9f12a02e80184c3a249c \
+                    size    992298
+
+worksrcdir          google-libphonenumber-a8e2d7f/cpp
+
+patchfiles          patch-cpp-CMakeLists.txt.diff
+
+depends_build-append \
+                    port:pkgconfig
+
+depends_lib-append  port:boost \
+                    port:icu \
+                    port:protobuf3-cpp
+
+configure.args-append \
+                    -DGTEST_SOURCE_DIR=${gtest_srcdir} \
+                    -DGTEST_INCLUDE_DIR=${gtest_srcdir}/include
+
+# as of 3.6.0, protobuf3-cpp requires c++11
+compiler.cxx_standard 2011
+configure.cxxflags-append -std=c++11
+
+# force protobuf3-cpp into the no_threadlocal mode on older systems
+if { ${os.platform} eq "darwin" && ${os.major} < 11 } {
+    configure.cppflags-append -DGOOGLE_PROTOBUF_NO_THREADLOCAL
+}
+
+platform darwin {
+    if {${configure.cxx_stdlib} eq "libc++"} {
+       configure.args-append \
+                    -DUSE_STD_MAP=ON
+    }
+}
+
+test.run            yes
+test.cmd            ./libphonenumber_test
+test.target

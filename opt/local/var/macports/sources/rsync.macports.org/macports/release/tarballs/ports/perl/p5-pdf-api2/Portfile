@@ -1,0 +1,31 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         PDF-API2 2.036 ../../authors/id/S/SS/SSIMMS
+license             LGPL-2.1
+maintainers         nomaintainer
+description         create and manipulate PDF files
+long_description    This module is 'The Next Generation' of Text::PDF::API \
+                    which initially provided a nice API around the \
+                    Text::PDF::* modules created by Martin Hosken.
+
+platforms           darwin
+
+checksums           rmd160  51a480df9505cd4932fb011b2e7e69da349312a8 \
+                    sha256  070444e9fef8beb6f115994a6ac89533fe8ba02d5e240a35bb07adcbcb511774 \
+                    size    3511856
+
+if {${perl5.major} != ""} {
+    depends_build-append \
+                    port:p${perl5.major}-test-exception \
+                    port:p${perl5.major}-test-memory-cycle
+
+    depends_lib-append \
+                    port:p${perl5.major}-io-compress \
+                    port:p${perl5.major}-font-ttf
+
+    supported_archs noarch
+}

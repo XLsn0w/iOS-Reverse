@@ -1,0 +1,42 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                msmtp
+version             1.8.6
+revision            0
+categories          mail
+platforms           darwin
+maintainers         {@ra1nb0w irh.it:rainbow} openmaintainer
+license             GPL-3+
+description         SMTP client that can be used as an SMTP plugin for Mutt
+long_description    msmtp is an SMTP client that can be used as an SMTP \
+                    plugin for Mutt and probably other MUAs (mail user \
+                    agents). It forwards mails to an SMTP server which \
+                    does the delivery. To use this program, create a \
+                    configuration file with your mail account(s) and tell \
+                    your MUA to call msmtp instead of /usr/sbin/sendmail.
+
+homepage            https://marlam.de/msmtp/
+master_sites        ${homepage}releases/
+use_xz              yes
+
+checksums           rmd160  3c9b157bdaf6a2d116cf2c081076aa8e09cc45a4 \
+                    sha256  6625f147430c65ba8527f52c4fe5d4d33552d3c0fb6d793ba7df819a3b3042e1 \
+                    size    339732
+
+depends_build       port:pkgconfig
+depends_lib         port:gettext \
+                    port:gnutls \
+                    port:libgsasl \
+                    port:libidn2
+
+configure.args      --disable-silent-rules \
+                    --with-libgsasl \
+                    --without-libsecret
+
+platform macosx {
+    configure.args-append   --with-macosx-keyring
+}
+
+livecheck.url       https://marlam.de/msmtp/download/

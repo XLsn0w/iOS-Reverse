@@ -1,0 +1,74 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                mod_gnutls
+version             0.9.0
+revision            0
+categories          www security crypto
+license             Apache-2
+platforms           darwin
+maintainers         {mps @Schamschula} openmaintainer
+
+description         \
+    mod_gnutls is an extension for Apache's httpd uses the GnuTLS library to \
+    provide HTTPS.
+
+long_description    \
+    mod_gnutls uses the GnuTLS library to provide SSL 3.0, TLS 1.0 and TLS 1.1 \
+    encryption for Apache HTTPD. It is similar to mod_ssl in purpose, but does \
+    not use OpenSSL.
+
+homepage            https://mod.gnutls.org
+master_sites        ${homepage}/downloads/
+
+checksums           rmd160  c942079c658ad365eeda57c88c62f758c1b4c393 \
+                    sha256  6b0d8d8add73012268307719146789b48533cde4a8ca4bbd53c1c9c579d440be \
+                    size    435869
+
+use_bzip2           yes
+
+depends_build       port:pkgconfig
+
+depends_lib         port:apache2 \
+                    port:gnutls
+
+use_autoreconf      yes
+patchfiles          patch-src-gnutls_sni.c.diff
+
+set apxs            ${prefix}/bin/apxs
+set httpd_conf      ${prefix}/etc/apache2/httpd.conf
+set mdir            ${destroot}${prefix}/lib/apache2/modules/
+
+variant apache22 description "use apache22 instead of apache2" {
+    # remove after 2020-05-04
+    ui_error "Please do not install this variant since Apache 2.2 is obsolete."
+    return -code error
+}
+
+configure.args      --disable-silent-rules \
+                    --with-apxs=${apxs} \
+                    --disable-strict
+
+pre-destroot {
+    xinstall -m 755 -d ${mdir}
+}
+
+post-destroot {
+    xinstall -m 755 -d ${destroot}${prefix}/share/doc/${name}
+    xinstall -m 644 -W ${worksrcpath} LICENSE NOTICE README \
+        ${destroot}${prefix}/share/doc/${name}
+}
+
+variant memcache description {Distributed SSL Session Cache support} {
+    depends_lib-append      port:apr_memcache
+    configure.args-append   --with-apr-memcache-prefix=${prefix}
+}
+
+livecheck.regex     ${name}-(\[0-9.\]+)${extract.suffix}
+
+notes "
+To enable ${name}, add
+    LoadModule gnutls_module modules/mod_gnutls.so
+to your ${httpd_conf} file.
+"

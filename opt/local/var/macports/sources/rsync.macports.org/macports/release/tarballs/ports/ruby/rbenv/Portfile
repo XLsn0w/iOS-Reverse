@@ -1,0 +1,33 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+github.setup        rbenv rbenv 1.1.2 v
+license             MIT
+categories          ruby
+platforms           darwin
+supported_archs     noarch
+
+maintainers         {mojca @mojca} openmaintainer
+
+description         Simple Ruby Version Management
+long_description    ${description}
+
+checksums           rmd160  c47e07a503d1604bdc279b4919cbef61e3e79775 \
+                    sha256  e14fae927dc86683c47a00230ac2aafc8d9860443cae42e0d7383d664291508b \
+                    size    32199
+
+patchfiles          patch-libexec-rbenv-init.diff
+use_configure       no
+build {}
+destroot {
+    copy ${worksrcpath}/libexec ${destroot}${prefix}/libexec/rbenv
+    ln -s ../libexec/rbenv/rbenv ${destroot}${prefix}/bin/rbenv
+    xinstall -d ${destroot}${prefix}/etc/bash_completion.d
+    xinstall ${worksrcpath}/completions/rbenv.bash \
+        ${destroot}${prefix}/etc/bash_completion.d/rbenv
+    xinstall -d ${destroot}${prefix}/share/zsh/site-functions
+    xinstall ${worksrcpath}/completions/rbenv.zsh \
+        ${destroot}${prefix}/share/zsh/site-functions/rbenv.zsh_completion
+}

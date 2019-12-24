@@ -1,0 +1,158 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           compiler_blacklist_versions 1.0
+
+# Remember to update libvirt and py-libvirt at the same time.
+name                libvirt
+version             5.8.0
+revision            0
+checksums           rmd160  39bd8d5edf4a4c0cba11b80b5f384c05a8d1477a \
+                    sha256  e23328289b18bdedc1e966f6c26402b2983149c660ed8bd52cda6feab0c20c55 \
+                    size    13129328
+
+categories          sysutils
+license             LGPL-2.1+
+platforms           darwin
+maintainers         {ryandesign @ryandesign} {danchr @danchr} openmaintainer
+
+description         Libvirt - The Virtualization API
+
+long_description    A toolkit to interact with the virtualization \
+                    capabilities of modern hypervisors.
+
+homepage            https://libvirt.org
+master_sites        ${homepage}/sources/
+use_xz              yes
+
+depends_build       port:pkgconfig \
+                    port:bash-completion \
+                    port:python27 \
+                    port:perl5
+
+depends_lib         port:curl \
+                    port:libiconv \
+                    port:libxml2 \
+                    port:readline \
+                    port:yajl \
+                    port:zlib
+
+# see https://trac.macports.org/ticket/58726
+compiler.blacklist-append apple-gcc* gcc-3.3 *gcc-4.* {clang < 425}
+
+# libvirt build scripts work with python 2.x only
+configure.python    ${prefix}/bin/python2.7
+configure.perl      ${prefix}/bin/perl5
+
+configure.args      --disable-silent-rules \
+                    --enable-debug \
+                    --without-apparmor \
+                    --without-attr \
+                    --without-audit \
+                    --without-avahi \
+                    --with-bash-completion \
+                    --with-bash-completions-dir=${prefix}/share/bash-completion/completions \
+                    --without-bhyve \
+                    --without-blkid \
+                    --without-capng \
+                    --with-curl \
+                    --without-dbus \
+                    --with-driver-modules \
+                    --without-dtrace \
+                    --with-esx \
+                    --without-fuse \
+                    --without-glusterfs \
+                    --without-gnutls \
+                    --without-hal \
+                    --without-hyperv \
+                    --with-init-script=none \
+                    --without-libpcap \
+                    --without-libssh \
+                    --with-libvirtd \
+                    --without-lxc \
+                    --without-macvtap \
+                    --without-netcf \
+                    --without-network \
+                    --without-numactl \
+                    --without-openssl \
+                    --without-openvz \
+                    --without-openwsman \
+                    --without-phyp \
+                    --without-pm-utils \
+                    --without-polkit \
+                    --without-qemu \
+                    --with-readline \
+                    --with-remote \
+                    --without-sanlock \
+                    --without-sasl \
+                    --with-secrets \
+                    --without-selinux \
+                    --without-ssh2 \
+                    --without-sysctl \
+                    --with-test \
+                    --without-udev \
+                    --without-uml \
+                    --with-vbox \
+                    --without-virtualport \
+                    --with-vmware \
+                    --without-vz \
+                    --without-wireshark-dissector \
+                    --without-xen \
+                    --without-xenapi \
+                    --without-xen-inotify \
+                    --with-yajl
+
+# work around a hopefully temporary bug that appeared in 5.5.0:
+# https://bugzilla.redhat.com/show_bug.cgi?id=1728944
+# see https://trac.macports.org/ticket/58726
+configure.cflags-append -std=gnu99
+
+if {![variant_isset openssl]} {
+    default_variants +gnutls
+}
+
+variant gnutls description {Use GnuTLS} conflicts openssl {
+    depends_lib-append     port:gnutls
+    configure.args-replace  --without-gnutls --with-gnutls
+}
+
+variant openssl description {Use OpenSSL} conflicts gnutls {
+    depends_lib-append     path:lib/libssl.dylib:openssl
+    configure.args-replace  --without-openssl --with-openssl
+}
+
+variant avahi description {Use Avahi to advertise remote daemon} {
+    depends_lib-append      port:avahi
+    configure.args-replace  --without-avahi --with-avahi
+}
+
+variant fuse description {FUSE support} {
+    depends_lib-append      port:osxfuse
+    configure.args-replace  --without-fuse --with-fuse
+}
+
+variant libssh2 description {Enable the libssh2 transport} {
+    depends_lib-append      port:libssh2
+    configure.args-replace  --without-ssh2 --with-ssh2
+}
+
+variant phyp requires libssh2 description {Phyp driver support} {
+    configure.args-replace  --without-phyp --with-phyp
+}
+
+variant sasl description {Use Cyrus SASL for authentication} {
+    depends_lib-append      port:cyrus-sasl2
+    configure.args-replace  --without-sasl --with-sasl
+}
+
+notes "
+    The default socket path for the libvirt client is ${prefix}/var/run/libvirt/libvirt-sock,\
+    which might cause problems when you want to attach to a remote libvirtd instance.\
+    In this case, remember to also specify the socket path for the remote side, which is\
+    usually /var/run/libvirt/libvirt-sock. For example to connect to a remote host with virsh:
+      $ virsh -c qemu+ssh://user@host/system?socket=/var/run/libvirt/libvirt-sock
+"
+
+livecheck.type      regex
+livecheck.url       [lindex ${master_sites} 0]
+livecheck.regex     ${name}-(\[0-9.\]+)\\.tar

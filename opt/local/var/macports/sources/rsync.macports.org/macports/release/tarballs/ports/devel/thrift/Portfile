@@ -1,0 +1,130 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem      1.0
+PortGroup       conflicts_build 1.0
+
+name            thrift
+
+# NOTE: This port must be kept at the same version as port:py-thrift and port:p5-thrift
+version         0.12.0
+checksums       rmd160 dc6286d9523ae0e073f12057987b42fffdddd754 \
+                sha256 c336099532b765a6815173f62df0ed897528a9d551837d627c1f87fadad90428 \
+                size   3906291
+revision        0
+
+categories      devel
+license         Apache-2
+maintainers     nomaintainer
+platforms       darwin
+
+description     framework for scalable cross-language services development
+long_description \
+    Thrift is a software framework for scalable cross-language \
+    services development. It combines a software stack with a code \
+    generation engine to build services that work efficiently and \
+    seamlessly between C++, Java, Python, PHP, Ruby, Erlang, Perl, \
+    Haskell, C#, Cocoa, Smalltalk, and OCaml.
+
+homepage        https://thrift.apache.org/
+master_sites    apache:${name}/${version}
+
+use_parallel_build  no
+
+depends_build       port:autoconf \
+                    port:automake \
+                    port:bison \
+                    port:boost \
+                    port:libevent \
+                    port:libtool \
+                    port:pkgconfig
+depends_lib-append  path:lib/libssl.dylib:openssl
+
+compiler.cxx_standard   2011
+
+use_autoreconf      yes
+
+pre-configure {
+    reinplace \
+        "s#libboost_unit_test_framework\.a#libboost_unit_test_framework-mt.dylib#g" \
+        ${worksrcpath}/configure.ac
+    foreach l {chrono filesystem program_options system thread} {
+        reinplace \
+            "s#libboost_${l}\.a#libboost_${l}-mt.dylib#g" \
+            ${worksrcpath}/configure.ac
+    }
+
+    # Create these files otherwise automake fails.
+    system -W ${worksrcpath} "touch AUTHORS ChangeLog NEWS README"
+}
+
+conflicts_build     ${name}
+
+configure.args  --with-c_glib=no \
+                --with-csharp=no \
+                --with-d=no \
+                --with-erlang=no \
+                --with-go=no \
+                --with-haskell=no \
+                --with-java=no \
+                --with-lua=no \
+                --with-perl=no \
+                --with-php=no \
+                --with-php_extension=no \
+                --with-python=no \
+                --with-qt4=no \
+                --with-ruby=no
+
+configure.cppflags-append -DBOOST_TEST_DYN_LINK
+
+variant java description "enable the Java library" {
+    depends_build-append    bin:ant:apache-ant
+    configure.env-append    JAVA_PREFIX=${prefix}/share/java
+    configure.args-delete   --with-java=no
+    configure.args-append   --with-java=yes
+}
+
+variant csharp description "enable the C# library" {
+    configure.args-delete   --with-csharp=no
+    configure.args-append   --with-csharp=yes
+    depends_lib-append      port:mono
+}
+
+variant glib2 description "enable the C (GLib) library" {
+    configure.args-delete   --with-c_glib=no
+    configure.args-append   --with-c_glib=yes
+    depends_lib-append      path:lib/pkgconfig/glib-2.0.pc:glib2
+}
+
+# doesn't install into destroot
+#variant ruby description "enable the Ruby library" {
+#    configure.args-delete   --with-ruby=no
+#    configure.args-append   --with-ruby=yes
+#    depends_lib-append      port:ruby
+#}
+
+variant haskell description "enable the Haskell library" {
+    configure.args-delete   --with-haskell=no
+    configure.args-append   --with-haskell=yes
+    depends_lib-append      port:ghc \
+                            port:hs-http \
+}
+
+variant php description "enable the PHP library" {
+    configure.env-append    PHP_PREFIX=${prefix}/lib/php
+    configure.args-delete   --with-php=no
+    configure.args-append   --with-php=yes
+    depends_lib-append      path:bin/php:php5
+}
+
+variant erlang description "enable the Erlang library" {
+    configure.args-delete   --with-erlang=no
+    configure.args-append   --with-erlang=yes
+    depends_lib-append      port:erlang
+}
+
+test.run        yes
+test.target     check
+
+livecheck.type  regex
+livecheck.url   https://www.apache.org/dist/thrift/
+livecheck.regex {(\d+(?:\.\d+)*)/}

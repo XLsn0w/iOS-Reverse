@@ -1,0 +1,94 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           gobject_introspection 1.0
+PortGroup           compiler_blacklist_versions 1.0
+PortGroup           cxx11 1.1
+PortGroup           legacysupport 1.0
+
+name                policykit
+version             0.115
+revision            1
+description         PolicyKit is an application-level toolkit for defining and \
+                    handling the policy that allows unprivileged processes to \
+                    speak to privileged processes
+long_description    ${description}
+maintainers         {devans @dbevans} openmaintainer
+categories          security
+platforms           darwin
+license             LGPL-2+
+homepage            https://www.freedesktop.org/wiki/Software/polkit/
+master_sites        https://www.freedesktop.org/software/polkit/releases/
+
+distname            polkit-${version}
+
+checksums           rmd160  fd98c3a4faf76c6adc021dff63f9a6cfd1804959 \
+                    sha256  2f87ecdabfbd415c6306673ceadc59846f059b18ef2fce42bac63fe283f12131 \
+                    size    1550932
+
+depends_build-append \
+                    port:pkgconfig \
+                    port:intltool \
+                    port:gtk-doc \
+                    port:autoconf \
+                    port:automake \
+                    port:libtool \
+                    port:perl5.28
+
+depends_lib         path:lib/pkgconfig/glib-2.0.pc:glib2 \
+                    port:mozjs52
+
+gobject_introspection yes
+
+pre-patch {
+    if {${os.platform} eq "darwin" && ${os.major} < 10} {
+        reinplace "s|security/pam|pam/pam|" ${worksrcpath}/configure.ac \
+            ${worksrcpath}/src/polkitagent/polkitagenthelper-pam.c \
+            ${worksrcpath}/src/programs/pkexec.c
+    }
+}
+
+patchfiles          patch-configure.ac.diff \
+                    patch-fix-getgrouplist-args.diff
+
+# reconfigure using upstream autogen.sh for intltool 0.51 compatibility
+
+post-patch {
+    xinstall -m 755 ${filespath}/autogen.sh ${worksrcpath}
+}
+
+# use same blacklisting as mozjs52
+compiler.blacklist  *gcc-3.* *gcc-4.* {clang < 700} macports-clang-3.3 macports-clang-3.4
+compiler.fallback-append macports-clang-5.0 macports-clang-3.7
+
+configure.env-append \
+                    INTLTOOL_PERL=${prefix}/bin/perl5.28
+
+configure.cmd       ./autogen.sh
+
+configure.cxxflags-append -std=c++11
+
+configure.args      --with-authfw=pam \
+                    --with-pam-prefix=/etc/pam.d \
+                    --with-pam-module-dir=/usr/lib/pam \
+                    --with-polkitd-user=polkitd \
+                    --enable-systemd=no \
+                    --enable-libelogind=no \
+                    --disable-silent-rules \
+                    --disable-test \
+                    --enable-man-pages \
+                    ac_cv_prog_AWK=/usr/bin/awk
+
+destroot.keepdirs   ${destroot}${prefix}/etc/polkit-1/localauthority \
+                    ${destroot}${prefix}/var/lib/polkit-1
+
+variant docs description {Build API docs using gtk-doc} {
+        configure.args-append --enable-gtk-doc
+        depends_build-append  port:gtk-doc
+}
+
+add_users           polkitd group=polkitd realname=Policy\ Kit
+
+livecheck.type      regex
+livecheck.url       ${master_sites}
+livecheck.regex     "polkit-(\\d+(?:\\.\\d+)*)${extract.suffix}"

@@ -1,0 +1,65 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                file-roller
+version             3.26.2
+license             GPL-2+
+set branch          [join [lrange [split ${version} .] 0 1] .]
+description         An archive manager for GNOME
+long_description    File Roller is an archive manager for the GNOME \
+                    environment that allows you to \
+                    \n    * Create and modify archives.  \
+                    \n    * View the content of an archive.  \
+                    \n    * View a file contained in the archive.  \
+                    \n    * Extract files from the archive.
+maintainers         {devans @dbevans} openmaintainer
+categories          gnome
+platforms           darwin
+homepage            https://wiki.gnome.org/Apps/FileRoller
+master_sites        gnome:sources/${name}/${branch}/
+
+use_xz              yes
+
+checksums           rmd160  70d243f262e5370dc397d6af1fe08cb2c9d33b3c \
+                    sha256  3e677b8e1c2f19aead69cf4fc419a19fc3373aaf5d7bf558b4f077f10bbba8a5
+
+depends_build       port:pkgconfig \
+                    port:intltool \
+                    port:itstool \
+                    port:yelp-tools \
+                    port:gnome-common \
+                    port:autoconf \
+                    port:automake \
+                    port:libtool
+
+depends_lib         port:desktop-file-utils \
+                    port:gdk-pixbuf2 \
+                    port:gtk3 \
+                    port:json-glib \
+                    port:libnotify \
+                    port:libmagic \
+                    port:libarchive
+
+depends_run         port:adwaita-icon-theme \
+                    port:yelp
+
+# reconfigure using upstream autogen.sh for intltool 0.51 compatibility
+
+post-patch {
+    xinstall -m 755 ${filespath}/autogen.sh ${worksrcpath}
+}
+
+configure.cmd       ./autogen.sh
+
+configure.args      --disable-packagekit \
+                    --disable-schemas-compile \
+                    --disable-silent-rules
+
+post-activate {
+    system "${prefix}/bin/gtk-update-icon-cache-3.0 -f -t ${prefix}/share/icons/hicolor"
+    system "${prefix}/bin/update-desktop-database ${prefix}/share/applications"
+    system "${prefix}/bin/glib-compile-schemas ${prefix}/share/glib-2.0/schemas"
+}
+
+livecheck.type      gnome

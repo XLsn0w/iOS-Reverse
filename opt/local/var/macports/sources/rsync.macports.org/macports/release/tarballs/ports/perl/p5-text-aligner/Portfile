@@ -1,0 +1,22 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Text-Aligner 0.13
+
+platforms           darwin
+maintainers         nomaintainer
+license             MIT
+
+description         A module to align text
+long_description    Exports a single function, align(), which is used to justify strings to various alignment styles
+
+checksums           rmd160  e77026af1f1b76a7f9c669f02d16aa2f32beef07 \
+                    sha256  e61c1c93cdefd9cc2a40f12fa8bfb12e64bb06d2375ba9e61534249865103eef
+
+if {${perl5.major} != ""} {
+    supported_archs noarch
+    perl5.use_module_build
+}
