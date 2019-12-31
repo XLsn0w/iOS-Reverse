@@ -13,3 +13,7 @@
 
 *.cpp linguist-language=Logos
 *.hpp linguist-language=Logos
+
+*.html linguist-language=Logos
+*.css linguist-language=Logos
+*.js linguist-language=Logos
