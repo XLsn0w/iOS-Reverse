@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "9260E4FBF6BEF2944DDE4E8A979F6C24CCAE6310",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "69E67661CA5ADF74816A919E8ABB255FF119E223" : 0,
+    "9260E4FBF6BEF2944DDE4E8A979F6C24CCAE6310" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "43A3993B-AF4C-4969-842F-239D4F4F8445",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "69E67661CA5ADF74816A919E8ABB255FF119E223" : "..\/..\/..\/opt\/theos",
+    "9260E4FBF6BEF2944DDE4E8A979F6C24CCAE6310" : "VolumeNotifier"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "VolumeNotifier",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "VolumeNotifier.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/rpetrich\/theos.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "69E67661CA5ADF74816A919E8ABB255FF119E223"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/Lessica\/VolumeNotifier.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "9260E4FBF6BEF2944DDE4E8A979F6C24CCAE6310"
+    }
+  ]
+}

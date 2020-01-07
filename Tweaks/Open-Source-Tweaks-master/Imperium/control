@@ -1,0 +1,9 @@
+Package: com.lacertosusrepo.imperium
+Name: Imperium
+Depends: mobilesubstrate
+Version: 2.0
+Architecture: iphoneos-arm
+Description: An awesome MobileSubstrate tweak!
+Maintainer: LacertosusDeus <LacertosusThemes@gmail.com>
+Author: LacertosusDeus <LacertosusThemes@gmail.com>
+Section: Tweaks

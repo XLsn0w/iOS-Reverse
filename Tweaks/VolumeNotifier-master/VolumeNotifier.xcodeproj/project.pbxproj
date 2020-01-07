@@ -1,0 +1,512 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0F531A701BD8E07100DF2E8B /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F531A6F1BD8E07100DF2E8B /* UIKit.framework */; };
+		0F77F13C1A0C4B480005468E /* SndDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F77F13A1A0C4B480005468E /* SndDelegate.h */; };
+		0F77F13D1A0C4B480005468E /* SndDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0F77F13B1A0C4B480005468E /* SndDelegate.m */; };
+		0FA8AE951A0E758200195856 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0FA8AE941A0E758200195856 /* AudioToolbox.framework */; };
+		0FA8AE961A0E758700195856 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0FA8AE911A0E757800195856 /* AVFoundation.framework */; };
+		0FEFCB9F1A09D524005B9103 /* VolumeNotifier.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0FEFCB9E1A09D524005B9103 /* VolumeNotifier.mm */; };
+		0FEFCBAB1A09D549005B9103 /* libsubstrate.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 0FEFCBAA1A09D549005B9103 /* libsubstrate.dylib */; };
+		0FEFCBAD1A09D55C005B9103 /* VolumeNotifier.h in Headers */ = {isa = PBXBuildFile; fileRef = 0FEFCBAC1A09D55C005B9103 /* VolumeNotifier.h */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		0F3E18071A0E351E00411010 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0F1C7F3E1A0E210D00A88496 /* VolumeNotifierPrefs.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0F1C7F151A0E210C00A88496;
+			remoteInfo = VolumeNotifierPrefs;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0F1C7EEB1A0E203F00A88496 /* Preferences.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Preferences.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/PrivateFrameworks/Preferences.framework; sourceTree = DEVELOPER_DIR; };
+		0F1C7F3E1A0E210D00A88496 /* VolumeNotifierPrefs.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = VolumeNotifierPrefs.xcodeproj; path = VolumeNotifierPrefs/VolumeNotifierPrefs.xcodeproj; sourceTree = SOURCE_ROOT; };
+		0F3969D71A12136B00B3864F /* morse.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = morse.aiff; sourceTree = "<group>"; };
+		0F3969D81A12136B00B3864F /* ping.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = ping.aiff; sourceTree = "<group>"; };
+		0F3969D91A12136B00B3864F /* pop.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = pop.aiff; sourceTree = "<group>"; };
+		0F3969DA1A12136B00B3864F /* tink.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = tink.aiff; sourceTree = "<group>"; };
+		0F3969DB1A12136B00B3864F /* volume.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = volume.aiff; sourceTree = "<group>"; };
+		0F3969DD1A12142600B3864F /* mavericks.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = mavericks.aiff; sourceTree = "<group>"; };
+		0F531A6F1BD8E07100DF2E8B /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		0F77F13A1A0C4B480005468E /* SndDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SndDelegate.h; sourceTree = "<group>"; };
+		0F77F13B1A0C4B480005468E /* SndDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SndDelegate.m; sourceTree = "<group>"; };
+		0F9BDF1A1A0BA1D7001645E3 /* beep.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = beep.caf; sourceTree = "<group>"; };
+		0FA8AE911A0E757800195856 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		0FA8AE941A0E758200195856 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		0FBF15A91A0AE55D007E5964 /* VolumeNotifier.xm */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = VolumeNotifier.xm; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		0FEFCB8A1A09D524005B9103 /* VolumeNotifier.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = VolumeNotifier.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		0FEFCB931A09D524005B9103 /* control */ = {isa = PBXFileReference; lastKnownFileType = text; name = control; path = Package/DEBIAN/control; sourceTree = "<group>"; };
+		0FEFCB951A09D524005B9103 /* PackageVersion.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PackageVersion.plist; sourceTree = "<group>"; };
+		0FEFCB9C1A09D524005B9103 /* VolumeNotifier-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VolumeNotifier-Prefix.pch"; sourceTree = "<group>"; };
+		0FEFCB9E1A09D524005B9103 /* VolumeNotifier.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = VolumeNotifier.mm; sourceTree = "<group>"; };
+		0FEFCBA21A09D524005B9103 /* VolumeNotifier.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = VolumeNotifier.plist; path = Package/Library/MobileSubstrate/DynamicLibraries/VolumeNotifier.plist; sourceTree = "<group>"; };
+		0FEFCBAA1A09D549005B9103 /* libsubstrate.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsubstrate.dylib; path = ../../../../opt/iOSOpenDev/lib/libsubstrate.dylib; sourceTree = "<group>"; };
+		0FEFCBAC1A09D55C005B9103 /* VolumeNotifier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VolumeNotifier.h; sourceTree = "<group>"; };
+		0FEFCBAE1A09D571005B9103 /* VolumeNotifier.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = VolumeNotifier.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		0FEFCB861A09D524005B9103 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0FA8AE951A0E758200195856 /* AudioToolbox.framework in Frameworks */,
+				0F531A701BD8E07100DF2E8B /* UIKit.framework in Frameworks */,
+				0FA8AE961A0E758700195856 /* AVFoundation.framework in Frameworks */,
+				0FEFCBAB1A09D549005B9103 /* libsubstrate.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0F3E18041A0E351E00411010 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0F3E18081A0E351E00411010 /* VolumeNotifierPrefs.bundle */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0FBD71881A0A624E00A786DB /* System */ = {
+			isa = PBXGroup;
+			children = (
+				0FBD71891A0A624E00A786DB /* Library */,
+			);
+			name = System;
+			path = Package/System;
+			sourceTree = "<group>";
+		};
+		0FBD71891A0A624E00A786DB /* Library */ = {
+			isa = PBXGroup;
+			children = (
+				0FBD718A1A0A624E00A786DB /* Audio */,
+			);
+			path = Library;
+			sourceTree = "<group>";
+		};
+		0FBD718A1A0A624E00A786DB /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				0FBD718B1A0A624E00A786DB /* UISounds */,
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
+		0FBD718B1A0A624E00A786DB /* UISounds */ = {
+			isa = PBXGroup;
+			children = (
+				0FBF15AA1A0AE622007E5964 /* VolumeNotifier */,
+			);
+			path = UISounds;
+			sourceTree = "<group>";
+		};
+		0FBF15AA1A0AE622007E5964 /* VolumeNotifier */ = {
+			isa = PBXGroup;
+			children = (
+				0F9BDF1A1A0BA1D7001645E3 /* beep.caf */,
+				0F3969D71A12136B00B3864F /* morse.aiff */,
+				0F3969D81A12136B00B3864F /* ping.aiff */,
+				0F3969D91A12136B00B3864F /* pop.aiff */,
+				0F3969DA1A12136B00B3864F /* tink.aiff */,
+				0F3969DB1A12136B00B3864F /* volume.aiff */,
+				0F3969DD1A12142600B3864F /* mavericks.aiff */,
+			);
+			path = VolumeNotifier;
+			sourceTree = "<group>";
+		};
+		0FEFCB7F1A09D523005B9103 = {
+			isa = PBXGroup;
+			children = (
+				0F1C7F3E1A0E210D00A88496 /* VolumeNotifierPrefs.xcodeproj */,
+				0FEFCB8F1A09D524005B9103 /* VolumeNotifier */,
+				0FEFCB8C1A09D524005B9103 /* Frameworks */,
+				0FEFCB8B1A09D524005B9103 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		0FEFCB8B1A09D524005B9103 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0FEFCB8A1A09D524005B9103 /* VolumeNotifier.dylib */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0FEFCB8C1A09D524005B9103 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				0F531A6F1BD8E07100DF2E8B /* UIKit.framework */,
+				0FA8AE941A0E758200195856 /* AudioToolbox.framework */,
+				0FA8AE911A0E757800195856 /* AVFoundation.framework */,
+				0FEFCBAA1A09D549005B9103 /* libsubstrate.dylib */,
+				0F1C7EEB1A0E203F00A88496 /* Preferences.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		0FEFCB8F1A09D524005B9103 /* VolumeNotifier */ = {
+			isa = PBXGroup;
+			children = (
+				0FEFCBAC1A09D55C005B9103 /* VolumeNotifier.h */,
+				0F77F13A1A0C4B480005468E /* SndDelegate.h */,
+				0F77F13B1A0C4B480005468E /* SndDelegate.m */,
+				0FBF15A91A0AE55D007E5964 /* VolumeNotifier.xm */,
+				0FEFCB9E1A09D524005B9103 /* VolumeNotifier.mm */,
+				0FEFCBAE1A09D571005B9103 /* VolumeNotifier.plist */,
+				0FEFCB901A09D524005B9103 /* Package */,
+				0FEFCB941A09D524005B9103 /* Supporting Files */,
+			);
+			path = VolumeNotifier;
+			sourceTree = "<group>";
+		};
+		0FEFCB901A09D524005B9103 /* Package */ = {
+			isa = PBXGroup;
+			children = (
+				0FBD71881A0A624E00A786DB /* System */,
+				0FEFCB911A09D524005B9103 /* DEBIAN */,
+				0FEFCB961A09D524005B9103 /* Library */,
+			);
+			name = Package;
+			sourceTree = "<group>";
+		};
+		0FEFCB911A09D524005B9103 /* DEBIAN */ = {
+			isa = PBXGroup;
+			children = (
+				0FEFCB931A09D524005B9103 /* control */,
+			);
+			name = DEBIAN;
+			sourceTree = "<group>";
+		};
+		0FEFCB941A09D524005B9103 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				0FEFCB951A09D524005B9103 /* PackageVersion.plist */,
+				0FEFCB9C1A09D524005B9103 /* VolumeNotifier-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		0FEFCB961A09D524005B9103 /* Library */ = {
+			isa = PBXGroup;
+			children = (
+				0FEFCBA01A09D524005B9103 /* MobileSubstrate */,
+			);
+			name = Library;
+			sourceTree = "<group>";
+		};
+		0FEFCBA01A09D524005B9103 /* MobileSubstrate */ = {
+			isa = PBXGroup;
+			children = (
+				0FEFCBA11A09D524005B9103 /* DynamicLibraries */,
+			);
+			name = MobileSubstrate;
+			sourceTree = "<group>";
+		};
+		0FEFCBA11A09D524005B9103 /* DynamicLibraries */ = {
+			isa = PBXGroup;
+			children = (
+				0FEFCBA21A09D524005B9103 /* VolumeNotifier.plist */,
+			);
+			name = DynamicLibraries;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		0FEFCB871A09D524005B9103 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0FEFCBAD1A09D55C005B9103 /* VolumeNotifier.h in Headers */,
+				0F77F13C1A0C4B480005468E /* SndDelegate.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		0FEFCB891A09D524005B9103 /* VolumeNotifier */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0FEFCBA51A09D524005B9103 /* Build configuration list for PBXNativeTarget "VolumeNotifier" */;
+			buildPhases = (
+				0FEFCB841A09D524005B9103 /* ShellScript */,
+				0FEFCB851A09D524005B9103 /* Sources */,
+				0FEFCB861A09D524005B9103 /* Frameworks */,
+				0FEFCB871A09D524005B9103 /* Headers */,
+				0FEFCB881A09D524005B9103 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = VolumeNotifier;
+			productName = VolumeNotifier;
+			productReference = 0FEFCB8A1A09D524005B9103 /* VolumeNotifier.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0FEFCB801A09D523005B9103 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0700;
+				TargetAttributes = {
+					0FEFCB891A09D524005B9103 = {
+						CreatedOnToolsVersion = 6.1;
+					};
+				};
+			};
+			buildConfigurationList = 0FEFCB831A09D523005B9103 /* Build configuration list for PBXProject "VolumeNotifier" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				"zh-Hans",
+				"zh-Hant",
+			);
+			mainGroup = 0FEFCB7F1A09D523005B9103;
+			productRefGroup = 0FEFCB8B1A09D524005B9103 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 0F3E18041A0E351E00411010 /* Products */;
+					ProjectRef = 0F1C7F3E1A0E210D00A88496 /* VolumeNotifierPrefs.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				0FEFCB891A09D524005B9103 /* VolumeNotifier */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		0F3E18081A0E351E00411010 /* VolumeNotifierPrefs.bundle */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = VolumeNotifierPrefs.bundle;
+			remoteRef = 0F3E18071A0E351E00411010 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		0FEFCB841A09D524005B9103 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 12;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/opt/iOSOpenDev/bin/iosod --xcbp-logos";
+		};
+		0FEFCB881A09D524005B9103 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/opt/iOSOpenDev/bin/iosod --xcbp";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		0FEFCB851A09D524005B9103 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0F77F13D1A0C4B480005468E /* SndDelegate.m in Sources */,
+				0FEFCB9F1A09D524005B9103 /* VolumeNotifier.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		0FEFCBA31A09D524005B9103 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_MODULES_AUTOLINK = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer: Zheng Wu (253D9QR4TP)";
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION).  [CONFIGURATION_BUILD_DIR]";
+				CONFIGURATION_TEMP_DIR = "$(PROJECT_TEMP_DIR)/$(CONFIGURATION).  [CONFIGURATION_TEMP_DIR]";
+				COPY_PHASE_STRIP = NO;
+				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
+				ENABLE_TESTABILITY = YES;
+				EXCLUDED_RECURSIVE_SEARCH_PATH_SUBDIRECTORIES = "*.nib *.lproj *.gch (*) .DS_Store CVS .svn .git .hg *.xcodeproj *.xcode *.pbproj *.pbxproj";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(iOSOpenDevPath)/frameworks/**",
+					"$(SDKROOT)/System/Library/PrivateFrameworks",
+				);
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(iOSOpenDevPath)/include/**",
+					/opt/theos/include,
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				LIBRARY_SEARCH_PATHS = (
+					"$(iOSOpenDevPath)/lib/**",
+					/opt/theos/lib,
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos7.1;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = NO;
+				VALID_ARCHS = "arm64 armv7s armv7";
+				iOSOpenDevPath = /opt/iOSOpenDev;
+			};
+			name = Debug;
+		};
+		0FEFCBA41A09D524005B9103 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_MODULES_AUTOLINK = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer: Zheng Wu (253D9QR4TP)";
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION).  [CONFIGURATION_BUILD_DIR]";
+				CONFIGURATION_TEMP_DIR = "$(PROJECT_TEMP_DIR)/$(CONFIGURATION).  [CONFIGURATION_TEMP_DIR]";
+				COPY_PHASE_STRIP = YES;
+				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
+				EXCLUDED_RECURSIVE_SEARCH_PATH_SUBDIRECTORIES = "*.nib *.lproj *.gch (*) .DS_Store CVS .svn .git .hg *.xcodeproj *.xcode *.pbproj *.pbxproj";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(iOSOpenDevPath)/frameworks/**",
+					"$(SDKROOT)/System/Library/PrivateFrameworks",
+				);
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(iOSOpenDevPath)/include/**",
+					/opt/theos/include,
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				LIBRARY_SEARCH_PATHS = (
+					"$(iOSOpenDevPath)/lib/**",
+					/opt/theos/lib,
+				);
+				SDKROOT = iphoneos7.1;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VALID_ARCHS = "arm64 armv7s armv7";
+				iOSOpenDevPath = /opt/iOSOpenDev;
+			};
+			name = Release;
+		};
+		0FEFCBA61A09D524005B9103 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer: Zheng Wu (253D9QR4TP)";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				ENABLE_BITCODE = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "VolumeNotifier/VolumeNotifier-Prefix.pch";
+				INSTALL_PATH = /Library/MobileSubstrate/DynamicLibraries;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/opt/iOSOpenDev/lib,
+				);
+				OTHER_LDFLAGS = "-Wl,-segalign,4000";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos7.1;
+				VALID_ARCHS = "arm64 armv7s armv7";
+				iOSOpenDevBuildPackageOnAnyBuild = NO;
+				iOSOpenDevCopyOnBuild = NO;
+				iOSOpenDevDevice = "";
+				iOSOpenDevInstallOnAnyBuild = NO;
+				iOSOpenDevInstallOnProfiling = NO;
+				iOSOpenDevRespringOnInstall = YES;
+				iOSOpenDevUsePackageVersionPList = YES;
+			};
+			name = Debug;
+		};
+		0FEFCBA71A09D524005B9103 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer: Zheng Wu (253D9QR4TP)";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				ENABLE_BITCODE = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "VolumeNotifier/VolumeNotifier-Prefix.pch";
+				INSTALL_PATH = /Library/MobileSubstrate/DynamicLibraries;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/opt/iOSOpenDev/lib,
+				);
+				OTHER_LDFLAGS = "-Wl,-segalign,4000";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos7.1;
+				VALID_ARCHS = "arm64 armv7s armv7";
+				iOSOpenDevBuildPackageOnAnyBuild = NO;
+				iOSOpenDevCopyOnBuild = NO;
+				iOSOpenDevDevice = "";
+				iOSOpenDevInstallOnAnyBuild = NO;
+				iOSOpenDevInstallOnProfiling = NO;
+				iOSOpenDevRespringOnInstall = YES;
+				iOSOpenDevUsePackageVersionPList = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0FEFCB831A09D523005B9103 /* Build configuration list for PBXProject "VolumeNotifier" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0FEFCBA31A09D524005B9103 /* Debug */,
+				0FEFCBA41A09D524005B9103 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0FEFCBA51A09D524005B9103 /* Build configuration list for PBXNativeTarget "VolumeNotifier" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0FEFCBA61A09D524005B9103 /* Debug */,
+				0FEFCBA71A09D524005B9103 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 0FEFCB801A09D523005B9103 /* Project object */;
+}

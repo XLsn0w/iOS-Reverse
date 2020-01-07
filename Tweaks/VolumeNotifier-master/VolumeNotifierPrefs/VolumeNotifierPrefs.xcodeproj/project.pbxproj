@@ -1,0 +1,636 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0F1C7F271A0E210D00A88496 /* VolumeNotifierPrefsController.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F1C7F261A0E210D00A88496 /* VolumeNotifierPrefsController.h */; };
+		0F1C7F291A0E210D00A88496 /* VolumeNotifierPrefsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0F1C7F281A0E210D00A88496 /* VolumeNotifierPrefsController.m */; };
+		0F7F50991A0EE1C70039C9A6 /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F7F50981A0EE1C70039C9A6 /* Social.framework */; };
+		0F7F509B1A0EE1D60039C9A6 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F7F509A1A0EE1D60039C9A6 /* CoreGraphics.framework */; };
+		0F7F509D1A0EE2110039C9A6 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F7F509C1A0EE2110039C9A6 /* MessageUI.framework */; };
+		0F7F509F1A0EE2190039C9A6 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F7F509E1A0EE2190039C9A6 /* QuartzCore.framework */; };
+		0F7F50BB1A0EE49D0039C9A6 /* SKListItemsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0F7F50A61A0EE49D0039C9A6 /* SKListItemsController.m */; };
+		0F7F50BD1A0EE49D0039C9A6 /* SKPersonCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0F7F50A81A0EE49D0039C9A6 /* SKPersonCell.m */; };
+		0F7F50BF1A0EE49D0039C9A6 /* SKSharedHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 0F7F50AA1A0EE49D0039C9A6 /* SKSharedHelper.m */; };
+		0F7F50C11A0EE49D0039C9A6 /* SKSpecifierParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 0F7F50AC1A0EE49D0039C9A6 /* SKSpecifierParser.m */; };
+		0F7F50C31A0EE49D0039C9A6 /* SKStandardController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0F7F50AE1A0EE49D0039C9A6 /* SKStandardController.m */; };
+		0F7F50C51A0EE49D0039C9A6 /* SKTintedCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0F7F50B01A0EE49D0039C9A6 /* SKTintedCell.m */; };
+		0F7F50C71A0EE49D0039C9A6 /* SKTintedControlCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0F7F50B21A0EE49D0039C9A6 /* SKTintedControlCell.m */; };
+		0F7F50C91A0EE49D0039C9A6 /* SKTintedListController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0F7F50B41A0EE49D0039C9A6 /* SKTintedListController.m */; };
+		0F7F50CB1A0EE49D0039C9A6 /* SKTintedSwitchCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0F7F50B61A0EE49D0039C9A6 /* SKTintedSwitchCell.m */; };
+		0FA8AE8E1A0E754000195856 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0FA8AE8D1A0E754000195856 /* CoreFoundation.framework */; };
+		0FA8AE901A0E755100195856 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0FA8AE8F1A0E755100195856 /* UIKit.framework */; };
+		0FBD899F1A11173A00AE2B90 /* common.h in Headers */ = {isa = PBXBuildFile; fileRef = 0FBD89941A11173A00AE2B90 /* common.h */; };
+		0FBD89A01A11173A00AE2B90 /* SKListControllerProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = 0FBD89951A11173A00AE2B90 /* SKListControllerProtocol.h */; };
+		0FBD89A11A11173A00AE2B90 /* SKListItemsController.h in Headers */ = {isa = PBXBuildFile; fileRef = 0FBD89961A11173A00AE2B90 /* SKListItemsController.h */; };
+		0FBD89A21A11173A00AE2B90 /* SKPersonCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 0FBD89971A11173A00AE2B90 /* SKPersonCell.h */; };
+		0FBD89A31A11173A00AE2B90 /* SKSharedHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 0FBD89981A11173A00AE2B90 /* SKSharedHelper.h */; };
+		0FBD89A41A11173A00AE2B90 /* SKSpecifierParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 0FBD89991A11173A00AE2B90 /* SKSpecifierParser.h */; };
+		0FBD89A51A11173A00AE2B90 /* SKStandardController.h in Headers */ = {isa = PBXBuildFile; fileRef = 0FBD899A1A11173A00AE2B90 /* SKStandardController.h */; };
+		0FBD89A61A11173A00AE2B90 /* SKTintedCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 0FBD899B1A11173A00AE2B90 /* SKTintedCell.h */; };
+		0FBD89A71A11173A00AE2B90 /* SKTintedControlCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 0FBD899C1A11173A00AE2B90 /* SKTintedControlCell.h */; };
+		0FBD89A81A11173A00AE2B90 /* SKTintedListController.h in Headers */ = {isa = PBXBuildFile; fileRef = 0FBD899D1A11173A00AE2B90 /* SKTintedListController.h */; };
+		0FBD89A91A11173A00AE2B90 /* SKTintedSwitchCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 0FBD899E1A11173A00AE2B90 /* SKTintedSwitchCell.h */; };
+		0FD65E0A1BC3F57A0028B180 /* Preferences.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0FD65E091BC3F57A0028B180 /* Preferences.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0F1C7F151A0E210C00A88496 /* VolumeNotifierPrefs.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VolumeNotifierPrefs.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		0F1C7F221A0E210D00A88496 /* control */ = {isa = PBXFileReference; lastKnownFileType = text; name = control; path = Package/DEBIAN/control; sourceTree = "<group>"; };
+		0F1C7F241A0E210D00A88496 /* PackageVersion.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PackageVersion.plist; sourceTree = "<group>"; };
+		0F1C7F251A0E210D00A88496 /* VolumeNotifierPrefs-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "VolumeNotifierPrefs-Info.plist"; sourceTree = "<group>"; };
+		0F1C7F261A0E210D00A88496 /* VolumeNotifierPrefsController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VolumeNotifierPrefsController.h; sourceTree = "<group>"; };
+		0F1C7F281A0E210D00A88496 /* VolumeNotifierPrefsController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VolumeNotifierPrefsController.m; sourceTree = "<group>"; };
+		0F1C7F2D1A0E210D00A88496 /* VolumeNotifierPrefs.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = VolumeNotifierPrefs.plist; path = Package/Library/PreferenceLoader/Preferences/VolumeNotifierPrefs.plist; sourceTree = "<group>"; };
+		0F1C7F381A0E210D00A88496 /* VolumeNotifierPrefs-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VolumeNotifierPrefs-Prefix.pch"; sourceTree = "<group>"; };
+		0F1C7F4C1A0E2D3300A88496 /* VolumeNotifierPrefsIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = VolumeNotifierPrefsIcon.png; path = Package/Library/PreferenceBundles/VolumeNotifierPrefs.bundle/VolumeNotifierPrefsIcon.png; sourceTree = "<group>"; };
+		0F1C7F4D1A0E2D3300A88496 /* VolumeNotifierPrefsIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "VolumeNotifierPrefsIcon@2x.png"; path = "Package/Library/PreferenceBundles/VolumeNotifierPrefs.bundle/VolumeNotifierPrefsIcon@2x.png"; sourceTree = "<group>"; };
+		0F7F50981A0EE1C70039C9A6 /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
+		0F7F509A1A0EE1D60039C9A6 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		0F7F509C1A0EE2110039C9A6 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
+		0F7F509E1A0EE2190039C9A6 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		0F7F50A61A0EE49D0039C9A6 /* SKListItemsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKListItemsController.m; sourceTree = "<group>"; };
+		0F7F50A81A0EE49D0039C9A6 /* SKPersonCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKPersonCell.m; sourceTree = "<group>"; };
+		0F7F50AA1A0EE49D0039C9A6 /* SKSharedHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKSharedHelper.m; sourceTree = "<group>"; };
+		0F7F50AC1A0EE49D0039C9A6 /* SKSpecifierParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKSpecifierParser.m; sourceTree = "<group>"; };
+		0F7F50AE1A0EE49D0039C9A6 /* SKStandardController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKStandardController.m; sourceTree = "<group>"; };
+		0F7F50B01A0EE49D0039C9A6 /* SKTintedCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKTintedCell.m; sourceTree = "<group>"; };
+		0F7F50B21A0EE49D0039C9A6 /* SKTintedControlCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKTintedControlCell.m; sourceTree = "<group>"; };
+		0F7F50B41A0EE49D0039C9A6 /* SKTintedListController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKTintedListController.m; sourceTree = "<group>"; };
+		0F7F50B61A0EE49D0039C9A6 /* SKTintedSwitchCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKTintedSwitchCell.m; sourceTree = "<group>"; };
+		0F7F50CC1A0EE4BE0039C9A6 /* brush@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "brush@2x.png"; path = "Package/Library/PreferenceBundles/VolumeNotifierPrefs.bundle/brush@2x.png"; sourceTree = "<group>"; };
+		0F7F50CD1A0EE4BE0039C9A6 /* enabled@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "enabled@2x.png"; path = "Package/Library/PreferenceBundles/VolumeNotifierPrefs.bundle/enabled@2x.png"; sourceTree = "<group>"; };
+		0F7F50CE1A0EE4BE0039C9A6 /* heart@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "heart@2x.png"; path = "Package/Library/PreferenceBundles/VolumeNotifierPrefs.bundle/heart@2x.png"; sourceTree = "<group>"; };
+		0F7F50CF1A0EE4BE0039C9A6 /* makers@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "makers@2x.png"; path = "Package/Library/PreferenceBundles/VolumeNotifierPrefs.bundle/makers@2x.png"; sourceTree = "<group>"; };
+		0F7F50D01A0EE4BE0039C9A6 /* settings@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "settings@2x.png"; path = "Package/Library/PreferenceBundles/VolumeNotifierPrefs.bundle/settings@2x.png"; sourceTree = "<group>"; };
+		0F7F50D11A0EE4BE0039C9A6 /* star@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "star@2x.png"; path = "Package/Library/PreferenceBundles/VolumeNotifierPrefs.bundle/star@2x.png"; sourceTree = "<group>"; };
+		0F7F50D21A0EE4BE0039C9A6 /* support@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "support@2x.png"; path = "Package/Library/PreferenceBundles/VolumeNotifierPrefs.bundle/support@2x.png"; sourceTree = "<group>"; };
+		0F7F50D31A0EE4BE0039C9A6 /* todo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "todo@2x.png"; path = "Package/Library/PreferenceBundles/VolumeNotifierPrefs.bundle/todo@2x.png"; sourceTree = "<group>"; };
+		0F8EA7B81A0E74E500F093F8 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		0F8EA7BA1A0E751D00F093F8 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		0F9AA5CA1A0F10500026F7C5 /* paypal@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "paypal@2x.png"; path = "Package/Library/PreferenceBundles/VolumeNotifierPrefs.bundle/paypal@2x.png"; sourceTree = "<group>"; };
+		0F9AA5CB1A0F10550026F7C5 /* twitter@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "twitter@2x.png"; path = "Package/Library/PreferenceBundles/VolumeNotifierPrefs.bundle/twitter@2x.png"; sourceTree = "<group>"; };
+		0F9AA5CD1A0F12760026F7C5 /* English */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = English; path = Localizable.strings; sourceTree = "<group>"; };
+		0FA8AE8B1A0E753900195856 /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
+		0FA8AE8D1A0E754000195856 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		0FA8AE8F1A0E755100195856 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		0FBD89941A11173A00AE2B90 /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = common.h; sourceTree = "<group>"; };
+		0FBD89951A11173A00AE2B90 /* SKListControllerProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKListControllerProtocol.h; sourceTree = "<group>"; };
+		0FBD89961A11173A00AE2B90 /* SKListItemsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKListItemsController.h; sourceTree = "<group>"; };
+		0FBD89971A11173A00AE2B90 /* SKPersonCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKPersonCell.h; sourceTree = "<group>"; };
+		0FBD89981A11173A00AE2B90 /* SKSharedHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKSharedHelper.h; sourceTree = "<group>"; };
+		0FBD89991A11173A00AE2B90 /* SKSpecifierParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKSpecifierParser.h; sourceTree = "<group>"; };
+		0FBD899A1A11173A00AE2B90 /* SKStandardController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKStandardController.h; sourceTree = "<group>"; };
+		0FBD899B1A11173A00AE2B90 /* SKTintedCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKTintedCell.h; sourceTree = "<group>"; };
+		0FBD899C1A11173A00AE2B90 /* SKTintedControlCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKTintedControlCell.h; sourceTree = "<group>"; };
+		0FBD899D1A11173A00AE2B90 /* SKTintedListController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKTintedListController.h; sourceTree = "<group>"; };
+		0FBD899E1A11173A00AE2B90 /* SKTintedSwitchCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKTintedSwitchCell.h; sourceTree = "<group>"; };
+		0FC778131BDBB1E3005E7E8B /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = Localizable.strings; sourceTree = "<group>"; };
+		0FC778161BDBB1E3005E7E8B /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = Localizable.strings; sourceTree = "<group>"; };
+		0FC778191BDBB23D005E7E8B /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = Localizable.strings; sourceTree = "<group>"; };
+		0FD65E091BC3F57A0028B180 /* Preferences.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Preferences.framework; path = ../../../../../opt/theos/sdks/iPhoneOS8.1.sdk/System/Library/PrivateFrameworks/Preferences.framework; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		0F1C7F111A0E210C00A88496 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0FD65E0A1BC3F57A0028B180 /* Preferences.framework in Frameworks */,
+				0F7F509F1A0EE2190039C9A6 /* QuartzCore.framework in Frameworks */,
+				0F7F509D1A0EE2110039C9A6 /* MessageUI.framework in Frameworks */,
+				0F7F509B1A0EE1D60039C9A6 /* CoreGraphics.framework in Frameworks */,
+				0F7F50991A0EE1C70039C9A6 /* Social.framework in Frameworks */,
+				0FA8AE901A0E755100195856 /* UIKit.framework in Frameworks */,
+				0FA8AE8E1A0E754000195856 /* CoreFoundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0F1C7F0B1A0E210C00A88496 = {
+			isa = PBXGroup;
+			children = (
+				0F1C7F1E1A0E210D00A88496 /* VolumeNotifierPrefs */,
+				0F1C7F171A0E210C00A88496 /* Frameworks */,
+				0F1C7F161A0E210C00A88496 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		0F1C7F161A0E210C00A88496 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0F1C7F151A0E210C00A88496 /* VolumeNotifierPrefs.bundle */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0F1C7F171A0E210C00A88496 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				0FD65E091BC3F57A0028B180 /* Preferences.framework */,
+				0F7F509E1A0EE2190039C9A6 /* QuartzCore.framework */,
+				0F7F509C1A0EE2110039C9A6 /* MessageUI.framework */,
+				0F7F509A1A0EE1D60039C9A6 /* CoreGraphics.framework */,
+				0F7F50981A0EE1C70039C9A6 /* Social.framework */,
+				0FA8AE8F1A0E755100195856 /* UIKit.framework */,
+				0FA8AE8D1A0E754000195856 /* CoreFoundation.framework */,
+				0FA8AE8B1A0E753900195856 /* Accounts.framework */,
+				0F8EA7BA1A0E751D00F093F8 /* Accelerate.framework */,
+				0F8EA7B81A0E74E500F093F8 /* AVFoundation.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		0F1C7F1E1A0E210D00A88496 /* VolumeNotifierPrefs */ = {
+			isa = PBXGroup;
+			children = (
+				0F1C7F261A0E210D00A88496 /* VolumeNotifierPrefsController.h */,
+				0F1C7F281A0E210D00A88496 /* VolumeNotifierPrefsController.m */,
+				0F7F50A01A0EE49D0039C9A6 /* SettingsKit */,
+				0F1C7F1F1A0E210D00A88496 /* Package */,
+				0F1C7F231A0E210D00A88496 /* Supporting Files */,
+			);
+			path = VolumeNotifierPrefs;
+			sourceTree = "<group>";
+		};
+		0F1C7F1F1A0E210D00A88496 /* Package */ = {
+			isa = PBXGroup;
+			children = (
+				0F1C7F201A0E210D00A88496 /* DEBIAN */,
+				0F1C7F2A1A0E210D00A88496 /* Library */,
+			);
+			name = Package;
+			sourceTree = "<group>";
+		};
+		0F1C7F201A0E210D00A88496 /* DEBIAN */ = {
+			isa = PBXGroup;
+			children = (
+				0F1C7F221A0E210D00A88496 /* control */,
+			);
+			name = DEBIAN;
+			sourceTree = "<group>";
+		};
+		0F1C7F231A0E210D00A88496 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				0F1C7F241A0E210D00A88496 /* PackageVersion.plist */,
+				0F1C7F251A0E210D00A88496 /* VolumeNotifierPrefs-Info.plist */,
+				0F1C7F381A0E210D00A88496 /* VolumeNotifierPrefs-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		0F1C7F2A1A0E210D00A88496 /* Library */ = {
+			isa = PBXGroup;
+			children = (
+				0F1C7F2B1A0E210D00A88496 /* PreferenceLoader */,
+				0F1C7F2E1A0E210D00A88496 /* PreferenceBundles */,
+			);
+			name = Library;
+			sourceTree = "<group>";
+		};
+		0F1C7F2B1A0E210D00A88496 /* PreferenceLoader */ = {
+			isa = PBXGroup;
+			children = (
+				0F1C7F2C1A0E210D00A88496 /* Preferences */,
+			);
+			name = PreferenceLoader;
+			sourceTree = "<group>";
+		};
+		0F1C7F2C1A0E210D00A88496 /* Preferences */ = {
+			isa = PBXGroup;
+			children = (
+				0F1C7F2D1A0E210D00A88496 /* VolumeNotifierPrefs.plist */,
+			);
+			name = Preferences;
+			sourceTree = "<group>";
+		};
+		0F1C7F2E1A0E210D00A88496 /* PreferenceBundles */ = {
+			isa = PBXGroup;
+			children = (
+				0F1C7F2F1A0E210D00A88496 /* VolumeNotifierPrefs.bundle */,
+			);
+			name = PreferenceBundles;
+			sourceTree = "<group>";
+		};
+		0F1C7F2F1A0E210D00A88496 /* VolumeNotifierPrefs.bundle */ = {
+			isa = PBXGroup;
+			children = (
+				0FC778171BDBB23D005E7E8B /* ja.lproj */,
+				0FC778111BDBB1E3005E7E8B /* zh-Hans.lproj */,
+				0FC778141BDBB1E3005E7E8B /* zh-Hant.lproj */,
+				0FFFDF8B1A0E4A1A00155ACC /* English.lproj */,
+				0F1C7F4C1A0E2D3300A88496 /* VolumeNotifierPrefsIcon.png */,
+				0F1C7F4D1A0E2D3300A88496 /* VolumeNotifierPrefsIcon@2x.png */,
+				0F9AA5CA1A0F10500026F7C5 /* paypal@2x.png */,
+				0F7F50CC1A0EE4BE0039C9A6 /* brush@2x.png */,
+				0F7F50CD1A0EE4BE0039C9A6 /* enabled@2x.png */,
+				0F9AA5CB1A0F10550026F7C5 /* twitter@2x.png */,
+				0F7F50CE1A0EE4BE0039C9A6 /* heart@2x.png */,
+				0F7F50CF1A0EE4BE0039C9A6 /* makers@2x.png */,
+				0F7F50D01A0EE4BE0039C9A6 /* settings@2x.png */,
+				0F7F50D11A0EE4BE0039C9A6 /* star@2x.png */,
+				0F7F50D21A0EE4BE0039C9A6 /* support@2x.png */,
+				0F7F50D31A0EE4BE0039C9A6 /* todo@2x.png */,
+			);
+			name = VolumeNotifierPrefs.bundle;
+			sourceTree = "<group>";
+		};
+		0F7F50A01A0EE49D0039C9A6 /* SettingsKit */ = {
+			isa = PBXGroup;
+			children = (
+				0FBD89941A11173A00AE2B90 /* common.h */,
+				0FBD89951A11173A00AE2B90 /* SKListControllerProtocol.h */,
+				0FBD89961A11173A00AE2B90 /* SKListItemsController.h */,
+				0FBD89971A11173A00AE2B90 /* SKPersonCell.h */,
+				0FBD89981A11173A00AE2B90 /* SKSharedHelper.h */,
+				0FBD89991A11173A00AE2B90 /* SKSpecifierParser.h */,
+				0FBD899A1A11173A00AE2B90 /* SKStandardController.h */,
+				0FBD899B1A11173A00AE2B90 /* SKTintedCell.h */,
+				0FBD899C1A11173A00AE2B90 /* SKTintedControlCell.h */,
+				0FBD899D1A11173A00AE2B90 /* SKTintedListController.h */,
+				0FBD899E1A11173A00AE2B90 /* SKTintedSwitchCell.h */,
+				0F7F50A61A0EE49D0039C9A6 /* SKListItemsController.m */,
+				0F7F50A81A0EE49D0039C9A6 /* SKPersonCell.m */,
+				0F7F50AA1A0EE49D0039C9A6 /* SKSharedHelper.m */,
+				0F7F50AC1A0EE49D0039C9A6 /* SKSpecifierParser.m */,
+				0F7F50AE1A0EE49D0039C9A6 /* SKStandardController.m */,
+				0F7F50B01A0EE49D0039C9A6 /* SKTintedCell.m */,
+				0F7F50B21A0EE49D0039C9A6 /* SKTintedControlCell.m */,
+				0F7F50B41A0EE49D0039C9A6 /* SKTintedListController.m */,
+				0F7F50B61A0EE49D0039C9A6 /* SKTintedSwitchCell.m */,
+			);
+			path = SettingsKit;
+			sourceTree = "<group>";
+		};
+		0FC778111BDBB1E3005E7E8B /* zh-Hans.lproj */ = {
+			isa = PBXGroup;
+			children = (
+				0FC778121BDBB1E3005E7E8B /* Localizable.strings */,
+			);
+			name = "zh-Hans.lproj";
+			path = "Package/Library/PreferenceBundles/VolumeNotifierPrefs.bundle/zh-Hans.lproj";
+			sourceTree = "<group>";
+		};
+		0FC778141BDBB1E3005E7E8B /* zh-Hant.lproj */ = {
+			isa = PBXGroup;
+			children = (
+				0FC778151BDBB1E3005E7E8B /* Localizable.strings */,
+			);
+			name = "zh-Hant.lproj";
+			path = "Package/Library/PreferenceBundles/VolumeNotifierPrefs.bundle/zh-Hant.lproj";
+			sourceTree = "<group>";
+		};
+		0FC778171BDBB23D005E7E8B /* ja.lproj */ = {
+			isa = PBXGroup;
+			children = (
+				0FC778181BDBB23D005E7E8B /* Localizable.strings */,
+			);
+			name = ja.lproj;
+			path = Package/Library/PreferenceBundles/VolumeNotifierPrefs.bundle/ja.lproj;
+			sourceTree = "<group>";
+		};
+		0FFFDF8B1A0E4A1A00155ACC /* English.lproj */ = {
+			isa = PBXGroup;
+			children = (
+				0F9AA5CC1A0F12760026F7C5 /* Localizable.strings */,
+			);
+			name = English.lproj;
+			path = Package/Library/PreferenceBundles/VolumeNotifierPrefs.bundle/English.lproj;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		0F1C7F121A0E210C00A88496 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0FBD89A21A11173A00AE2B90 /* SKPersonCell.h in Headers */,
+				0FBD89A41A11173A00AE2B90 /* SKSpecifierParser.h in Headers */,
+				0FBD89A81A11173A00AE2B90 /* SKTintedListController.h in Headers */,
+				0FBD89A31A11173A00AE2B90 /* SKSharedHelper.h in Headers */,
+				0FBD89A01A11173A00AE2B90 /* SKListControllerProtocol.h in Headers */,
+				0FBD89A11A11173A00AE2B90 /* SKListItemsController.h in Headers */,
+				0FBD89A91A11173A00AE2B90 /* SKTintedSwitchCell.h in Headers */,
+				0F1C7F271A0E210D00A88496 /* VolumeNotifierPrefsController.h in Headers */,
+				0FBD89A61A11173A00AE2B90 /* SKTintedCell.h in Headers */,
+				0FBD899F1A11173A00AE2B90 /* common.h in Headers */,
+				0FBD89A71A11173A00AE2B90 /* SKTintedControlCell.h in Headers */,
+				0FBD89A51A11173A00AE2B90 /* SKStandardController.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		0F1C7F141A0E210C00A88496 /* VolumeNotifierPrefs */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0F1C7F3B1A0E210D00A88496 /* Build configuration list for PBXNativeTarget "VolumeNotifierPrefs" */;
+			buildPhases = (
+				0F1C7F101A0E210C00A88496 /* Sources */,
+				0F1C7F111A0E210C00A88496 /* Frameworks */,
+				0F1C7F121A0E210C00A88496 /* Headers */,
+				0F1C7F131A0E210C00A88496 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = VolumeNotifierPrefs;
+			productName = VolumeNotifierPrefs;
+			productReference = 0F1C7F151A0E210C00A88496 /* VolumeNotifierPrefs.bundle */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0F1C7F0C1A0E210C00A88496 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0700;
+				TargetAttributes = {
+					0F1C7F141A0E210C00A88496 = {
+						CreatedOnToolsVersion = 6.1;
+					};
+				};
+			};
+			buildConfigurationList = 0F1C7F0F1A0E210C00A88496 /* Build configuration list for PBXProject "VolumeNotifierPrefs" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				zh_CN,
+				English,
+				zh_TW,
+				"zh-Hans",
+				"zh-Hant",
+				ja,
+			);
+			mainGroup = 0F1C7F0B1A0E210C00A88496;
+			productRefGroup = 0F1C7F161A0E210C00A88496 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				0F1C7F141A0E210C00A88496 /* VolumeNotifierPrefs */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		0F1C7F131A0E210C00A88496 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/opt/iOSOpenDev/bin/iosod --xcbp";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		0F1C7F101A0E210C00A88496 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0F7F50C31A0EE49D0039C9A6 /* SKStandardController.m in Sources */,
+				0F7F50C11A0EE49D0039C9A6 /* SKSpecifierParser.m in Sources */,
+				0F7F50C51A0EE49D0039C9A6 /* SKTintedCell.m in Sources */,
+				0F7F50BF1A0EE49D0039C9A6 /* SKSharedHelper.m in Sources */,
+				0F7F50BD1A0EE49D0039C9A6 /* SKPersonCell.m in Sources */,
+				0F7F50CB1A0EE49D0039C9A6 /* SKTintedSwitchCell.m in Sources */,
+				0F7F50BB1A0EE49D0039C9A6 /* SKListItemsController.m in Sources */,
+				0F7F50C91A0EE49D0039C9A6 /* SKTintedListController.m in Sources */,
+				0F1C7F291A0E210D00A88496 /* VolumeNotifierPrefsController.m in Sources */,
+				0F7F50C71A0EE49D0039C9A6 /* SKTintedControlCell.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		0F9AA5CC1A0F12760026F7C5 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				0F9AA5CD1A0F12760026F7C5 /* English */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+		0FC778121BDBB1E3005E7E8B /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				0FC778131BDBB1E3005E7E8B /* zh-Hans */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+		0FC778151BDBB1E3005E7E8B /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				0FC778161BDBB1E3005E7E8B /* zh-Hant */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+		0FC778181BDBB23D005E7E8B /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				0FC778191BDBB23D005E7E8B /* ja */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		0F1C7F391A0E210D00A88496 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMPRESS_PNG_FILES = NO;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_BITCODE = NO;
+				ENABLE_TESTABILITY = YES;
+				EXCLUDED_RECURSIVE_SEARCH_PATH_SUBDIRECTORIES = "*.nib *.lproj *.gch (*) .DS_Store CVS .svn .git .hg *.xcodeproj *.xcode *.pbproj *.pbxproj";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(iOSOpenDevPath)/frameworks/**",
+					"$(SDKROOT)/System/Library/PrivateFrameworks",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "/opt/theos/include/**";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				LIBRARY_SEARCH_PATHS = "/opt/theos/lib/**";
+				MACH_O_TYPE = mh_bundle;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = (
+					"-F/opt/theos/frameworks",
+					"-Wl,-segalign,4000",
+				);
+				SDKROOT = iphoneos7.1;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = NO;
+				iOSOpenDevPath = /opt/iOSOpenDev;
+			};
+			name = Debug;
+		};
+		0F1C7F3A1A0E210D00A88496 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMPRESS_PNG_FILES = NO;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_BITCODE = NO;
+				EXCLUDED_RECURSIVE_SEARCH_PATH_SUBDIRECTORIES = "*.nib *.lproj *.gch (*) .DS_Store CVS .svn .git .hg *.xcodeproj *.xcode *.pbproj *.pbxproj";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(iOSOpenDevPath)/frameworks/**",
+					"$(SDKROOT)/System/Library/PrivateFrameworks",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "/opt/theos/include/**";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				LIBRARY_SEARCH_PATHS = "/opt/theos/lib/**";
+				MACH_O_TYPE = mh_bundle;
+				OTHER_LDFLAGS = (
+					"-F/opt/theos/frameworks",
+					"-Wl,-segalign,4000",
+				);
+				SDKROOT = iphoneos7.1;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				iOSOpenDevPath = /opt/iOSOpenDev;
+			};
+			name = Release;
+		};
+		0F1C7F3C1A0E210D00A88496 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "";
+				DEAD_CODE_STRIPPING = YES;
+				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(DEVELOPER_DIR)/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/Frameworks",
+					/opt/theos/frameworks,
+					/opt/theos/sdks/iPhoneOS8.1.sdk/System/Library/PrivateFrameworks,
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "VolumeNotifierPrefs/VolumeNotifierPrefs-Prefix.pch";
+				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
+				GENERATE_MASTER_OBJECT_FILE = NO;
+				HEADER_SEARCH_PATHS = "/opt/theos/include/**";
+				INFOPLIST_FILE = "VolumeNotifierPrefs/VolumeNotifierPrefs-Info.plist";
+				INSTALL_PATH = /Library/PreferenceBundles;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				LIBRARY_SEARCH_PATHS = "/opt/theos/lib/**";
+				LINK_WITH_STANDARD_LIBRARIES = YES;
+				MACH_O_TYPE = mh_bundle;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "-Wl,-segalign,4000";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.darwindev.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos7.1;
+				SKIP_INSTALL = YES;
+				WRAPPER_EXTENSION = bundle;
+				iOSOpenDevBuildPackageOnAnyBuild = NO;
+				iOSOpenDevCopyOnBuild = NO;
+				iOSOpenDevDevice = "";
+				iOSOpenDevInstallOnAnyBuild = NO;
+				iOSOpenDevInstallOnProfiling = NO;
+				iOSOpenDevRespringOnInstall = NO;
+				iOSOpenDevUsePackageVersionPList = YES;
+			};
+			name = Debug;
+		};
+		0F1C7F3D1A0E210D00A88496 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "";
+				DEAD_CODE_STRIPPING = YES;
+				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(DEVELOPER_DIR)/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/Frameworks",
+					/opt/theos/frameworks,
+					/opt/theos/sdks/iPhoneOS8.1.sdk/System/Library/PrivateFrameworks,
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "VolumeNotifierPrefs/VolumeNotifierPrefs-Prefix.pch";
+				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
+				GENERATE_MASTER_OBJECT_FILE = NO;
+				HEADER_SEARCH_PATHS = "/opt/theos/include/**";
+				INFOPLIST_FILE = "VolumeNotifierPrefs/VolumeNotifierPrefs-Info.plist";
+				INSTALL_PATH = /Library/PreferenceBundles;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				LIBRARY_SEARCH_PATHS = "/opt/theos/lib/**";
+				LINK_WITH_STANDARD_LIBRARIES = YES;
+				MACH_O_TYPE = mh_bundle;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "-Wl,-segalign,4000";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.darwindev.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos7.1;
+				SKIP_INSTALL = YES;
+				WRAPPER_EXTENSION = bundle;
+				iOSOpenDevBuildPackageOnAnyBuild = NO;
+				iOSOpenDevCopyOnBuild = NO;
+				iOSOpenDevDevice = "";
+				iOSOpenDevInstallOnAnyBuild = NO;
+				iOSOpenDevInstallOnProfiling = NO;
+				iOSOpenDevRespringOnInstall = NO;
+				iOSOpenDevUsePackageVersionPList = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0F1C7F0F1A0E210C00A88496 /* Build configuration list for PBXProject "VolumeNotifierPrefs" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0F1C7F391A0E210D00A88496 /* Debug */,
+				0F1C7F3A1A0E210D00A88496 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0F1C7F3B1A0E210D00A88496 /* Build configuration list for PBXNativeTarget "VolumeNotifierPrefs" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0F1C7F3C1A0E210D00A88496 /* Debug */,
+				0F1C7F3D1A0E210D00A88496 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 0F1C7F0C1A0E210C00A88496 /* Project object */;
+}

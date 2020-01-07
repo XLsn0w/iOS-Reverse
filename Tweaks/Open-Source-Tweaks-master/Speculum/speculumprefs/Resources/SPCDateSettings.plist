@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>items</key>
+	<array>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<true/>
+			<key>defaults</key>
+			<string>com.lacertosusrepo.speculumprefs</string>
+			<key>key</key>
+			<string>speculumDateLabelSwitch</string>
+			<key>label</key>
+			<string>Enable</string>
+			<key>PostNotification</key>
+			<string>com.lacertosusrepo.speculumprefs/ReloadPrefs</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<false/>
+			<key>defaults</key>
+			<string>com.lacertosusrepo.speculumprefs</string>
+			<key>key</key>
+			<string>speculumDateLabelLowercase</string>
+			<key>label</key>
+			<string>Force Lowercase</string>
+			<key>PostNotification</key>
+			<string>com.lacertosusrepo.speculumprefs/ReloadPrefs</string>
+		</dict>
+		<dict>
+			<key>action</key>
+			<string>colorPicker</string>
+			<key>cell</key>
+			<string>PSLinkCell</string>
+			<key>label</key>
+			<string>Font Color</string>
+		</dict>
+
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Date Font Size &amp; Weight</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSliderCell</string>
+			<key>default</key>
+			<string>25</string>
+			<key>defaults</key>
+			<string>com.lacertosusrepo.speculumprefs</string>
+			<key>label</key>
+			<string>Date Label Size</string>
+			<key>min</key>
+			<string>10</string>
+			<key>max</key>
+			<string>100</string>
+			<key>isSegmented</key>
+			<true/>
+			<key>showValue</key>
+			<true/>
+			<key>key</key>
+			<string>speculumDateLabelSize</string>
+			<key>PostNotification</key>
+			<string>com.lacertosusrepo.speculumprefs/ReloadPrefs</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSLinkListCell</string>
+			<key>detail</key>
+			<string>PSListItemsController</string>
+			<key>default</key>
+			<string>-0.400000</string>
+			<key>defaults</key>
+			<string>com.lacertosusrepo.speculumprefs</string>
+			<key>label</key>
+			<string>Font Weight</string>
+			<key>validTitles</key>
+			<array>
+				<string>Black</string>
+				<string>Heavy</string>
+				<string>Bold</string>
+				<string>SemiBold</string>
+				<string>Medium</string>
+				<string>Regular</string>
+				<string>Light</string>
+				<string>Thin</string>
+				<string>Ultra-Light</string>
+			</array>
+			<key>validValues</key>
+			<array>
+				<string>0.620000</string>
+				<string>0.560000</string>
+				<string>0.400000</string>
+				<string>0.300000</string>
+				<string>0.230000</string>
+				<string>0.000000</string>
+				<string>-0.400000</string>
+				<string>-0.600000</string>
+				<string>-0.800000</string>
+			</array>
+			<key>key</key>
+			<string>speculumDateLabelWeight</string>
+			<key>PostNotification</key>
+			<string>com.lacertosusrepo.speculumprefs/ReloadPrefs</string>
+		</dict>
+
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Date Label Format</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>default</key>
+			<string></string>
+			<key>defaults</key>
+			<string>com.lacertosusrepo.speculumprefs</string>
+			<key>placeholder</key>
+			<string>EEEE, MMMM d</string>
+			<key>label</key>
+			<string>Format:</string>
+			<key>key</key>
+			<string>speculumDateLabelFormat</string>
+			<key>PostNotification</key>
+			<string>com.lacertosusrepo.speculumprefs/ReloadPrefs</string>
+		</dict>
+		<dict>
+			<key>cellClass</key>
+			<string>HBLinkTableCell</string>
+			<key>label</key>
+			<string>Time/Date Formatting Help</string>
+			<key>subtitle</key>
+			<string>Need some help figuring out the formatting?</string>
+			<key>url</key>
+			<string>https://nsdateformatter.com/</string>
+		</dict>
+
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Date Label Calendar</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSLinkListCell</string>
+			<key>detail</key>
+			<string>PSListItemsController</string>
+			<key>default</key>
+			<string>gregorian</string>
+			<key>defaults</key>
+			<string>com.lacertosusrepo.speculumprefs</string>
+			<key>label</key>
+			<string>Calendar</string>
+			<key>validTitles</key>
+			<array>
+				<string>Buddhist</string>
+				<string>Chinese</string>
+				<string>Coptic</string>
+				<string>Ethiopic (Amete Alem)</string>
+				<string>Ethiopic (Amete Mihret)</string>
+				<string>Gregorian</string>
+				<string>Hebrew</string>
+				<string>Indian</string>
+				<string>ISO 8601</string>
+				<string>Islamic</string>
+				<string>Islamic Civil</string>
+				<string>Islamic Tabular</string>
+				<string>Islamic Umm al-Qura</string>
+				<string>Japanese</string>
+				<string>Persian</string>
+				<string>Republic of China</string>
+			</array>
+			<key>validValues</key>
+			<array>
+				<string>buddhist</string>
+				<string>chinese</string>
+				<string>coptic</string>
+				<string>ethiopic-amete-alem</string>
+				<string>ethiopic</string>
+				<string>gregorian</string>
+				<string>hebrew</string>
+				<string>indian</string>
+				<string>iso8601</string>
+				<string>islamic</string>
+				<string>islamic-civil</string>
+				<string>islamic-tbla</string>
+				<string>islamic-umalqura</string>
+				<string>japanese</string>
+				<string>persian</string>
+				<string>roc</string>
+			</array>
+			<key>key</key>
+			<string>speculumDateLabelCalendar</string>
+			<key>PostNotification</key>
+			<string>com.lacertosusrepo.speculumprefs/ReloadPrefs</string>
+		</dict>
+	</array>
+	<key>title</key>
+	<string></string>
+</dict>
+</plist>

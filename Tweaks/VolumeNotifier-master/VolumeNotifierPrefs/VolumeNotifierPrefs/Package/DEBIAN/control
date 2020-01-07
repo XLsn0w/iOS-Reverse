@@ -1,0 +1,8 @@
+Package: com.darwindev.VolumeNotifierPrefs
+Name: VolumeNotifierPrefs
+Version: 0.3-7
+Section: PreferenceBundles
+Depends: firmware (>= 7.0), mobilesubstrate, preferenceloader
+Architecture: iphoneos-arm
+Author: i_82 <i.82@me.com>
+Homepage: http://82flex.com

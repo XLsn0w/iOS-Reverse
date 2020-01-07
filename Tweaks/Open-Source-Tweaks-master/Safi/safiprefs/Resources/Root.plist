@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>items</key>
+	<array>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>headerCellClass</key>
+			<string>SafiCustomHeaderCell</string>
+		</dict>
+
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Options</string>
+			<key>footerText</key>
+			<string>Tap-Close allows the user to tap inside blank space in a folder to close it.</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<true/>
+			<key>defaults</key>
+			<string>com.lacertosusrepo.safiprefs</string>
+			<key>key</key>
+			<string>tapCloseSwitch</string>
+			<key>label</key>
+			<string>Allow Tap-Close in Folder</string>
+			<key>PostNotification</key>
+			<string>com.lacertosusrepo.safiprefs/preferences.changed</string>
+		</dict>
+
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Blur Options</string>
+			<key>footerText</key>
+			<string>Use slider to change blur alpha. Max is 1.0.</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSegmentCell</string>
+			<key>defaults</key>
+			<string>com.lacertosusrepo.safiprefs</string>
+			<key>key</key>
+			<string>blurOption</string>
+			<key>label</key>
+			<string>Blur Type</string>
+			<key>default</key>
+			<string>1</string>
+			<key>validTitles</key>
+			<array>
+				<string>No Blur</string>
+				<string>Dark Blur</string>
+				<string>Light Blur</string>
+				<string>Extra Light Blur</string>
+			</array>
+			<key>validValues</key>
+			<array>
+				<string>0</string>
+				<string>1</string>
+				<string>2</string>
+				<string>3</string>
+			</array>
+			<key>id</key>
+			<string>ModeCell</string>
+			<key>PostNotification</key>
+			<string>com.lacertosusrepo.safiprefs/preferences.changed</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSliderCell</string>
+			<key>default</key>
+			<string>1.0</string>
+			<key>min</key>
+			<string>0.0</string>
+			<key>max</key>
+			<string>1.0</string>
+			<key>showValue</key>
+			<false/>
+			<key>defaults</key>
+			<string>com.lacertosusrepo.safiprefs</string>
+			<key>key</key>
+			<string>blurAlpha</string>
+			<key>label</key>
+			<string>Blur Alpha</string>
+			<key>leftImage</key>
+			<string>slidericon.png</string>
+			<key>isSegmented</key>
+			<true/>
+			<key>segmentCount</key>
+			<integer>10</integer>
+			<key>PostNotification</key>
+			<string>com.lacertosusrepo.safiprefs/preferences.changed</string>
+		</dict>
+
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Folder Background Options</string>
+			<key>footerText</key>
+			<string>Use slider to change folder background alpha. Max is 1.0.</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<false/>
+			<key>defaults</key>
+			<string>com.lacertosusrepo.safiprefs</string>
+			<key>key</key>
+			<string>hideFolderIcon</string>
+			<key>label</key>
+			<string>Hide Folder Icon</string>
+			<key>PostNotification</key>
+			<string>com.lacertosusrepo.safiprefs/preferences.changed</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<true/>
+			<key>defaults</key>
+			<string>com.lacertosusrepo.safiprefs</string>
+			<key>key</key>
+			<string>hideFolderTitle</string>
+			<key>label</key>
+			<string>Hide Folder Title</string>
+			<key>PostNotification</key>
+			<string>com.lacertosusrepo.safiprefs/preferences.changed</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<true/>
+			<key>defaults</key>
+			<string>com.lacertosusrepo.safiprefs</string>
+			<key>key</key>
+			<string>hideFolderDots</string>
+			<key>label</key>
+			<string>Hide Folder Dots</string>
+			<key>PostNotification</key>
+			<string>com.lacertosusrepo.safiprefs/preferences.changed</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<false/>
+			<key>defaults</key>
+			<string>com.lacertosusrepo.safiprefs</string>
+			<key>key</key>
+			<string>folderColorSwitch</string>
+			<key>label</key>
+			<string>Use Custom Color for Folders</string>
+			<key>PostNotification</key>
+			<string>com.lacertosusrepo.safiprefs/preferences.changed</string>
+		</dict>
+		<dict>
+			<key>action</key>
+			<string>colorPickerFolderBackground</string>
+			<key>cell</key>
+			<string>PSLinkCell</string>
+			<key>label</key>
+			<string>Folder Background Color</string>
+			<key>icon</key>
+			<string>colorpickericon.png</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSliderCell</string>
+			<key>default</key>
+			<string>0.0</string>
+			<key>min</key>
+			<string>0.0</string>
+			<key>max</key>
+			<string>1.0</string>
+			<key>showValue</key>
+			<false/>
+			<key>defaults</key>
+			<string>com.lacertosusrepo.safiprefs</string>
+			<key>key</key>
+			<string>folderBackgroundAlpha</string>
+			<key>label</key>
+			<string>Folder Background Alpha</string>
+			<key>leftImage</key>
+			<string>slidericon.png</string>
+			<key>isSegmented</key>
+			<true/>
+			<key>segmentCount</key>
+			<integer>10</integer>
+			<key>PostNotification</key>
+			<string>com.lacertosusrepo.safiprefs/preferences.changed</string>
+		</dict>
+
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>footerText</key>
+			<string>Some changes may require a respring.</string>
+		</dict>
+		<dict>
+			<key>action</key>
+			<string>respring</string>
+			<key>cell</key>
+			<string>PSButtonCell</string>
+			<key>cellClass</key>
+			<string>SafiButtonCell</string>
+			<key>label</key>
+			<string>Respring</string>
+		</dict>
+
+		<dict>
+			<key>label</key>
+			<string>Need Something?</string>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>footerText</key>
+			<string>Created by LacertosusDeus 2018</string>
+		</dict>
+		<dict>
+			<key>action</key>
+			<string>github</string>
+			<key>cell</key>
+			<string>PSButtonCell</string>
+			<key>cellClass</key>
+			<string>SafiButtonCell</string>
+			<key>icon</key>
+			<string>github.png</string>
+			<key>label</key>
+			<string>Github</string>
+		</dict>
+		<dict>
+			<key>action</key>
+			<string>twitter</string>
+			<key>cell</key>
+			<string>PSButtonCell</string>
+			<key>cellClass</key>
+			<string>SafiButtonCell</string>
+			<key>icon</key>
+			<string>twitter.png</string>
+			<key>label</key>
+			<string>Twitter</string>
+		</dict>
+		<dict>
+			<key>action</key>
+			<string>paypal</string>
+			<key>cell</key>
+			<string>PSButtonCell</string>
+			<key>cellClass</key>
+			<string>SafiButtonCell</string>
+			<key>icon</key>
+			<string>paypal.png</string>
+			<key>label</key>
+			<string>Donate</string>
+		</dict>
+	</array>
+	<key>title</key>
+	<string></string>
+</dict>
+</plist>
